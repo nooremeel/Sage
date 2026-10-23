@@ -1,0 +1,53 @@
+# Blueprint & Internal Specs
+Sage (سيج) — Project Blueprint.md
+Sage (سايج) — Project Blueprint.md
+
+# Dependencies
+node_modules/
+.pnpm-store/
+.npm
+.yarn
+
+# Production outputs & builds
+dist/
+build/
+.next/
+out/
+.turbo/
+*.tsbuildinfo
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing & Coverage
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+
+# OS & IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporary media & artifacts
+tmp/
+temp/
+*.mp4
+*.m3u8
+*.ts
+!apps/**/*.ts
+!packages/**/*.ts
