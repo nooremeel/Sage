@@ -1,0 +1,15 @@
+{
+  "common": {
+    "appName": "Sage",
+    "tagline": "Learn something worth knowing.",
+    "language": "Language",
+    "arabic": "العربية",
+    "english": "English",
+    "theme": "Theme"
+  },
+  "home": {
+    "welcome": "Welcome to Sage",
+    "description": "A bilingual course platform with protected video delivery.",
+    "status": "System Status: Foundation Ready"
+  }
+}

@@ -1,0 +1,60 @@
+name: sage-dev
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: sage-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sage_user
+      POSTGRES_PASSWORD: sage_password
+      POSTGRES_DB: sage_db
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U sage_user -d sage_db']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: sage-redis
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  seaweedfs:
+    image: chrislusf/seaweedfs:latest
+    container_name: sage-seaweedfs
+    restart: unless-stopped
+    command: 'server -dir=/data -s3 -s3.port=8333 -s3.allowEmptyFolder=true'
+    ports:
+      - '8333:8333'
+      - '9333:9333'
+    volumes:
+      - seaweedfs_data:/data
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: sage-mailpit
+    restart: unless-stopped
+    ports:
+      - '1025:1025'
+      - '8025:8025'
+    environment:
+      MP_MAX_MESSAGES: 500
+
+volumes:
+  postgres_data:
+  redis_data:
+  seaweedfs_data:

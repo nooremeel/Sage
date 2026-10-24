@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Sage palette */
+  --paper: #fbf7ee;
+  --surface: #fffdf8;
+  --paper-200: #f1ead9;
+  --rule: #e2d8c2;
+  --ink-900: #15233f;
+  --ink-600: #3f4b66;
+  --blue-700: #1f3a6e;
+  --blue-800: #162c57;
+  --blue-100: #e4eaf5;
+  --amber-500: #e39b35;
+  --amber-100: #fbebd0;
+  --sage-300: #b9cbb4;
+  --sage-700: #44614a;
+  --warning: #8a5100;
+  --danger: #a8281f;
+
+  /* Semantic tokens */
+  --bg: var(--paper);
+  --bg-subtle: var(--paper-200);
+  --card: var(--surface);
+  --border: var(--rule);
+  --text: var(--ink-900);
+  --text-muted: var(--ink-600);
+  --primary: var(--blue-700);
+  --primary-hover: var(--blue-800);
+  --on-primary: #ffffff;
+  --primary-tint: var(--blue-100);
+  --accent: var(--amber-500);
+  --on-accent: var(--ink-900);
+  --success: var(--sage-700);
+  --focus-ring: var(--blue-700);
+}
+
+[data-theme='dark'] {
+  --bg: #0e1729;
+  --bg-subtle: #121c33;
+  --card: #15203a;
+  --border: #26345a;
+  --text: #f1ebdd;
+  --text-muted: #a9b2c7;
+  --primary: #9db5ee;
+  --primary-hover: #b7c8f3;
+  --on-primary: #0e1729;
+  --primary-tint: #1d2a4b;
+  --accent: #edaa4e;
+  --on-accent: #0e1729;
+  --success: #9cbf9f;
+  --focus-ring: #edaa4e;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans), sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Arabic typography adjustment */
+html:lang(ar) {
+  font-size: 105%;
+}

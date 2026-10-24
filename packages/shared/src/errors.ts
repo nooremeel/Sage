@@ -1,0 +1,33 @@
+export const AppErrorCode = {
+  // General & Auth
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  CONFLICT: 'CONFLICT',
+  RATE_LIMITED: 'RATE_LIMITED',
+  INTERNAL_SERVER_ERROR: 'INTERNAL_SERVER_ERROR',
+  INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
+  TOKEN_EXPIRED: 'TOKEN_EXPIRED',
+  TOKEN_INVALID: 'TOKEN_INVALID',
+  REFRESH_TOKEN_REUSE: 'REFRESH_TOKEN_REUSE',
+
+  // Domain specific
+  COURSE_NOT_FOUND: 'COURSE_NOT_FOUND',
+  LESSON_NOT_FOUND: 'LESSON_NOT_FOUND',
+  NOT_ENROLLED: 'NOT_ENROLLED',
+  MEDIA_UPLOAD_FAILED: 'MEDIA_UPLOAD_FAILED',
+  MEDIA_NOT_READY: 'MEDIA_NOT_READY',
+  COUPON_EXPIRED: 'COUPON_EXPIRED',
+  COUPON_EXHAUSTED: 'COUPON_EXHAUSTED',
+} as const;
+
+export type AppErrorCode = (typeof AppErrorCode)[keyof typeof AppErrorCode];
+
+export interface ApiErrorResponse {
+  message: string;
+  code?: AppErrorCode | string;
+  statusCode?: number;
+  timestamp?: string;
+  path?: string;
+}
