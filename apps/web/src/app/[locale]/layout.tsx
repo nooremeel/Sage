@@ -1,10 +1,20 @@
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { DirectionProvider } from '@radix-ui/react-direction';
 import { LOCALES, type Locale } from '@sage/shared';
+import {
+  ebGaramond,
+  amiri,
+  ibmPlexSans,
+  ibmPlexSansArabic,
+  ibmPlexMono,
+} from '../fonts';
 import '../globals.css';
+import { Header } from '@/components/shell/header';
+import { Footer } from '@/components/shell/footer';
 
 export const metadata: Metadata = {
   title: 'Sage (سايج) — Learn something worth knowing',
@@ -31,11 +41,26 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
   const messages = await getMessages();
   const dir = locale === 'ar' ? 'rtl' : 'ltr';
 
+  const cookieStore = await cookies();
+  const theme = cookieStore.get('sage_theme')?.value ?? 'light';
+
+  const fontVariables = [
+    ebGaramond.variable,
+    amiri.variable,
+    ibmPlexSans.variable,
+    ibmPlexSansArabic.variable,
+    ibmPlexMono.variable,
+  ].join(' ');
+
   return (
-    <html lang={locale} dir={dir} suppressHydrationWarning>
-      <body className="min-h-screen bg-bg text-text antialiased">
+    <html lang={locale} dir={dir} data-theme={theme} className={fontVariables} suppressHydrationWarning>
+      <body className="min-h-screen bg-bg text-text antialiased flex flex-col">
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <DirectionProvider dir={dir}>{children}</DirectionProvider>
+          <DirectionProvider dir={dir}>
+            <Header />
+            <div className="flex-1">{children}</div>
+            <Footer />
+          </DirectionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

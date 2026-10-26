@@ -5,11 +5,68 @@
     "language": "Language",
     "arabic": "العربية",
     "english": "English",
-    "theme": "Theme"
+    "theme": "Theme",
+    "lightMode": "Light",
+    "darkMode": "Dark",
+    "learnMore": "Learn more",
+    "preview": "Preview"
+  },
+  "nav": {
+    "home": "Home",
+    "catalog": "Courses",
+    "styleguide": "Styleguide",
+    "menu": "Menu",
+    "close": "Close"
+  },
+  "footer": {
+    "copyright": "© 2026 Sage. All rights reserved.",
+    "terms": "Terms & Conditions",
+    "privacy": "Privacy Policy"
   },
   "home": {
     "welcome": "Welcome to Sage",
+    "heroTitle": "Learn something worth knowing in a quiet, scholarly study",
+    "heroSubtitle": "A classic bilingual course platform with protected video delivery, paper-ink aesthetics, and blazing performance.",
     "description": "A bilingual course platform with protected video delivery.",
-    "status": "System Status: Foundation Ready"
+    "status": "System Status: Production Ready",
+    "exploreCourses": "Explore Courses",
+    "viewStyleguide": "Explore Styleguide"
+  },
+  "styleguide": {
+    "title": "Design System & Component Styleguide",
+    "subtitle": "Warm, scholarly visual foundation (paper & ink, classic serif headlines, and hand-drawn ink illustrations).",
+    "colorTokens": "Core Palette Tokens",
+    "colorTokensDesc": "Inspired by aged parchment, deep-blue ink, and warm amber accents.",
+    "typography": "Typography & Font Pairings",
+    "typographyDesc": "EB Garamond / Amiri for classic headlines; IBM Plex Sans / Arabic for UI.",
+    "buttons": "Action Buttons",
+    "buttonsDesc": "Curated variants and sizes with loading and disabled states.",
+    "formControls": "Form Controls & Inputs",
+    "formControlsDesc": "Accessible inputs, checkboxes, and switches using CSS logical properties.",
+    "feedback": "Feedback & Progress Indicators",
+    "feedbackDesc": "Subtle alerts and progress bars rendered with scholarly sage green.",
+    "illustrations": "Hand-Drawn Ink Illustrations",
+    "illustrationsDesc": "Pen-and-ink line drawings with offset misregistered amber/sage washes.",
+    "courseCardDemo": "Course Card Preview",
+    "courseCardDemoDesc": "Realistic course card representation with metadata, rating, and price.",
+    "curriculumDemo": "Curriculum Accordion Outline",
+    "curriculumDemoDesc": "Interactive curriculum sections with lesson icons and completion indicators.",
+    "primaryBtn": "Primary (Ink)",
+    "secondaryBtn": "Secondary (Outline)",
+    "accentBtn": "Call to Action (Amber)",
+    "destructiveBtn": "Destructive",
+    "loadingBtn": "Loading State",
+    "disabledBtn": "Disabled",
+    "inputPlaceholder": "Enter sample text here...",
+    "textareaPlaceholder": "Enter your notes or scholarly description...",
+    "sampleLabel": "Username or Institutional Email",
+    "sampleHint": "We will never share your email with third parties.",
+    "sampleError": "Please provide a valid and recognized email address.",
+    "sampleSelectPlaceholder": "Select Academic Level",
+    "option1": "Beginner Level",
+    "option2": "Intermediate Level",
+    "option3": "Advanced Level",
+    "toggleLabel": "Enable instant email course notifications",
+    "checkboxLabel": "I accept the scholarly honor code and terms"
   }
 }

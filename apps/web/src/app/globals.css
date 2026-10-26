@@ -35,6 +35,15 @@
   --on-accent: var(--ink-900);
   --success: var(--sage-700);
   --focus-ring: var(--blue-700);
+
+  /* Shadows */
+  --shadow-e1: 0 1px 2px rgb(21 35 63 / 0.06);
+  --shadow-e2: 0 8px 24px rgb(21 35 63 / 0.12);
+
+  /* Default fonts (fallback before lang kicks in) */
+  --font-headline: var(--font-eb-garamond), serif;
+  --font-sans: var(--font-plex-sans), sans-serif;
+  --font-mono: var(--font-plex-mono), monospace;
 }
 
 [data-theme='dark'] {
@@ -52,6 +61,22 @@
   --on-accent: #0e1729;
   --success: #9cbf9f;
   --focus-ring: #edaa4e;
+
+  /* Dark mode shadows */
+  --shadow-e1: 0 1px 2px rgb(0 0 0 / 0.35);
+  --shadow-e2: 0 8px 24px rgb(0 0 0 / 0.55);
+}
+
+/* Locale font mappings and size adjustments */
+html[lang='ar'] {
+  --font-headline: var(--font-amiri), serif;
+  --font-sans: var(--font-plex-sans-arabic), sans-serif;
+  font-size: 105%;
+}
+
+html[lang='en'] {
+  --font-headline: var(--font-eb-garamond), serif;
+  --font-sans: var(--font-plex-sans), sans-serif;
 }
 
 body {
@@ -63,7 +88,26 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Arabic typography adjustment */
-html:lang(ar) {
-  font-size: 105%;
+/* Double hairline rule — Editorial signature */
+.rule-double {
+  display: block;
+  border: none;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  height: 5px;
+  width: 100%;
+}
+
+/* Accessible focus ring utility */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Reading container constraints */
+.reading-column {
+  max-width: 680px;
 }

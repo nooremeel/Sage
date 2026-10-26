@@ -40,8 +40,17 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Lint
+        run: pnpm lint
+
+      - name: i18n Parity Check
+        run: pnpm --filter @sage/web i18n:check
+
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Unit Tests
+        run: pnpm test
 
       - name: Build
         run: pnpm build

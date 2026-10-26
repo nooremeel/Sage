@@ -44,6 +44,17 @@ const config: Config = {
         warning: 'var(--warning)',
         danger: 'var(--danger)',
       },
+      borderRadius: {
+        sm: '4px',
+        md: '6px',
+        DEFAULT: '6px',
+        lg: '10px',
+        full: '9999px',
+      },
+      boxShadow: {
+        e1: 'var(--shadow-e1)',
+        e2: 'var(--shadow-e2)',
+      },
       fontFamily: {
         headline: ['var(--font-headline)', 'serif'],
         sans: ['var(--font-sans)', 'sans-serif'],
