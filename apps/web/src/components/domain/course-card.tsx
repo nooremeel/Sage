@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from '@/i18n/routing';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { RatingStars } from '@/components/ui/rating-stars';
@@ -17,6 +18,7 @@ export interface CourseCardProps {
   duration: string;
   categoryIcon?: IllustrationName;
   languageChip?: string;
+  href?: string;
   className?: string;
 }
 
@@ -31,9 +33,10 @@ export function CourseCard({
   duration,
   categoryIcon = 'category-code',
   languageChip = 'العربية / EN',
+  href,
   className,
 }: CourseCardProps) {
-  return (
+  const content = (
     <Card
       elevation="flat"
       className={cn(
@@ -84,4 +87,14 @@ export function CourseCard({
       </div>
     </Card>
   );
+
+  if (href) {
+    return (
+      <Link href={href} className="focus-ring rounded-lg block h-full">
+        {content}
+      </Link>
+    );
+  }
+
+  return content;
 }

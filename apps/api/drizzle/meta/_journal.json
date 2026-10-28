@@ -15,6 +15,13 @@
       "when": 1793172669982,
       "tag": "0001_green_synch",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793198565860,
+      "tag": "0002_old_carlie_cooper",
+      "breakpoints": true
     }
   ]
 }

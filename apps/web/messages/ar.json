@@ -14,6 +14,7 @@
   "nav": {
     "home": "الرئيسية",
     "catalog": "الدورات",
+    "studio": "الأستوديو",
     "styleguide": "دليل التصميم",
     "login": "تسجيل الدخول",
     "signup": "إنشاء حساب",
@@ -34,6 +35,43 @@
     "status": "حالة النظام: جاهز للإنتاج",
     "exploreCourses": "استكشف الدورات",
     "viewStyleguide": "معاينة دليل التصميم"
+  },
+  "catalog": {
+    "title": "فهرس الدورات الأكاديمية",
+    "subtitle": "استكشف دورات تعليمية ثنائية اللغة صُممت بعناية وعمق ورصانة.",
+    "allCategories": "جميع التخصصات",
+    "softwareEngineering": "هندسة البرمجيات",
+    "islamicArts": "الفنون الكلاسيكية والخط العربي",
+    "businessLeadership": "إدارة الأعمال والقيادة",
+    "free": "مجاناً",
+    "noCoursesFound": "لم يتم العثور على دورات",
+    "noCoursesFoundDesc": "لا توجد دورات منشورة تطابق معايير التصفية المحددة حالياً.",
+    "clearFilters": "إعادة ضبط التصفية"
+  },
+  "courseDetail": {
+    "instructor": "المدرّب",
+    "aboutCourse": "عن هذه الدورة",
+    "curriculum": "منهج الدورة وقائمة الدروس",
+    "sectionsCount": "فصول",
+    "curriculumUnderReview": "يجري إعداد محتوى المنهج حالياً.",
+    "tuition": "الرسوم الأكاديمية",
+    "free": "مجاناً بالكامل",
+    "enrollNow": "سجّل الآن",
+    "accessGuarantee": "وصول دائم وشامل لجميع الدروس والملحقات",
+    "verifiedCertificate": "شهادة إتمام معتمدة وقابلة للتحقق رقمياً",
+    "bilingualMaterial": "محتوى تعليمي متكامل باللغتين العربية والإنجليزية"
+  },
+  "studio": {
+    "dashboardTitle": "أستوديو المدرّب",
+    "dashboardSubtitle": "إدارة مسودات الدورات، بناء المناهج، ومتابعة حالات الاعتماد.",
+    "newCourseDraft": "مسودة دورة جديدة",
+    "submittedSuccess": "تم تقديم مسودة الدورة للمراجعة والاعتماد بنجاح.",
+    "instructorOnlyTitle": "متاح للمدرّبين المعتمدين فقط",
+    "instructorOnlyDesc": "يجب أن تمتلك حساب مدرّب معتمد لإنشاء الدورات وإدارتها في سايج.",
+    "applyInstructorBtn": "التقدم بطلب اعتماد كمدرّب",
+    "submitReview": "تقديم للمراجعة",
+    "noCoursesYet": "لا توجد دورات في الأستوديو بعد",
+    "noCoursesYetDesc": "ابدأ مسيرتك التعليمية بإنشاء مسودتك الأولى وتأليف منهجك الدراسي."
   },
   "auth": {
     "loginTitle": "تسجيل الدخول إلى حسابك",
@@ -58,8 +96,8 @@
     "sendResetLinkBtn": "إرسال رابط التعيين",
     "resetPasswordBtn": "تحديث كلمة المرور",
     "verifyBtn": "تأكيد البريد",
-    "forgotPasswordLink": "نسيت كلمة المرور؟"
-    ,"noAccount": "ليس لديك حساب؟",
+    "forgotPasswordLink": "نسيت كلمة المرور؟",
+    "noAccount": "ليس لديك حساب؟",
     "haveAccount": "لديك حساب بالفعل؟",
     "checkEmailAlert": "إذا كان البريد مسجلاً، فقد تم إرسال التعليمات إليه.",
     "passwordResetSuccess": "تمت إعادة تعيين كلمة المرور بنجاح. يُرجى تسجيل الدخول.",

@@ -10,6 +10,10 @@ import { CaslModule } from './common/casl/casl.module.js';
 import { PoliciesGuard } from './common/casl/policies.guard.js';
 import { AuthModule } from './modules/auth/auth.module.js';
 import { UsersModule } from './modules/users/users.module.js';
+import { CategoriesModule } from './modules/categories/categories.module.js';
+import { CoursesModule } from './modules/courses/courses.module.js';
+import { CurriculumModule } from './modules/curriculum/curriculum.module.js';
+import { AdminModule } from './modules/admin/admin.module.js';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware.js';
 import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
 
@@ -52,6 +56,10 @@ import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
     CaslModule,
     AuthModule,
     UsersModule,
+    CategoriesModule,
+    CoursesModule,
+    CurriculumModule,
+    AdminModule,
     HealthModule,
   ],
   providers: [

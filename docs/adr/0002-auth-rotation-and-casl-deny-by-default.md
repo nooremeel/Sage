@@ -37,3 +37,4 @@ Adopted **Dual-Token Architecture with CASL Deny-By-Default**:
 - Clients transparently rotate tokens on 401 via `POST /api/auth/refresh`.
 - If an attacker compromises a refresh token and uses it after legitimate rotation, both attacker and legitimate user are revoked, forcing re-authentication and protecting user data.
 - Any newly created route that forgets to declare `@Public()` or `@CheckPolicies()` will fail at compile/startup test time, preventing IDOR vulnerabilities.
+

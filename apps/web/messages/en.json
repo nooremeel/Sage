@@ -14,6 +14,7 @@
   "nav": {
     "home": "Home",
     "catalog": "Courses",
+    "studio": "Studio",
     "styleguide": "Styleguide",
     "login": "Sign In",
     "signup": "Sign Up",
@@ -34,6 +35,43 @@
     "status": "System Status: Production Ready",
     "exploreCourses": "Explore Courses",
     "viewStyleguide": "Explore Styleguide"
+  },
+  "catalog": {
+    "title": "Scholarly Catalog",
+    "subtitle": "Explore curated bilingual courses designed for depth, rigor, and craft.",
+    "allCategories": "All Disciplines",
+    "softwareEngineering": "Software Engineering",
+    "islamicArts": "Classical Arts & Calligraphy",
+    "businessLeadership": "Business & Leadership",
+    "free": "Free",
+    "noCoursesFound": "No courses found",
+    "noCoursesFoundDesc": "There are no published courses matching your selected filter criteria.",
+    "clearFilters": "Clear all filters"
+  },
+  "courseDetail": {
+    "instructor": "Instructor",
+    "aboutCourse": "About this Course",
+    "curriculum": "Curriculum Outline",
+    "sectionsCount": "sections",
+    "curriculumUnderReview": "Curriculum is currently being refined.",
+    "tuition": "Tuition",
+    "free": "Complimentary",
+    "enrollNow": "Enroll Now",
+    "accessGuarantee": "Full lifetime access to all lessons",
+    "verifiedCertificate": "Verifiable bilingual completion certificate",
+    "bilingualMaterial": "Bilingual Arabic and English material"
+  },
+  "studio": {
+    "dashboardTitle": "Instructor Studio",
+    "dashboardSubtitle": "Manage your course drafts, curriculum structures, and reviews.",
+    "newCourseDraft": "New Course Draft",
+    "submittedSuccess": "Course draft submitted for review successfully.",
+    "instructorOnlyTitle": "Instructor Access Required",
+    "instructorOnlyDesc": "You must have an instructor account to author and publish courses on Sage.",
+    "applyInstructorBtn": "Apply to Become an Instructor",
+    "submitReview": "Submit for Review",
+    "noCoursesYet": "No courses in studio yet",
+    "noCoursesYetDesc": "Begin your teaching journey by drafting your first bilingual curriculum."
   },
   "auth": {
     "loginTitle": "Sign in to your account",

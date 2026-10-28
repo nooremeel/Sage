@@ -8,7 +8,7 @@ export default defineConfig({
   out: './drizzle',
   dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL || 'postgresql://sage_user:sage_password@localhost:5432/sage_db',
+    url: process.env.DATABASE_URL_UNPOOLED || process.env.DATABASE_URL || 'postgresql://sage_user:sage_password@localhost:5432/sage_db',
   },
   verbose: true,
   strict: true,

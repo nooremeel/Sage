@@ -20,6 +20,10 @@ export function Header() {
 
   const navLinks = [
     { href: '/', label: tNav('home') },
+    { href: '/courses', label: tNav('catalog') },
+    ...(user && (user.role === 'instructor' || user.role === 'admin')
+      ? [{ href: '/studio', label: tNav('studio') }]
+      : []),
     { href: '/styleguide', label: tNav('styleguide') },
   ];
 

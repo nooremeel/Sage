@@ -1,14 +1,26 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { Reflector } from '@nestjs/core';
 import { IS_PUBLIC_KEY } from '../../src/common/decorators/public.decorator.js';
 import { CHECK_POLICIES_KEY } from '../../src/common/casl/check-policies.decorator.js';
 import { AuthController } from '../../src/modules/auth/auth.controller.js';
 import { UsersController } from '../../src/modules/users/users.controller.js';
 import { HealthController } from '../../src/modules/health/health.controller.js';
+import { CategoriesController } from '../../src/modules/categories/categories.controller.js';
+import { CoursesController } from '../../src/modules/courses/courses.controller.js';
+import { CurriculumController } from '../../src/modules/curriculum/curriculum.controller.js';
+import { AdminController } from '../../src/modules/admin/admin.controller.js';
 
 describe('Deny-By-Default Authorization Guardrail', () => {
   const reflector = new Reflector();
-  const controllers = [AuthController, UsersController, HealthController];
+  const controllers = [
+    AuthController,
+    UsersController,
+    HealthController,
+    CategoriesController,
+    CoursesController,
+    CurriculumController,
+    AdminController,
+  ];
 
   it('asserts that every route in every controller explicitly declares either @Public() or @CheckPolicies()', () => {
     const unshieldedRoutes: string[] = [];

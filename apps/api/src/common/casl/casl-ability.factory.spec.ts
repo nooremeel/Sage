@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   CaslAbilityFactory,
   CourseSubject,
-  LessonSubject,
   EnrollmentSubject,
   UserSubject,
   type CurrentUser,
