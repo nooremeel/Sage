@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
+import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
 
@@ -18,6 +19,8 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'x-request-id', 'x-csrf-token'],
     exposedHeaders: ['x-request-id'],
   });
+
+  app.use(cookieParser());
 
   app.useGlobalPipes(
     new ValidationPipe({

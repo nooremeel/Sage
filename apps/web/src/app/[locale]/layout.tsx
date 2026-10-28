@@ -15,6 +15,7 @@ import {
 import '../globals.css';
 import { Header } from '@/components/shell/header';
 import { Footer } from '@/components/shell/footer';
+import { AuthProvider } from '@/lib/auth-context';
 
 export const metadata: Metadata = {
   title: 'Sage (سايج) — Learn something worth knowing',
@@ -57,9 +58,11 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       <body className="min-h-screen bg-bg text-text antialiased flex flex-col">
         <NextIntlClientProvider messages={messages} locale={locale}>
           <DirectionProvider dir={dir}>
-            <Header />
-            <div className="flex-1">{children}</div>
-            <Footer />
+            <AuthProvider>
+              <Header />
+              <div className="flex-1">{children}</div>
+              <Footer />
+            </AuthProvider>
           </DirectionProvider>
         </NextIntlClientProvider>
       </body>

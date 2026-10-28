@@ -6,13 +6,16 @@ import { Link, usePathname } from '@/i18n/routing';
 import { Illustration } from '@/components/illustrations/illustration';
 import { LanguageSwitcher } from '@/components/shell/language-switcher';
 import { ThemeToggle } from '@/components/shell/theme-toggle';
-import { Menu, X } from 'lucide-react';
+import { useAuth } from '@/lib/auth-context';
+import { Button } from '@/components/ui/button';
+import { Menu, X, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Header() {
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
   const pathname = usePathname();
+  const { user, isLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const navLinks = [
@@ -52,9 +55,37 @@ export function Header() {
         </nav>
 
         {/* Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <ThemeToggle />
           <LanguageSwitcher />
+
+          {/* User Auth Action (Desktop) */}
+          <div className="hidden sm:flex items-center gap-2">
+            {!isLoading && (
+              user ? (
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-1.5 text-xs font-medium text-text hover:text-primary border border-border rounded-md px-2.5 py-1.5 focus-ring"
+                >
+                  <User className="h-3.5 w-3.5 text-primary" />
+                  <span className="max-w-[120px] truncate">{user.email}</span>
+                </Link>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Link href="/login">
+                    <Button variant="ghost" size="sm">
+                      {tNav('login')}
+                    </Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button variant="accent" size="sm">
+                      {tNav('signup')}
+                    </Button>
+                  </Link>
+                </div>
+              )
+            )}
+          </div>
 
           {/* Mobile menu button */}
           <button
@@ -75,7 +106,7 @@ export function Header() {
             className="fixed inset-0 bg-black/30 backdrop-blur-xs"
             onClick={() => setMobileMenuOpen(false)}
           />
-          <div className="relative w-64 border-s border-border bg-card p-6 shadow-e2 flex flex-col gap-4">
+          <div className="relative w-64 border-s border-border bg-card p-6 shadow-e2 flex flex-col justify-between">
             <nav className="flex flex-col gap-3">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;
@@ -96,6 +127,40 @@ export function Header() {
                 );
               })}
             </nav>
+
+            <div className="pt-6 border-t border-border flex flex-col gap-2">
+              {!isLoading && (
+                user ? (
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center gap-2 rounded-md p-2 text-sm font-medium text-text hover:bg-bg-subtle"
+                  >
+                    <User className="h-4 w-4 text-primary" />
+                    <span>{tNav('profile')}</span>
+                  </Link>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Button variant="secondary" className="w-full">
+                        {tNav('login')}
+                      </Button>
+                    </Link>
+                    <Link
+                      href="/signup"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Button variant="accent" className="w-full">
+                        {tNav('signup')}
+                      </Button>
+                    </Link>
+                  </>
+                )
+              )}
+            </div>
           </div>
         </div>
       )}

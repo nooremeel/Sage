@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { configure as serverlessExpress } from '@codegenie/serverless-express';
 import { Logger } from 'nestjs-pino';
+import cookieParser from 'cookie-parser';
 import { AppModule } from '../src/app.module.js';
 import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter.js';
 import type { Request, Response } from 'express';
@@ -21,6 +22,8 @@ async function bootstrapServer() {
     allowedHeaders: ['Content-Type', 'Authorization', 'x-request-id', 'x-csrf-token'],
     exposedHeaders: ['x-request-id'],
   });
+
+  app.use(cookieParser());
 
   app.useGlobalPipes(
     new ValidationPipe({

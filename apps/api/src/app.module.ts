@@ -1,10 +1,17 @@
 import { Module, MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { validateEnv } from '@sage/shared';
 import { DbModule } from './db/db.module.js';
 import { HealthModule } from './modules/health/health.module.js';
+import { CaslModule } from './common/casl/casl.module.js';
+import { PoliciesGuard } from './common/casl/policies.guard.js';
+import { AuthModule } from './modules/auth/auth.module.js';
+import { UsersModule } from './modules/users/users.module.js';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware.js';
+import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
 
 @Module({
   imports: [
@@ -35,12 +42,33 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware.j
         },
       },
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
     DbModule,
+    CaslModule,
+    AuthModule,
+    UsersModule,
     HealthModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PoliciesGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestIdMiddleware).forRoutes({ path: '*path', method: RequestMethod.ALL });
+    consumer
+      .apply(RequestIdMiddleware, JwtAuthMiddleware)
+      .forRoutes({ path: '*path', method: RequestMethod.ALL });
   }
 }
