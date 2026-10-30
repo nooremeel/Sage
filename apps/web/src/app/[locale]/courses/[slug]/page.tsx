@@ -119,7 +119,7 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
             </div>
 
             {formattedSections.length > 0 ? (
-              <CurriculumAccordion sections={formattedSections} />
+              <CurriculumAccordion sections={formattedSections} courseSlug={slug} />
             ) : (
               <p className="text-sm text-text-muted">{t('curriculumUnderReview')}</p>
             )}

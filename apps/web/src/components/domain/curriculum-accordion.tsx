@@ -3,6 +3,7 @@
 import * as React from 'react';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { ChevronDown, Video, FileText, HelpCircle, CheckCircle } from 'lucide-react';
+import { Link } from '@/i18n/routing';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -23,10 +24,11 @@ export interface SectionItem {
 
 export interface CurriculumAccordionProps {
   sections: SectionItem[];
+  courseSlug?: string;
   className?: string;
 }
 
-export function CurriculumAccordion({ sections, className }: CurriculumAccordionProps) {
+export function CurriculumAccordion({ sections, courseSlug, className }: CurriculumAccordionProps) {
   const lessonIcons = {
     video: <Video className="h-4 w-4 text-blue-700 dark:text-primary shrink-0" />,
     article: <FileText className="h-4 w-4 text-ink-600 dark:text-text-muted shrink-0" />,
@@ -55,31 +57,42 @@ export function CurriculumAccordion({ sections, className }: CurriculumAccordion
 
           <AccordionPrimitive.Content className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
             <div className="divide-y divide-border/60 bg-bg-subtle/50">
-              {section.lessons.map((lesson) => (
-                <div
-                  key={lesson.id}
-                  className="flex items-center justify-between p-3.5 ps-6 transition-colors hover:bg-bg-subtle"
-                >
-                  <div className="flex items-center gap-3">
-                    {lessonIcons[lesson.type]}
-                    <span className="text-sm font-medium text-text">{lesson.title}</span>
-                    {lesson.isFreePreview && (
-                      <Badge variant="accent" className="text-[10px] py-0 px-1.5">
-                        Free Preview
-                      </Badge>
-                    )}
-                  </div>
+              {section.lessons.map((lesson) => {
+                const content = (
+                  <div className="flex items-center justify-between p-3.5 ps-6 transition-colors hover:bg-bg-subtle w-full">
+                    <div className="flex items-center gap-3">
+                      {lessonIcons[lesson.type]}
+                      <span className="text-sm font-medium text-text">{lesson.title}</span>
+                      {lesson.isFreePreview && (
+                        <Badge variant="accent" className="text-[10px] py-0 px-1.5">
+                          Free Preview
+                        </Badge>
+                      )}
+                    </div>
 
-                  <div className="flex items-center gap-3 text-xs text-text-muted">
-                    <span>{lesson.duration}</span>
-                    {lesson.isCompleted ? (
-                      <CheckCircle className="h-4 w-4 text-sage-700 dark:text-sage-300" />
-                    ) : (
-                      <span className="h-4 w-4 rounded-full border border-border" />
-                    )}
+                    <div className="flex items-center gap-3 text-xs text-text-muted">
+                      <span>{lesson.duration}</span>
+                      {lesson.isCompleted ? (
+                        <CheckCircle className="h-4 w-4 text-sage-700 dark:text-sage-300" />
+                      ) : (
+                        <span className="h-4 w-4 rounded-full border border-border" />
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+
+                return courseSlug ? (
+                  <Link
+                    key={lesson.id}
+                    href={`/courses/${courseSlug}/lessons/${lesson.id}`}
+                    className="block focus-ring"
+                  >
+                    {content}
+                  </Link>
+                ) : (
+                  <div key={lesson.id}>{content}</div>
+                );
+              })}
             </div>
           </AccordionPrimitive.Content>
         </AccordionPrimitive.Item>

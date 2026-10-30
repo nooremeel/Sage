@@ -68,7 +68,11 @@
     "enrollNow": "Enroll Now",
     "accessGuarantee": "Full lifetime access to all lessons",
     "verifiedCertificate": "Verifiable bilingual completion certificate",
-    "bilingualMaterial": "Bilingual Arabic and English material"
+    "bilingualMaterial": "Bilingual Arabic and English material",
+    "freePreview": "Free Preview",
+    "watchLesson": "Watch Lesson",
+    "protectedLesson": "Protected Content",
+    "protectedLessonDesc": "This lesson is part of the full curriculum. Enroll in the course to unlock unlimited streaming access."
   },
   "studio": {
     "dashboardTitle": "Instructor Studio",

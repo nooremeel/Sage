@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Patch,
   Delete,
@@ -10,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CurriculumService } from './curriculum.service.js';
+import { MediaService } from '../media/media.service.js';
 import { CheckPolicies } from '../../common/casl/check-policies.decorator.js';
 import { CourseSubject, type CurrentUser } from '../../common/casl/casl-ability.factory.js';
 import { User } from '../../common/decorators/current-user.decorator.js';
@@ -25,7 +27,10 @@ import type {
 @ApiTags('curriculum')
 @Controller('curriculum')
 export class CurriculumController {
-  constructor(private readonly curriculumService: CurriculumService) {}
+  constructor(
+    private readonly curriculumService: CurriculumService,
+    private readonly mediaService: MediaService,
+  ) {}
 
   // Sections
   @Post('courses/:courseId/sections')
@@ -128,5 +133,16 @@ export class CurriculumController {
     await this.curriculumService.reorderLessons(sectionId, user.id, body.lessonIds, user.role === 'admin');
     return { ok: true };
   }
+
+  @Get('lessons/:id/playback')
+  @CheckPolicies((ability) => ability.can('read', CourseSubject))
+  @ApiOperation({ summary: 'Obtain a signed 4-hour playback token for video streaming' })
+  async getPlaybackToken(
+    @Param('id') id: string,
+    @User() user: CurrentUser,
+  ) {
+    return this.mediaService.getPlaybackToken(id, user.id, user.role);
+  }
 }
+
 
