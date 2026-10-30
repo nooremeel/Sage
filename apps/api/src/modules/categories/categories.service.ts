@@ -3,6 +3,7 @@ import { eq } from 'drizzle-orm';
 import { DRIZZLE_DB, type DrizzleDb } from '../../db/db.module.js';
 import { categories, categoryTranslations } from '../../db/schema/index.js';
 import type { Locale } from '@sage/shared';
+import { CacheService } from '../../common/cache/cache.service.js';
 
 export interface CategoryWithTranslation {
   id: string;
@@ -15,40 +16,50 @@ export interface CategoryWithTranslation {
 
 @Injectable()
 export class CategoriesService {
-  constructor(@Inject(DRIZZLE_DB) private readonly db: DrizzleDb) {}
+  constructor(
+    @Inject(DRIZZLE_DB) private readonly db: DrizzleDb,
+    private readonly cacheService: CacheService,
+  ) {}
 
   async findAll(locale: Locale = 'en'): Promise<CategoryWithTranslation[]> {
-    const allCategories = await this.db.select().from(categories);
-    const results: CategoryWithTranslation[] = [];
+    const cacheKey = `categories:list:${locale}`;
 
-    for (const cat of allCategories) {
-      // Find translation matching requested locale, or fallback to any available
-      const trans = await this.db.query.categoryTranslations.findFirst({
-        where: eq(categoryTranslations.categoryId, cat.id),
-      });
+    return await this.cacheService.getOrSet(
+      cacheKey,
+      300,
+      async () => {
+        const allCategories = await this.db.select().from(categories);
+        const results: CategoryWithTranslation[] = [];
 
-      // Find specific locale translation if available
-      const specificTrans = await this.db
-        .select()
-        .from(categoryTranslations)
-        .where(eq(categoryTranslations.categoryId, cat.id));
+        for (const cat of allCategories) {
+          const trans = await this.db.query.categoryTranslations.findFirst({
+            where: eq(categoryTranslations.categoryId, cat.id),
+          });
 
-      const match =
-        specificTrans.find((t) => t.locale === locale) ||
-        specificTrans.find((t) => t.locale === 'en') ||
-        trans;
+          const specificTrans = await this.db
+            .select()
+            .from(categoryTranslations)
+            .where(eq(categoryTranslations.categoryId, cat.id));
 
-      results.push({
-        id: cat.id,
-        slug: cat.slug,
-        icon: cat.icon,
-        name: match ? match.name : cat.slug,
-        description: match?.description ?? null,
-        locale: (match?.locale as Locale) ?? locale,
-      });
-    }
+          const match =
+            specificTrans.find((t) => t.locale === locale) ||
+            specificTrans.find((t) => t.locale === 'en') ||
+            trans;
 
-    return results;
+          results.push({
+            id: cat.id,
+            slug: cat.slug,
+            icon: cat.icon,
+            name: match ? match.name : cat.slug,
+            description: match?.description ?? null,
+            locale: (match?.locale as Locale) ?? locale,
+          });
+        }
+
+        return results;
+      },
+      'categories',
+    );
   }
 
   async findBySlug(slug: string, locale: Locale = 'en'): Promise<CategoryWithTranslation> {
@@ -113,6 +124,8 @@ export class CategoriesService {
         description: t.description,
       });
     }
+
+    await this.cacheService.invalidateTag('categories');
 
     return { id: newCat.id, slug: newCat.slug };
   }

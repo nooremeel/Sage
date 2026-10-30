@@ -39,14 +39,23 @@
   "catalog": {
     "title": "Scholarly Catalog",
     "subtitle": "Explore curated bilingual courses designed for depth, rigor, and craft.",
+    "searchPlaceholder": "Search by course title, topic, or keyword...",
+    "searchBtn": "Search",
     "allCategories": "All Disciplines",
     "softwareEngineering": "Software Engineering",
     "islamicArts": "Classical Arts & Calligraphy",
     "businessLeadership": "Business & Leadership",
+    "allLevels": "All Levels",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "allPrices": "All Pricing",
     "free": "Free",
+    "paid": "Paid",
     "noCoursesFound": "No courses found",
     "noCoursesFoundDesc": "There are no published courses matching your selected filter criteria.",
-    "clearFilters": "Clear all filters"
+    "clearFilters": "Clear all filters",
+    "loadMore": "Load More Courses"
   },
   "courseDetail": {
     "instructor": "Instructor",

@@ -164,3 +164,22 @@ export interface CourseDto {
   translations: CourseTranslationDto[];
   sections?: SectionDto[];
 }
+
+export const searchCoursesSchema = z.object({
+  q: z.string().trim().max(100).optional(),
+  categorySlug: z.string().trim().optional(),
+  level: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+  price: z.enum(['free', 'paid']).optional(),
+  locale: z.enum(LOCALES as unknown as [string, ...string[]]).optional().default('en'),
+  cursor: z.string().optional(),
+  limit: z.coerce.number().min(1).max(50).default(20),
+});
+
+export type SearchCoursesInput = z.infer<typeof searchCoursesSchema>;
+
+export interface KeysetPaginationResult<T> {
+  items: T[];
+  nextCursor: string | null;
+  total?: number;
+}
+

@@ -9,6 +9,7 @@ import {
   uniqueIndex,
   index,
 } from 'drizzle-orm/pg-core';
+import { sql } from 'drizzle-orm';
 import { COURSE_STATUS, LOCALES } from '@sage/shared';
 import { users } from './users.js';
 import { categories } from './categories.js';
@@ -45,6 +46,7 @@ export const courses = pgTable(
     instructorIdIdx: index('courses_instructor_id_idx').on(table.instructorId),
     categoryIdIdx: index('courses_category_id_idx').on(table.categoryId),
     statusIdx: index('courses_status_idx').on(table.status),
+    catalogKeysetIdx: index('courses_catalog_keyset_idx').on(table.status, table.publishedAt, table.id),
   }),
 );
 
@@ -64,6 +66,10 @@ export const courseTranslations = pgTable(
   (table) => ({
     pk: primaryKey({ columns: [table.courseId, table.locale] }),
     localeSlugIdx: uniqueIndex('course_translations_locale_slug_idx').on(table.locale, table.slug),
+    searchTextGinIdx: index('course_translations_search_text_gin_idx').using(
+      'gin',
+      sql`to_tsvector('simple', coalesce(${table.searchText}, ''))`,
+    ),
   }),
 );
 

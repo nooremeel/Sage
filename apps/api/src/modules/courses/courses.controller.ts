@@ -9,6 +9,7 @@ import {
   Query,
   HttpCode,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CoursesService } from './courses.service.js';
@@ -16,6 +17,7 @@ import { Public } from '../../common/decorators/public.decorator.js';
 import { CheckPolicies } from '../../common/casl/check-policies.decorator.js';
 import { CourseSubject, type CurrentUser } from '../../common/casl/casl-ability.factory.js';
 import { User } from '../../common/decorators/current-user.decorator.js';
+import { EtagInterceptor } from '../../common/interceptors/etag.interceptor.js';
 import type { CreateCourseInput, UpdateCourseInput, CourseLevel, Locale } from '@sage/shared';
 
 @ApiTags('courses')
@@ -24,6 +26,7 @@ export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
 
   @Public()
+  @UseInterceptors(EtagInterceptor)
   @Get()
   @ApiOperation({ summary: 'Public catalog listing of published courses' })
   async getCatalog(
@@ -43,6 +46,31 @@ export class CoursesController {
   }
 
   @Public()
+  @UseInterceptors(EtagInterceptor)
+  @Get('search')
+  @ApiOperation({ summary: 'Search published courses with Arabic normalization, filters, and keyset pagination' })
+  async searchCourses(
+    @Query('q') q?: string,
+    @Query('categorySlug') categorySlug?: string,
+    @Query('level') level?: CourseLevel,
+    @Query('price') price?: 'free' | 'paid',
+    @Query('locale') locale?: Locale,
+    @Query('cursor') cursor?: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.coursesService.searchCourses({
+      q,
+      categorySlug,
+      level,
+      price,
+      locale: locale || 'en',
+      cursor,
+      limit: limit ? parseInt(limit, 10) : 20,
+    });
+  }
+
+  @Public()
+  @UseInterceptors(EtagInterceptor)
   @Get('detail/:slug')
   @ApiOperation({ summary: 'Public course details and curriculum outline by localized slug' })
   async getCourseBySlug(

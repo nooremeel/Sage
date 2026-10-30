@@ -2,6 +2,7 @@ import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import postgres from 'postgres';
 import { Redis } from 'ioredis';
+import { Redis as UpstashRedis } from '@upstash/redis';
 import { S3Client, ListBucketsCommand } from '@aws-sdk/client-s3';
 import { POSTGRES_CLIENT } from '../../db/db.module.js';
 
@@ -77,6 +78,20 @@ export class HealthService {
   async checkRedis(): Promise<ServiceHealth> {
     const start = Date.now();
     try {
+      const provider = this.config.get<string>('REDIS_PROVIDER', 'local');
+      if (provider === 'upstash') {
+        const restUrl = this.config.get<string>('UPSTASH_REDIS_REST_URL');
+        const restToken = this.config.get<string>('UPSTASH_REDIS_REST_TOKEN');
+        if (restUrl && restToken) {
+          const upstash = new UpstashRedis({ url: restUrl, token: restToken });
+          const pong = await upstash.ping();
+          if (pong !== 'PONG') {
+            throw new Error(`Unexpected Redis ping response: ${pong}`);
+          }
+          return { status: 'up', latencyMs: Date.now() - start };
+        }
+      }
+
       const client = this.getRedisClient();
       if (client.status !== 'ready' && client.status !== 'connecting') {
         await client.connect();

@@ -6,6 +6,7 @@ import {
   CreateLessonSchema,
   ReorderSectionsSchema,
   ReviewCourseSchema,
+  searchCoursesSchema,
 } from './courses.js';
 
 describe('Course Schemas', () => {
@@ -122,5 +123,42 @@ describe('Course Schemas', () => {
       expect(review.action).toBe('approve');
     });
   });
+
+  describe('Search & Keyset Pagination Schemas', () => {
+    it('parses valid search query with default pagination', () => {
+      const result = searchCoursesSchema.parse({
+        q: 'nest js',
+        level: 'intermediate',
+        price: 'free',
+      });
+      expect(result.q).toBe('nest js');
+      expect(result.level).toBe('intermediate');
+      expect(result.price).toBe('free');
+      expect(result.limit).toBe(20);
+      expect(result.locale).toBe('en');
+    });
+
+    it('accepts cursor and trims query string', () => {
+      const result = searchCoursesSchema.parse({
+        q: '   برمجة متقدمة   ',
+        cursor: '2026-10-28T18:00:00.000Z_uuid123',
+        limit: '15',
+        locale: 'ar',
+      });
+      expect(result.q).toBe('برمجة متقدمة');
+      expect(result.cursor).toBe('2026-10-28T18:00:00.000Z_uuid123');
+      expect(result.limit).toBe(15);
+      expect(result.locale).toBe('ar');
+    });
+
+    it('clamps limit to maximum 50', () => {
+      expect(() =>
+        searchCoursesSchema.parse({
+          limit: 100,
+        }),
+      ).toThrow();
+    });
+  });
 });
+
 

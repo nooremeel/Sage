@@ -1,12 +1,13 @@
 import {
   Injectable,
   Inject,
+  Optional,
   NotFoundException,
   ForbiddenException,
   BadRequestException,
   ConflictException,
 } from '@nestjs/common';
-import { eq, and, isNull, count, desc, asc } from 'drizzle-orm';
+import { eq, and, or, isNull, count, desc, asc, gt, lt, inArray, sql } from 'drizzle-orm';
 import { DRIZZLE_DB, type DrizzleDb } from '../../db/db.module.js';
 import {
   courses,
@@ -19,6 +20,8 @@ import {
 import {
   type CreateCourseInput,
   type UpdateCourseInput,
+  type SearchCoursesInput,
+  type KeysetPaginationResult,
   type CourseDto,
   type SectionDto,
   type Locale,
@@ -27,10 +30,14 @@ import {
   AppErrorCode,
 } from '@sage/shared';
 import { normalizeArabic } from '../../common/utils/arabic-normalizer.js';
+import { CacheService } from '../../common/cache/cache.service.js';
 
 @Injectable()
 export class CoursesService {
-  constructor(@Inject(DRIZZLE_DB) private readonly db: DrizzleDb) {}
+  constructor(
+    @Inject(DRIZZLE_DB) private readonly db: DrizzleDb,
+    @Optional() private readonly cacheService?: CacheService,
+  ) {}
 
   async getCatalog(filters: {
     categorySlug?: string;
@@ -41,126 +48,284 @@ export class CoursesService {
   }): Promise<{ courses: CourseDto[]; total: number }> {
     const limit = filters.limit || 20;
     const offset = filters.offset || 0;
+    const cacheKey = `catalog:${filters.locale || 'all'}:${filters.categorySlug || 'all'}:${filters.level || 'all'}:${offset}:${limit}`;
 
-    // Base query for published, non-deleted courses
-    let categoryId: string | undefined;
-    if (filters.categorySlug) {
-      const cat = await this.db.query.categories.findFirst({
-        where: eq(categories.slug, filters.categorySlug),
-      });
-      if (cat) {
-        categoryId = cat.id;
-      }
-    }
+    const fetcher = async () => {
+        // Base query for published, non-deleted courses
+        let categoryId: string | undefined;
+        if (filters.categorySlug) {
+          const cat = await this.db.query.categories.findFirst({
+            where: eq(categories.slug, filters.categorySlug),
+          });
+          if (cat) {
+            categoryId = cat.id;
+          }
+        }
 
-    const whereConditions = [
-      eq(courses.status, 'published'),
-      isNull(courses.deletedAt),
-    ];
+        const whereConditions = [
+          eq(courses.status, 'published'),
+          isNull(courses.deletedAt),
+        ];
 
-    if (categoryId) {
-      whereConditions.push(eq(courses.categoryId, categoryId));
-    }
-    if (filters.level) {
-      whereConditions.push(eq(courses.level, filters.level));
-    }
+        if (categoryId) {
+          whereConditions.push(eq(courses.categoryId, categoryId));
+        }
+        if (filters.level) {
+          whereConditions.push(eq(courses.level, filters.level));
+        }
 
-    const [totalRecord] = await this.db
-      .select({ count: count() })
-      .from(courses)
-      .where(and(...whereConditions));
+        const [totalRecord] = await this.db
+          .select({ count: count() })
+          .from(courses)
+          .where(and(...whereConditions));
 
-    const courseList = await this.db
-      .select()
-      .from(courses)
-      .where(and(...whereConditions))
-      .orderBy(desc(courses.publishedAt), desc(courses.createdAt))
-      .limit(limit)
-      .offset(offset);
+        const courseList = await this.db
+          .select()
+          .from(courses)
+          .where(and(...whereConditions))
+          .orderBy(desc(courses.publishedAt), desc(courses.createdAt))
+          .limit(limit)
+          .offset(offset);
 
-    const results: CourseDto[] = [];
-    for (const c of courseList) {
-      const transList = await this.db
-        .select()
-        .from(courseTranslations)
-        .where(eq(courseTranslations.courseId, c.id));
+        const results: CourseDto[] = [];
+        for (const c of courseList) {
+          const transList = await this.db
+            .select()
+            .from(courseTranslations)
+            .where(eq(courseTranslations.courseId, c.id));
 
-      const instructor = await this.db.query.users.findFirst({
-        where: eq(users.id, c.instructorId),
-      });
+          const instructor = await this.db.query.users.findFirst({
+            where: eq(users.id, c.instructorId),
+          });
 
-      const category = await this.db.query.categories.findFirst({
-        where: eq(categories.id, c.categoryId),
-      });
+          const category = await this.db.query.categories.findFirst({
+            where: eq(categories.id, c.categoryId),
+          });
 
-      results.push({
-        id: c.id,
-        instructorId: c.instructorId,
-        instructorName: instructor ? instructor.email.split('@')[0] : 'Instructor',
-        categoryId: c.categoryId,
-        categoryName: category?.slug,
-        status: c.status as CourseStatus,
-        level: c.level as CourseLevel,
-        priceCents: c.priceCents,
-        currency: c.currency,
-        primaryLocale: c.primaryLocale as Locale,
-        ratingAvg: Number(c.ratingAvg),
-        ratingCount: c.ratingCount,
-        publishedAt: c.publishedAt ? c.publishedAt.toISOString() : null,
-        createdAt: c.createdAt.toISOString(),
-        translations: transList.map((t) => ({
-          locale: t.locale as Locale,
-          title: t.title,
-          subtitle: t.subtitle,
-          description: t.description,
-          slug: t.slug,
-        })),
-      });
-    }
+          results.push({
+            id: c.id,
+            instructorId: c.instructorId,
+            instructorName: instructor ? instructor.email.split('@')[0] : 'Instructor',
+            categoryId: c.categoryId,
+            categoryName: category?.slug,
+            status: c.status as CourseStatus,
+            level: c.level as CourseLevel,
+            priceCents: c.priceCents,
+            currency: c.currency,
+            primaryLocale: c.primaryLocale as Locale,
+            ratingAvg: Number(c.ratingAvg),
+            ratingCount: c.ratingCount,
+            publishedAt: c.publishedAt ? c.publishedAt.toISOString() : null,
+            createdAt: c.createdAt.toISOString(),
+            translations: transList.map((t) => ({
+              locale: t.locale as Locale,
+              title: t.title,
+              subtitle: t.subtitle,
+              description: t.description,
+              slug: t.slug,
+            })),
+          });
+        }
 
-    return {
-      courses: results,
-      total: totalRecord?.count ? Number(totalRecord.count) : 0,
+        return {
+          courses: results,
+          total: totalRecord?.count ? Number(totalRecord.count) : 0,
+        };
     };
+
+    if (!this.cacheService) return await fetcher();
+    return await this.cacheService.getOrSet(cacheKey, 300, fetcher, 'catalog');
+  }
+
+  async searchCourses(input: SearchCoursesInput): Promise<KeysetPaginationResult<CourseDto>> {
+    const locale = input.locale || 'en';
+    const limit = input.limit || 20;
+    const cacheKey = `search:${locale}:${input.q || ''}:${input.categorySlug || ''}:${input.level || ''}:${input.price || ''}:${input.cursor || ''}:${limit}`;
+
+    const fetcher = async () => {
+        let categoryId: string | undefined;
+        if (input.categorySlug) {
+          const cat = await this.db.query.categories.findFirst({
+            where: eq(categories.slug, input.categorySlug),
+          });
+          if (cat) categoryId = cat.id;
+        }
+
+        const whereConditions = [
+          eq(courses.status, 'published'),
+          isNull(courses.deletedAt),
+        ];
+
+        if (categoryId) {
+          whereConditions.push(eq(courses.categoryId, categoryId));
+        }
+        if (input.level) {
+          whereConditions.push(eq(courses.level, input.level));
+        }
+        if (input.price === 'free') {
+          whereConditions.push(eq(courses.priceCents, 0));
+        } else if (input.price === 'paid') {
+          whereConditions.push(gt(courses.priceCents, 0));
+        }
+
+        // Keyset Cursor (publishedAt_id)
+        if (input.cursor) {
+          const parts = input.cursor.split('_');
+          const cursorDateStr = parts[0];
+          const cursorId = parts[1];
+          if (cursorDateStr) {
+            const cursorDate = new Date(cursorDateStr);
+            if (!isNaN(cursorDate.getTime())) {
+              if (cursorId) {
+                whereConditions.push(
+                  or(
+                    lt(courses.publishedAt, cursorDate),
+                    and(eq(courses.publishedAt, cursorDate), lt(courses.id, cursorId)),
+                  )!,
+                );
+              } else {
+                whereConditions.push(lt(courses.publishedAt, cursorDate));
+              }
+            }
+          }
+        }
+
+        // Text Search
+        if (input.q && input.q.trim().length > 0) {
+          const rawQ = input.q.trim();
+          const isArabic = /[\u0600-\u06FF]/.test(rawQ);
+          const normalizedQ = isArabic ? normalizeArabic(rawQ) : rawQ.toLowerCase();
+
+          const searchSql = sql`
+            SELECT course_id
+            FROM ${courseTranslations}
+            WHERE to_tsvector('simple', coalesce(search_text, '')) @@ plainto_tsquery('simple', ${normalizedQ})
+               OR coalesce(search_text, '') ILIKE ${'%' + normalizedQ + '%'}
+            ORDER BY ts_rank(to_tsvector('simple', coalesce(search_text, '')), plainto_tsquery('simple', ${normalizedQ})) DESC
+            LIMIT 100
+          `;
+
+          const searchMatches = await this.db.execute<{ course_id: string }>(searchSql);
+          const matchedIds = (searchMatches as unknown as Array<{ course_id: string }>).map((r) => r.course_id);
+
+          if (matchedIds.length === 0) {
+            return { items: [], nextCursor: null, total: 0 };
+          }
+          whereConditions.push(inArray(courses.id, matchedIds));
+        }
+
+        const courseList = await this.db
+          .select()
+          .from(courses)
+          .where(and(...whereConditions))
+          .orderBy(desc(courses.publishedAt), desc(courses.id))
+          .limit(limit + 1);
+
+        let nextCursor: string | null = null;
+        let itemsToReturn = courseList;
+
+        if (courseList.length > limit) {
+          itemsToReturn = courseList.slice(0, limit);
+          const lastItem = itemsToReturn[itemsToReturn.length - 1];
+          if (lastItem && lastItem.publishedAt) {
+            nextCursor = `${lastItem.publishedAt.toISOString()}_${lastItem.id}`;
+          }
+        }
+
+        const results: CourseDto[] = [];
+        for (const c of itemsToReturn) {
+          const transList = await this.db
+            .select()
+            .from(courseTranslations)
+            .where(eq(courseTranslations.courseId, c.id));
+
+          const instructor = await this.db.query.users.findFirst({
+            where: eq(users.id, c.instructorId),
+          });
+
+          const category = await this.db.query.categories.findFirst({
+            where: eq(categories.id, c.categoryId),
+          });
+
+          results.push({
+            id: c.id,
+            instructorId: c.instructorId,
+            instructorName: instructor ? instructor.email.split('@')[0] : 'Instructor',
+            categoryId: c.categoryId,
+            categoryName: category?.slug,
+            status: c.status as CourseStatus,
+            level: c.level as CourseLevel,
+            priceCents: c.priceCents,
+            currency: c.currency,
+            primaryLocale: c.primaryLocale as Locale,
+            ratingAvg: Number(c.ratingAvg),
+            ratingCount: c.ratingCount,
+            publishedAt: c.publishedAt ? c.publishedAt.toISOString() : null,
+            createdAt: c.createdAt.toISOString(),
+            translations: transList.map((t) => ({
+              locale: t.locale as Locale,
+              title: t.title,
+              subtitle: t.subtitle,
+              description: t.description,
+              slug: t.slug,
+            })),
+          });
+        }
+
+        return {
+          items: results,
+          nextCursor,
+        };
+    };
+
+    if (!this.cacheService) return await fetcher();
+    return await this.cacheService.getOrSet(cacheKey, 300, fetcher, 'catalog');
   }
 
   async getCourseBySlug(slug: string, locale: Locale = 'en'): Promise<CourseDto> {
-    const trans = await this.db.query.courseTranslations.findFirst({
-      where: and(
-        eq(courseTranslations.slug, slug),
-        eq(courseTranslations.locale, locale),
-      ),
-    });
+    const cacheKey = `course:slug:${slug}:${locale}`;
 
-    const fallbackTrans =
-      trans ||
-      (await this.db.query.courseTranslations.findFirst({
-        where: eq(courseTranslations.slug, slug),
-      }));
-
-    if (!fallbackTrans) {
-      throw new NotFoundException({
-        message: 'Course not found',
-        code: AppErrorCode.COURSE_NOT_FOUND,
+    const fetcher = async () => {
+      const trans = await this.db.query.courseTranslations.findFirst({
+        where: and(
+          eq(courseTranslations.slug, slug),
+          eq(courseTranslations.locale, locale),
+        ),
       });
-    }
 
-    const course = await this.db.query.courses.findFirst({
-      where: and(
-        eq(courses.id, fallbackTrans.courseId),
-        eq(courses.status, 'published'),
-        isNull(courses.deletedAt),
-      ),
-    });
+      const fallbackTrans =
+        trans ||
+        (await this.db.query.courseTranslations.findFirst({
+          where: eq(courseTranslations.slug, slug),
+        }));
 
-    if (!course) {
-      throw new NotFoundException({
-        message: 'Course not found or not published',
-        code: AppErrorCode.COURSE_NOT_FOUND,
+      if (!fallbackTrans) {
+        throw new NotFoundException({
+          message: 'Course not found',
+          code: AppErrorCode.COURSE_NOT_FOUND,
+        });
+      }
+
+      const course = await this.db.query.courses.findFirst({
+        where: and(
+          eq(courses.id, fallbackTrans.courseId),
+          eq(courses.status, 'published'),
+          isNull(courses.deletedAt),
+        ),
       });
-    }
 
-    return this.buildCourseDetails(course);
+      if (!course) {
+        throw new NotFoundException({
+          message: 'Course not found or not published',
+          code: AppErrorCode.COURSE_NOT_FOUND,
+        });
+      }
+
+      return this.buildCourseDetails(course);
+    };
+
+    if (!this.cacheService) return await fetcher();
+    return await this.cacheService.getOrSet(cacheKey, 300, fetcher);
   }
 
   async buildCourseDetails(course: typeof courses.$inferSelect): Promise<CourseDto> {
@@ -409,6 +574,10 @@ export class CoursesService {
     const updated = await this.db.query.courses.findFirst({
       where: eq(courses.id, courseId),
     });
+
+    await this.cacheService?.invalidateTag(`course:${courseId}`);
+    await this.cacheService?.invalidateTag('catalog');
+
     return this.buildCourseDetails(updated!);
   }
 
@@ -440,6 +609,9 @@ export class CoursesService {
       .set({ status: 'in_review', updatedAt: new Date() })
       .where(eq(courses.id, courseId));
 
+    await this.cacheService?.invalidateTag(`course:${courseId}`);
+    await this.cacheService?.invalidateTag('catalog');
+
     const updated = await this.db.query.courses.findFirst({
       where: eq(courses.id, courseId),
     });
@@ -464,5 +636,8 @@ export class CoursesService {
       .update(courses)
       .set({ deletedAt: new Date() })
       .where(eq(courses.id, courseId));
+
+    await this.cacheService?.invalidateTag(`course:${courseId}`);
+    await this.cacheService?.invalidateTag('catalog');
   }
 }

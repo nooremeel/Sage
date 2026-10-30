@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, HttpCode, HttpStatus, UseInterceptors } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { CategoriesService } from './categories.service.js';
 import { Public } from '../../common/decorators/public.decorator.js';
 import { CheckPolicies } from '../../common/casl/check-policies.decorator.js';
+import { EtagInterceptor } from '../../common/interceptors/etag.interceptor.js';
 import type { Locale } from '@sage/shared';
 
 @ApiTags('categories')
@@ -11,6 +12,7 @@ export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
   @Public()
+  @UseInterceptors(EtagInterceptor)
   @Get()
   @ApiOperation({ summary: 'List all categories with localized names' })
   async list(@Query('locale') locale?: Locale) {

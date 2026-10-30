@@ -1,6 +1,7 @@
 import {
   Injectable,
   Inject,
+  Optional,
   NotFoundException,
   BadRequestException,
   ConflictException,
@@ -14,10 +15,14 @@ import {
   users,
 } from '../../db/schema/index.js';
 import type { ReviewCourseInput, CourseDto, Locale, CourseLevel, CourseStatus } from '@sage/shared';
+import { CacheService } from '../../common/cache/cache.service.js';
 
 @Injectable()
 export class AdminService {
-  constructor(@Inject(DRIZZLE_DB) private readonly db: DrizzleDb) {}
+  constructor(
+    @Inject(DRIZZLE_DB) private readonly db: DrizzleDb,
+    @Optional() private readonly cacheService?: CacheService,
+  ) {}
 
   // Review Queue
   async getReviewQueue(): Promise<CourseDto[]> {
@@ -84,6 +89,9 @@ export class AdminService {
         })
         .where(eq(courses.id, courseId));
 
+      await this.cacheService?.invalidateTag(`course:${courseId}`);
+      await this.cacheService?.invalidateTag('catalog');
+
       return { message: 'Course approved and published', status: 'published' };
     } else {
       await this.db
@@ -93,6 +101,9 @@ export class AdminService {
           updatedAt: new Date(),
         })
         .where(eq(courses.id, courseId));
+
+      await this.cacheService?.invalidateTag(`course:${courseId}`);
+      await this.cacheService?.invalidateTag('catalog');
 
       return { message: `Course rejected: ${input.reason || 'Needs improvements'}`, status: 'draft' };
     }

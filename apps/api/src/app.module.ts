@@ -5,6 +5,7 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
 import { validateEnv } from '@sage/shared';
 import { DbModule } from './db/db.module.js';
+import { CacheModule } from './common/cache/cache.module.js';
 import { HealthModule } from './modules/health/health.module.js';
 import { CaslModule } from './common/casl/casl.module.js';
 import { PoliciesGuard } from './common/casl/policies.guard.js';
@@ -53,6 +54,7 @@ import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
       },
     ]),
     DbModule,
+    CacheModule,
     CaslModule,
     AuthModule,
     UsersModule,

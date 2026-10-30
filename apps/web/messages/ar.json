@@ -39,14 +39,23 @@
   "catalog": {
     "title": "فهرس الدورات الأكاديمية",
     "subtitle": "استكشف دورات تعليمية ثنائية اللغة صُممت بعناية وعمق ورصانة.",
+    "searchPlaceholder": "ابحث باسم الدورة أو الموضوع أو الكلمات المفتاحية...",
+    "searchBtn": "بحث",
     "allCategories": "جميع التخصصات",
     "softwareEngineering": "هندسة البرمجيات",
     "islamicArts": "الفنون الكلاسيكية والخط العربي",
     "businessLeadership": "إدارة الأعمال والقيادة",
+    "allLevels": "جميع المستويات",
+    "beginner": "مبتدئ",
+    "intermediate": "متوسط",
+    "advanced": "متقدم",
+    "allPrices": "الكل",
     "free": "مجاناً",
+    "paid": "مدفوع",
     "noCoursesFound": "لم يتم العثور على دورات",
     "noCoursesFoundDesc": "لا توجد دورات منشورة تطابق معايير التصفية المحددة حالياً.",
-    "clearFilters": "إعادة ضبط التصفية"
+    "clearFilters": "إعادة ضبط التصفية",
+    "loadMore": "تحميل المزيد من الدورات"
   },
   "courseDetail": {
     "instructor": "المدرّب",
