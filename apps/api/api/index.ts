@@ -1,25 +1,40 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import { configure as serverlessExpress } from '@codegenie/serverless-express';
-import { Logger } from 'nestjs-pino';
+import serverlessPackage from '@codegenie/serverless-express';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import type { Context, Callback, Handler } from 'aws-lambda';
 import { AppModule } from '../src/app.module.js';
 import { AllExceptionsFilter } from '../src/common/filters/all-exceptions.filter.js';
-import type { Request, Response } from 'express';
 
-let cachedServer: any;
+const serverlessExpress =
+  (serverlessPackage as any).default || (serverlessPackage as any).configure || serverlessPackage;
 
-async function bootstrapServer() {
+let cachedServer: Handler;
+
+async function bootstrapServer(): Promise<Handler> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
-  app.useLogger(app.get(Logger));
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
+
   app.setGlobalPrefix('api');
 
   app.enableCors({
-    origin: [process.env.WEB_URL || '*'],
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-request-id', 'x-csrf-token'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'x-request-id',
+      'x-csrf-token',
+      'x-signature',
+    ],
     exposedHeaders: ['x-request-id'],
   });
 
@@ -37,13 +52,19 @@ async function bootstrapServer() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   await app.init();
+
   const expressApp = app.getHttpAdapter().getInstance();
   return serverlessExpress({ app: expressApp });
 }
 
-export default async function handler(req: Request, res: Response) {
+export default async function handler(
+  req: any,
+  res: any,
+  context?: Context,
+  callback?: Callback,
+) {
   if (!cachedServer) {
     cachedServer = await bootstrapServer();
   }
-  return cachedServer(req, res);
+  return (cachedServer as any)(req, res, context, callback);
 }

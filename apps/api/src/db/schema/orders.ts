@@ -33,3 +33,4 @@ export const orders = pgTable(
     statusIdx: index('orders_status_idx').on(table.status),
   }),
 );
+

@@ -55,3 +55,4 @@ export class FakePaymentProvider implements PaymentProvider {
     }
   }
 }
+

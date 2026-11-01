@@ -32,3 +32,4 @@ export const payments = pgTable(
     idempotencyKeyIdx: index('payments_idempotency_key_idx').on(table.idempotencyKey),
   }),
 );
+

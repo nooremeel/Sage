@@ -63,3 +63,4 @@ At the same time, the payment subsystem must reflect real-world production engin
 - Fully functional commercial checkout experience without third-party API dependencies or costs.
 - Tested and verified against duplicate webhook deliveries with zero double-enrollment anomalies.
 - Clear upgrade path to live payment gateways documented in architecture guides.
+

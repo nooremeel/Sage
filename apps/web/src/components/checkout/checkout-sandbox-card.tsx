@@ -227,3 +227,4 @@ export function CheckoutSandboxCard({ order, locale }: CheckoutSandboxCardProps)
     </div>
   );
 }
+

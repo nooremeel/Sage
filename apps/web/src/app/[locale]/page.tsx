@@ -45,14 +45,14 @@ function HomeContent() {
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <Button asChild variant="accent" size="lg">
-              <Link href="/styleguide" className="gap-2">
-                <span>{tHome('viewStyleguide')}</span>
+              <Link href="/courses" className="gap-2">
+                <span>{tHome('exploreCourses')}</span>
                 <ArrowEnd className="h-4 w-4" />
               </Link>
             </Button>
             <Button asChild variant="secondary" size="lg">
               <Link href="/styleguide" className="gap-2">
-                <span>{tCommon('learnMore')}</span>
+                <span>{tHome('viewStyleguide')}</span>
               </Link>
             </Button>
           </div>
@@ -76,10 +76,10 @@ function HomeContent() {
             <ShieldCheck className="h-5 w-5" />
           </div>
           <h3 className="font-headline text-xl font-semibold text-text">
-            حماية البث والمحتوى المرئي
+            {tHome('feature1Title')}
           </h3>
           <p className="text-sm text-text-muted leading-relaxed">
-            تجزئة فيديوهات HLS ورموز تفويض ديناميكية محدودة الوقت لمنع التحميل أو المشاركة غير المصرح بها.
+            {tHome('feature1Desc')}
           </p>
         </Card>
 
@@ -88,10 +88,10 @@ function HomeContent() {
             <Zap className="h-5 w-5" />
           </div>
           <h3 className="font-headline text-xl font-semibold text-text">
-            معمارية سحابية فورية واقتصادية
+            {tHome('feature2Title')}
           </h3>
           <p className="text-sm text-text-muted leading-relaxed">
-            تشغيل كامل بدون كلفة خوادم مستمرة (Vercel + Neon + Upstash Redis) مع استجابة فائقة السرعة.
+            {tHome('feature2Desc')}
           </p>
         </Card>
 
@@ -100,10 +100,10 @@ function HomeContent() {
             <Illustration name="logo-leaf" size={28} wash="amber" />
           </div>
           <h3 className="font-headline text-xl font-semibold text-text">
-            هندسة عربية أصيلة RTL
+            {tHome('feature3Title')}
           </h3>
           <p className="text-sm text-text-muted leading-relaxed">
-            تخطيط منطقي دقيق بالكامل وتطبيع متقدم للبحث العربي في PostgreSQL وتوافق طباعي أكاديمي.
+            {tHome('feature3Desc')}
           </p>
         </Card>
       </section>

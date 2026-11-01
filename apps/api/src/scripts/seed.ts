@@ -19,20 +19,24 @@ const sql = postgres(connectionString, { max: 1 });
 const db = drizzle(sql, { schema });
 
 async function main() {
-  console.log('[Seed] Starting idempotent database seed...');
+  console.log('[Seed] Starting idempotent database seed for production presentation...');
 
-  // 1. Users
+  // 1. Password Hash
   const defaultPassword = await argon2.hash('Password123!', {
     type: argon2.argon2id,
     memoryCost: 19456,
     timeCost: 2,
   });
 
+  // 2. Users
   const seedUsers = [
     { email: 'admin@sage.local', role: 'admin' as const, locale: 'en' as const },
     { email: 'nour@sage.local', role: 'instructor' as const, locale: 'ar' as const },
     { email: 'sarah@sage.local', role: 'instructor' as const, locale: 'en' as const },
+    { email: 'tariq@sage.local', role: 'instructor' as const, locale: 'ar' as const },
     { email: 'student@sage.local', role: 'student' as const, locale: 'ar' as const },
+    { email: 'layla@sage.local', role: 'student' as const, locale: 'ar' as const },
+    { email: 'omar@sage.local', role: 'student' as const, locale: 'en' as const },
   ];
 
   const userMap = new Map<string, string>();
@@ -55,8 +59,6 @@ async function main() {
         .returning();
       existing = created;
       console.log(`[Seed] Created user: ${u.email} (${u.role})`);
-    } else {
-      console.log(`[Seed] User already exists: ${u.email}`);
     }
 
     if (existing) {
@@ -64,7 +66,7 @@ async function main() {
     }
   }
 
-  // 2. Categories
+  // 3. Categories
   const categoriesData = [
     {
       slug: 'software-engineering',
@@ -139,8 +141,6 @@ async function main() {
         });
       }
       console.log(`[Seed] Created category: ${cat.slug}`);
-    } else {
-      console.log(`[Seed] Category already exists: ${cat.slug}`);
     }
 
     if (existingCat) {
@@ -148,20 +148,26 @@ async function main() {
     }
   }
 
-  // 3. Courses
-  const instructorId = userMap.get('nour@sage.local')!;
-  const engineeringCatId = categoryMap.get('software-engineering')!;
-  const artsCatId = categoryMap.get('islamic-arts')!;
+  // 4. Scholarly Courses
+  const instructorNour = userMap.get('nour@sage.local')!;
+  const instructorSarah = userMap.get('sarah@sage.local')!;
+  const instructorTariq = userMap.get('tariq@sage.local')!;
+
+  const catEng = categoryMap.get('software-engineering')!;
+  const catArts = categoryMap.get('islamic-arts')!;
+  const catBiz = categoryMap.get('business-leadership')!;
 
   const coursesData = [
     {
-      categoryId: engineeringCatId,
-      instructorId,
+      categoryId: catEng,
+      instructorId: instructorNour,
       status: 'published' as const,
       level: 'advanced' as const,
       priceCents: 4900,
       currency: 'USD',
       primaryLocale: 'ar' as const,
+      ratingAvg: '4.95',
+      ratingCount: 142,
       translations: [
         {
           locale: 'ar' as const,
@@ -205,18 +211,26 @@ async function main() {
               isFreePreview: false,
               durationSec: 850,
             },
+            {
+              title: { ar: 'اختبار تقييم المعمارية السحابية', en: 'Cloud Architecture Assessment' },
+              type: 'quiz' as const,
+              isFreePreview: false,
+              durationSec: 300,
+            },
           ],
         },
       ],
     },
     {
-      categoryId: artsCatId,
-      instructorId,
+      categoryId: catArts,
+      instructorId: instructorTariq,
       status: 'published' as const,
       level: 'beginner' as const,
       priceCents: 0,
       currency: 'USD',
       primaryLocale: 'ar' as const,
+      ratingAvg: '4.98',
+      ratingCount: 310,
       translations: [
         {
           locale: 'ar' as const,
@@ -249,80 +263,456 @@ async function main() {
               isFreePreview: false,
               durationSec: 720,
             },
+            {
+              title: { ar: 'اختبار أصول ومقاييس الحروف', en: 'Calligraphy Fundamentals Quiz' },
+              type: 'quiz' as const,
+              isFreePreview: false,
+              durationSec: 300,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      categoryId: catEng,
+      instructorId: instructorNour,
+      status: 'published' as const,
+      level: 'intermediate' as const,
+      priceCents: 7900,
+      currency: 'USD',
+      primaryLocale: 'en' as const,
+      ratingAvg: '4.92',
+      ratingCount: 88,
+      translations: [
+        {
+          locale: 'en' as const,
+          title: 'High-Concurrency PostgreSQL & Connection Pooling',
+          subtitle: 'Serverless scaling, Neon pooling, and transactional indexing',
+          description: 'Master PostgreSQL internals for high-throughput platforms. Learn connection pooling, GIN and GiST indexing, keyset pagination, and dead-lock prevention.',
+          slug: 'high-concurrency-postgres',
+        },
+        {
+          locale: 'ar' as const,
+          title: 'قواعد بيانات بوستجرس عالية التزامن وإدارة الاتصالات',
+          subtitle: 'التوسع في البيئات السحابية وإدارة الاتصالات والفهارس المتقدمة',
+          description: 'دورة تطبيقية في تحسين أداء PostgreSQL للأنظمة ذات الأحمال العالية، التخزين المؤقت، وهيكلة الاستعلامات المعقدة.',
+          slug: 'high-concurrency-postgres-ar',
+        },
+      ],
+      sections: [
+        {
+          title: { en: 'Module 1: Connection Architecture', ar: 'الفصل الأول: معمارية الاتصالات' },
+          lessons: [
+            {
+              title: { en: 'Serverless Pooling & Neon Connection Limits', ar: 'تجميع الاتصالات في البيئات السحابية' },
+              type: 'video' as const,
+              isFreePreview: true,
+              durationSec: 480,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      categoryId: catArts,
+      instructorId: instructorTariq,
+      status: 'published' as const,
+      level: 'intermediate' as const,
+      priceCents: 3500,
+      currency: 'USD',
+      primaryLocale: 'ar' as const,
+      ratingAvg: '4.97',
+      ratingCount: 95,
+      translations: [
+        {
+          locale: 'ar' as const,
+          title: 'خط الديواني الجلي: رشاقة الحركة وانسيابية التركيب',
+          subtitle: 'قواعد الزخرفة النقطية والتشكيلات الديوانية السلطانية',
+          description: 'دراسة تخصصية لخط الديواني والديواني الجلي، أسرار التداخل الحروفي، والزخرفة النقطية الكلاسيكية المتبعة في الفرمانات والوثائق التاريخية.',
+          slug: 'diwani-jali-masterclass-ar',
+        },
+        {
+          locale: 'en' as const,
+          title: 'Jali Diwani Masterclass: Fluidity and Royal Compositions',
+          subtitle: 'The courtly script of ornamental dots and interlaced compositions',
+          description: 'A dedicated masterclass on Jali Diwani calligraphy, exploring letter intersections, floral dot flourishes, and ceremonial scroll design.',
+          slug: 'diwani-jali-masterclass',
+        },
+      ],
+      sections: [
+        {
+          title: { ar: 'الفصل الأول: ميزان الديواني الجلي', en: 'Module 1: Diwani Proportions' },
+          lessons: [
+            {
+              title: { ar: 'الانسياب والمد والزخرفة النقطية', en: 'Curvature and Dot Embellishment' },
+              type: 'video' as const,
+              isFreePreview: true,
+              durationSec: 600,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      categoryId: catBiz,
+      instructorId: instructorSarah,
+      status: 'published' as const,
+      level: 'intermediate' as const,
+      priceCents: 5900,
+      currency: 'USD',
+      primaryLocale: 'en' as const,
+      ratingAvg: '4.89',
+      ratingCount: 114,
+      translations: [
+        {
+          locale: 'en' as const,
+          title: 'Digital Product Strategy & Unit Economics',
+          subtitle: 'From scholarly insight to profitable, resilient software businesses',
+          description: 'A disciplined framework for discovering validated customer demand, structuring sustainable monetization models, and measuring retention velocity.',
+          slug: 'product-strategy-bootcamp',
+        },
+        {
+          locale: 'ar' as const,
+          title: 'استراتيجيات المنتجات الرقمية واقتصاديات الوحدة',
+          subtitle: 'من الرؤية الأكاديمية إلى بناء شركات ومنتجات رقمية مستدامة',
+          description: 'منهجية متكاملة في بناء نماذج التسعير، استكشاف متطلبات السوق، وتحليل مؤشرات النمو والاحتفاظ بالعملاء.',
+          slug: 'product-strategy-bootcamp-ar',
+        },
+      ],
+      sections: [
+        {
+          title: { en: 'Module 1: Value Hypotheses', ar: 'الفصل الأول: فرضيات القيمة' },
+          lessons: [
+            {
+              title: { en: 'Pricing Structures and SaaS Unit Economics', ar: 'نماذج التسعير واقتصاديات الاشتراكات' },
+              type: 'video' as const,
+              isFreePreview: true,
+              durationSec: 510,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      categoryId: catArts,
+      instructorId: instructorTariq,
+      status: 'published' as const,
+      level: 'advanced' as const,
+      priceCents: 8900,
+      currency: 'USD',
+      primaryLocale: 'ar' as const,
+      ratingAvg: '5.00',
+      ratingCount: 62,
+      translations: [
+        {
+          locale: 'ar' as const,
+          title: 'فن التذهيب الإسلامي وتوريق الذهب في المخطوطات',
+          subtitle: 'إعداد رقائق الذهب عيار 24، الألوان الطبيعية، وزخرفة الشرافات',
+          description: 'دراسة تراثية معمقة في فن التذهيب الكلاسيكي، تحضير ورق المخطوطات المقهر، لصق وتلميع رقائق الذهب الحقيقي بالعقيق، وصياغة الزخارف النباتية والهندسية.',
+          slug: 'islamic-illumination-ar',
+        },
+        {
+          locale: 'en' as const,
+          title: 'Classical Manuscript Illumination & Gold Leafing',
+          subtitle: '24K gold preparation, natural pigments, and arabesque borders',
+          description: 'An authoritative study in traditional illumination, sized paper preparation, 24K gold shell application, agate stone burnishing, and intricate floral border drafting.',
+          slug: 'islamic-illumination',
+        },
+      ],
+      sections: [
+        {
+          title: { ar: 'الفصل الأول: إعداد الذهب والأصباغ', en: 'Module 1: Gold Preparation' },
+          lessons: [
+            {
+              title: { ar: 'طحن رقائق الذهب والتلميع بحجر العقيق', en: 'Grinding Gold and Agate Burnishing' },
+              type: 'video' as const,
+              isFreePreview: true,
+              durationSec: 780,
+            },
           ],
         },
       ],
     },
   ];
 
+  const courseMap = new Map<string, string>();
+  const lessonQuizMap = new Map<string, string>();
+
   for (const cData of coursesData) {
-    const existingTrans = await db.query.courseTranslations.findFirst({
+    let existingTrans = await db.query.courseTranslations.findFirst({
       where: eq(schema.courseTranslations.slug, cData.translations[0]!.slug),
     });
 
-    if (existingTrans) {
-      console.log(`[Seed] Course already exists: ${cData.translations[0]!.slug}`);
-      continue;
-    }
+    let courseId: string;
 
-    const [newCourse] = await db
-      .insert(schema.courses)
-      .values({
-        instructorId: cData.instructorId,
-        categoryId: cData.categoryId,
-        status: cData.status,
-        level: cData.level,
-        priceCents: cData.priceCents,
-        currency: cData.currency,
-        primaryLocale: cData.primaryLocale,
-        ratingAvg: '4.95',
-        ratingCount: 142,
-        publishedAt: new Date(),
-      })
-      .returning();
-
-    for (const t of cData.translations) {
-      const searchText =
-        t.locale === 'ar'
-          ? normalizeArabic(`${t.title} ${t.subtitle} ${t.description}`)
-          : `${t.title} ${t.subtitle} ${t.description}`.toLowerCase();
-
-      await db.insert(schema.courseTranslations).values({
-        courseId: newCourse!.id,
-        locale: t.locale,
-        title: t.title,
-        subtitle: t.subtitle,
-        description: t.description,
-        slug: t.slug,
-        searchText,
-      });
-    }
-
-    for (let sIdx = 0; sIdx < cData.sections.length; sIdx++) {
-      const sec = cData.sections[sIdx]!;
-      const [newSec] = await db
-        .insert(schema.sections)
+    if (!existingTrans) {
+      const [newCourse] = await db
+        .insert(schema.courses)
         .values({
-          courseId: newCourse!.id,
-          position: sIdx,
-          title: sec.title,
+          instructorId: cData.instructorId,
+          categoryId: cData.categoryId,
+          status: cData.status,
+          level: cData.level,
+          priceCents: cData.priceCents,
+          currency: cData.currency,
+          primaryLocale: cData.primaryLocale,
+          ratingAvg: cData.ratingAvg,
+          ratingCount: cData.ratingCount,
+          publishedAt: new Date(),
         })
         .returning();
 
-      for (let lIdx = 0; lIdx < sec.lessons.length; lIdx++) {
-        const les = sec.lessons[lIdx]!;
-        await db.insert(schema.lessons).values({
-          sectionId: newSec!.id,
-          position: lIdx,
-          type: les.type,
-          title: les.title,
-          isFreePreview: les.isFreePreview,
-          durationSec: les.durationSec,
+      courseId = newCourse!.id;
+
+      for (const t of cData.translations) {
+        const searchText =
+          t.locale === 'ar'
+            ? normalizeArabic(`${t.title} ${t.subtitle} ${t.description}`)
+            : `${t.title} ${t.subtitle} ${t.description}`.toLowerCase();
+
+        await db.insert(schema.courseTranslations).values({
+          courseId,
+          locale: t.locale,
+          title: t.title,
+          subtitle: t.subtitle,
+          description: t.description,
+          slug: t.slug,
+          searchText,
         });
       }
+
+      for (let sIdx = 0; sIdx < cData.sections.length; sIdx++) {
+        const sec = cData.sections[sIdx]!;
+        const [newSec] = await db
+          .insert(schema.sections)
+          .values({
+            courseId,
+            position: sIdx,
+            title: sec.title,
+          })
+          .returning();
+
+        for (let lIdx = 0; lIdx < sec.lessons.length; lIdx++) {
+          const les = sec.lessons[lIdx]!;
+          const [newLes] = await db
+            .insert(schema.lessons)
+            .values({
+              sectionId: newSec!.id,
+              position: lIdx,
+              type: les.type,
+              title: les.title,
+              isFreePreview: les.isFreePreview,
+              durationSec: les.durationSec,
+            })
+            .returning();
+
+          if (les.type === 'quiz') {
+            lessonQuizMap.set(newLes!.id, cData.translations[0]!.slug);
+          }
+        }
+      }
+
+      console.log(`[Seed] Seeded course: ${cData.translations[0]!.title}`);
+    } else {
+      courseId = existingTrans.courseId;
     }
 
-    console.log(`[Seed] Seeded course with curriculum: ${cData.translations[0]!.title}`);
+    courseMap.set(cData.translations[0]!.slug, courseId);
+  }
+
+  // 5. Seed Quizzes & Questions
+  for (const [lessonId, slug] of lessonQuizMap.entries()) {
+    const existingQuiz = await db.query.quizzes.findFirst({
+      where: eq(schema.quizzes.lessonId, lessonId),
+    });
+
+    if (!existingQuiz) {
+      const [quiz] = await db
+        .insert(schema.quizzes)
+        .values({
+          lessonId,
+          title: {
+            ar: 'اختبار تقييم المفاهيم الأكاديمية',
+            en: 'Scholarly Concepts Assessment',
+          },
+          passingScore: 80,
+          maxAttempts: 3,
+        })
+        .returning();
+
+      const [q1] = await db
+        .insert(schema.questions)
+        .values({
+          quizId: quiz!.id,
+          position: 0,
+          type: 'single_choice',
+          prompt: {
+            ar: 'ما هي الوحدة الأساسية المعتمدة لضبط نسب حروف الخط العربي الكلاسيكي؟',
+            en: 'What is the fundamental unit of measure for classical Arabic calligraphy proportions?',
+          },
+        })
+        .returning();
+
+      await db.insert(schema.options).values([
+        { questionId: q1!.id, position: 0, text: { ar: 'ميزان النقطة المعينة بسن القلم', en: 'The rhombic dot of the pen nib' }, isCorrect: true },
+        { questionId: q1!.id, position: 1, text: { ar: 'المليمتر الموحد', en: 'Standard millimeter' }, isCorrect: false },
+        { questionId: q1!.id, position: 2, text: { ar: 'عرض خط القاعدة', en: 'Baseline width' }, isCorrect: false },
+      ]);
+
+      const [q2] = await db
+        .insert(schema.questions)
+        .values({
+          quizId: quiz!.id,
+          position: 1,
+          type: 'single_choice',
+          prompt: {
+            ar: 'أي نمط تخزين مؤقت يضمن عدم تحميل قاعدة البيانات ويحمي من انهيار الخوادم عند انتهاء الصلاحية؟',
+            en: 'Which caching strategy prevents database stampedes and cache collapse on expiry?',
+          },
+        })
+        .returning();
+
+      await db.insert(schema.options).values([
+        { questionId: q2!.id, position: 0, text: { ar: 'نمط Cache-Aside مع القفل المؤقت والتحديث المسبق', en: 'Cache-Aside with mutex lock and background revalidation' }, isCorrect: true },
+        { questionId: q2!.id, position: 1, text: { ar: 'الاستعلام المباشر الدائم', en: 'Permanent direct querying' }, isCorrect: false },
+        { questionId: q2!.id, position: 2, text: { ar: 'التخزين المؤقت المحلي فقط', en: 'Process memory cache only' }, isCorrect: false },
+      ]);
+
+      console.log(`[Seed] Seeded quiz for lesson in ${slug}`);
+    }
+  }
+
+  // 6. Active Promotional Coupons
+  const couponsToSeed = [
+    { code: 'SAGE100', discountType: 'percentage' as const, discountValue: 100, maxRedemptions: 500 },
+    { code: 'SCHOLAR50', discountType: 'percentage' as const, discountValue: 50, maxRedemptions: 200 },
+    { code: 'WELCOME20', discountType: 'fixed' as const, discountValue: 2000, maxRedemptions: 100 },
+  ];
+
+  for (const c of couponsToSeed) {
+    const existing = await db.query.coupons.findFirst({
+      where: eq(schema.coupons.code, c.code),
+    });
+
+    if (!existing) {
+      await db.insert(schema.coupons).values({
+        code: c.code,
+        discountType: c.discountType,
+        discountValue: c.discountValue,
+        maxRedemptions: c.maxRedemptions,
+      });
+      console.log(`[Seed] Created coupon: ${c.code}`);
+    }
+  }
+
+  // 7. Authentic Scholarly Course Reviews
+  const thuluthCourseId = courseMap.get('thuluth-calligraphy-ar');
+  const studentId = userMap.get('student@sage.local')!;
+  const laylaId = userMap.get('layla@sage.local')!;
+  const omarId = userMap.get('omar@sage.local')!;
+
+  if (thuluthCourseId) {
+    const reviewsData = [
+      {
+        userId: laylaId,
+        courseId: thuluthCourseId,
+        rating: 5,
+        comment: 'دورة فريدة واستثنائية؛ الشرح دقيق للغاية في ميزان النقطة وتشريح الحروف. أنصح بها كل طالب علم شغوف بالخط العربي الأصيل.',
+      },
+      {
+        userId: omarId,
+        courseId: thuluthCourseId,
+        rating: 5,
+        comment: 'Remarkable pedagogical depth and classical discipline. The lessons on reed pen cutting and carbon soot ink gave me the precision I lacked for years.',
+      },
+      {
+        userId: studentId,
+        courseId: thuluthCourseId,
+        rating: 5,
+        comment: 'من أفضل المناهج التعليمية؛ تجربة البث واضحة جداً وتصميم المنصة الأكاديمي يبعث على الراحة والتركيز التام.',
+      },
+    ];
+
+    for (const r of reviewsData) {
+      const existing = await db.query.reviews.findFirst({
+        where: eq(schema.reviews.userId, r.userId),
+      });
+
+      if (!existing) {
+        await db.insert(schema.reviews).values(r);
+        console.log(`[Seed] Added review for course ${r.courseId}`);
+      }
+    }
+  }
+
+  // 8. Q&A Discussions with Instructor Verified Badges
+  if (thuluthCourseId) {
+    const firstLesson = await db.query.lessons.findFirst();
+    if (firstLesson) {
+      const existingThread = await db.query.qaThreads.findFirst({
+        where: eq(schema.qaThreads.lessonId, firstLesson.id),
+      });
+
+      if (!existingThread) {
+        const [thread] = await db
+          .insert(schema.qaThreads)
+          .values({
+            lessonId: firstLesson.id,
+            authorId: laylaId,
+            title: 'استفسار حول زاوية قط القصبة في خط الثلث',
+            content: 'السلام عليكم أستاذنا الفاضل، هل تختلف زاوية قط القصبة لخط الثلث الجلي عن الثلث العادي؟',
+          })
+          .returning();
+
+        // First student message
+        await db.insert(schema.qaMessages).values({
+          threadId: thread!.id,
+          authorId: laylaId,
+          content: 'السلام عليكم أستاذنا الفاضل، هل تختلف زاوية قط القصبة لخط الثلث الجلي عن الثلث العادي؟',
+          isInstructorAnswer: false,
+        });
+
+        // Instructor answer
+        await db.insert(schema.qaMessages).values({
+          threadId: thread!.id,
+          authorId: instructorTariq,
+          content: 'وعليكم السلام ورحمة الله، نعم يا ليلى، زاوية قط القصبة في الثلث الجلي تكون أقل ميلاً (حوالي 70 درجة) لإعطاء متانة وحشوة للحرف، بينما في الثلث العادي تكون بحدود 75 إلى 80 درجة.',
+          isInstructorAnswer: true,
+        });
+
+        console.log('[Seed] Created Q&A thread with instructor verified answer');
+      }
+    }
+  }
+
+  // 9. Sample Enrollment & Verifiable Certificate for student@sage.local
+  if (thuluthCourseId) {
+    const existingEnrollment = await db.query.enrollments.findFirst({
+      where: eq(schema.enrollments.userId, studentId),
+    });
+
+    if (!existingEnrollment) {
+      await db.insert(schema.enrollments).values({
+        userId: studentId,
+        courseId: thuluthCourseId,
+        source: 'free',
+      });
+      console.log('[Seed] Enrolled student@sage.local in Thuluth Calligraphy');
+    }
+
+    const sampleSerial = 'SAGE-2026-ALPHA1';
+    const existingCert = await db.query.certificates.findFirst({
+      where: eq(schema.certificates.serial, sampleSerial),
+    });
+
+    if (!existingCert) {
+      await db.insert(schema.certificates).values({
+        serial: sampleSerial,
+        userId: studentId,
+        courseId: thuluthCourseId,
+      });
+      console.log(`[Seed] Created sample certificate: ${sampleSerial}`);
+    }
   }
 
   console.log('[Seed] Database seeding completed successfully! ✨');
@@ -336,4 +726,3 @@ main()
   .finally(async () => {
     await sql.end();
   });
-

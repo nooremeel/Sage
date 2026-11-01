@@ -42,3 +42,4 @@ describe('Phase 9: Payments & Checkout Schemas', () => {
     expect(() => paymentWebhookEventSchema.parse(event)).not.toThrow();
   });
 });
+

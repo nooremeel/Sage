@@ -34,7 +34,13 @@
     "description": "A bilingual course platform with protected video delivery.",
     "status": "System Status: Production Ready",
     "exploreCourses": "Explore Courses",
-    "viewStyleguide": "Explore Styleguide"
+    "viewStyleguide": "Explore Styleguide",
+    "feature1Title": "Protected HLS Video Streaming",
+    "feature1Desc": "Adaptive HLS video chunking and short-lived signed authorization tokens prevent unauthorized downloads or URL sharing.",
+    "feature2Title": "Zero-Cost Serverless Velocity",
+    "feature2Desc": "100% serverless deployment (Vercel + Neon + Upstash Redis) delivers sub-second response times with zero idle compute costs.",
+    "feature3Title": "Authentic RTL & Arabic Engineering",
+    "feature3Desc": "Strict logical CSS, normalized Arabic full-text search with typo tolerance, and classical calligraphic typography."
   },
   "catalog": {
     "title": "Scholarly Catalog",
