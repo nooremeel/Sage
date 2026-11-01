@@ -36,6 +36,13 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `apps/web/src/components/ui/progress.tsx`
 - **Tags**: accessibility, a11y, aria, axe-core, wcag, frontend
 
+### [2026-11-01] Bug: CI GitHub Actions typecheck failure due to unbuilt workspace package
+- **Symptom**: `error TS2307: Cannot find module '@sage/shared' or its corresponding type declarations` in `apps/api` during `pnpm typecheck` in GitHub Actions
+- **Root cause**: Fresh checkout on CI runner did not have `packages/shared/dist/index.d.ts` generated because `@sage/shared` was not built before recursive typecheck
+- **Fix**: Added `pnpm --filter @sage/shared build` to CI workflow immediately after dependency installation, and updated root `typecheck` script to build `@sage/shared` before running `pnpm -r typecheck`
+- **Files**: `.github/workflows/ci.yml`, `package.json`
+- **Tags**: ci, github-actions, monorepo, typescript, typecheck
+
 ---
 
 ## 2. Technical Debt Tracker

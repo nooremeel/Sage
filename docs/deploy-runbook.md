@@ -130,3 +130,4 @@ Or connect the repository via GitHub integration. Vercel reads `vercel.json` and
 4. **Arabic Search:** Search `الخط` or `معمارية` on `/ar/courses` — verify diacritic-normalized results.
 5. **Verifiable Certificate:** Visit `/en/verify/SAGE-2026-ALPHA1` — verify certificate rendering, QR code, and print preview (`Ctrl+P`).
 6. **Simulated Payment Sandbox:** Click "Enroll in Course" on a paid course — verify redirect to `/checkout/[orderId]` and simulated webhook completion.
+

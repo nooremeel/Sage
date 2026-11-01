@@ -39,3 +39,4 @@ else
   echo "Run manually when pg_dump is available:" >&2
   echo "pg_dump --dbname=\"$DB_URL\" --clean --if-exists -f \"$DUMP_FILE\"" >&2
 fi
+

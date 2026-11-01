@@ -5,3 +5,4 @@ import { MetricsController } from './metrics.controller.js';
   controllers: [MetricsController],
 })
 export class MetricsModule {}
+

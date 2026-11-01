@@ -220,3 +220,4 @@ Key architectural decisions are documented in [`docs/adr/`](docs/adr/):
 ## 📄 License
 
 MIT © 2026 Nour Emil & Sage Contributors.
+

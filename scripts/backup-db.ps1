@@ -46,3 +46,4 @@ if (Get-Command pg_dump -ErrorAction SilentlyContinue) {
     Write-Host "Command to run when pg_dump is available:"
     Write-Host "pg_dump --dbname=`"$dbUrl`" --clean --if-exists -f `"$dumpFile`"" -ForegroundColor Yellow
 }
+

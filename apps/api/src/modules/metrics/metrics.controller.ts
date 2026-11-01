@@ -41,3 +41,4 @@ export class MetricsController {
     ].join('\n');
   }
 }
+
