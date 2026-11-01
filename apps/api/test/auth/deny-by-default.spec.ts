@@ -18,6 +18,7 @@ import { QAController } from '../../src/modules/qa/qa.controller.js';
 import { CertificatesController } from '../../src/modules/certificates/certificates.controller.js';
 import { ReviewsController } from '../../src/modules/reviews/reviews.controller.js';
 import { AnalyticsController } from '../../src/modules/analytics/analytics.controller.js';
+import { PaymentsController } from '../../src/modules/payments/payments.controller.js';
 import { AdminController } from '../../src/modules/admin/admin.controller.js';
 
 describe('Deny-By-Default Authorization Guardrail', () => {
@@ -39,6 +40,7 @@ describe('Deny-By-Default Authorization Guardrail', () => {
     CertificatesController,
     ReviewsController,
     AnalyticsController,
+    PaymentsController,
     AdminController,
   ];
 

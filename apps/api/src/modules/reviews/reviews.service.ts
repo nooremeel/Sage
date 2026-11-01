@@ -118,7 +118,7 @@ export class ReviewsService {
       courseId: savedReview.courseId,
       rating: savedReview.rating,
       comment: savedReview.comment,
-      createdAt: savedReview.createdAt ? new Date(savedReview.createdAt).toISOString() : new Date().toISOString(),
+      createdAt: savedReview?.createdAt ? new Date(savedReview.createdAt).toISOString() : new Date().toISOString(),
     };
   }
 
@@ -158,3 +158,4 @@ export class ReviewsService {
     };
   }
 }
+

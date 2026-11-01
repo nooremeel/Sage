@@ -51,19 +51,13 @@ describe('Course Reviews & Rating Aggregation Suite', () => {
         }),
       }),
       transaction: async (cb: (tx: any) => Promise<any>) => {
-        let selectCallCount = 0;
         const tx = {
           select: () => ({
-            from: (table: any) => ({
+            from: () => ({
               where: () => {
-                selectCallCount++;
-                if (selectCallCount === 1) {
-                  // Checking existing review
-                  return reviewsList;
-                }
                 // Return stats
-                const count = reviewsList.length || 1;
-                const sum = reviewsList.reduce((acc, r) => acc + r.rating, 0) || 5;
+                const count = reviewsList.length + 1;
+                const sum = reviewsList.reduce((acc, r) => acc + r.rating, 0) + 5;
                 const avg = (sum / count).toFixed(2);
                 return [{ count, avg }];
               },
@@ -76,7 +70,7 @@ describe('Course Reviews & Rating Aggregation Suite', () => {
                   Object.assign(courseRecord, vals);
                 }
                 return {
-                  returning: () => [{ id: 'updated', createdAt: new Date(), ...vals }],
+                  returning: () => [{ id: 'updated', ...vals }],
                 };
               },
             }),

@@ -51,3 +51,4 @@ Serverless constraints on Vercel preclude bundling heavy headless Chromium binar
 - Tamper-evident credentials verifiable by employers and academic institutions via QR link or serial lookup.
 - High-performance catalog browsing via pre-aggregated ratings with instantaneous tag-based Redis invalidation.
 - Zero IDOR vulnerabilities verified by CASL deny-by-default integration tests.
+

@@ -13,6 +13,8 @@ export * from './qa.js';
 export * from './notifications.js';
 export * from './certificates.js';
 export * from './reviews.js';
+export * from './orders.js';
+export * from './payments.js';
 
 
 

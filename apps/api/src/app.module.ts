@@ -24,6 +24,7 @@ import { QAModule } from './modules/qa/qa.module.js';
 import { CertificatesModule } from './modules/certificates/certificates.module.js';
 import { ReviewsModule } from './modules/reviews/reviews.module.js';
 import { AnalyticsModule } from './modules/analytics/analytics.module.js';
+import { PaymentsModule } from './modules/payments/payments.module.js';
 import { AdminModule } from './modules/admin/admin.module.js';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware.js';
 import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
@@ -81,6 +82,7 @@ import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
     CertificatesModule,
     ReviewsModule,
     AnalyticsModule,
+    PaymentsModule,
     AdminModule,
     HealthModule,
   ],

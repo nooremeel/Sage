@@ -56,6 +56,12 @@ export const envSchema = z.object({
   PUSHER_SECRET: z.string().optional(),
   PUSHER_CLUSTER: z.string().optional(),
   TRANSCODE_PROFILE: z.enum(['local', 'cloud']).default('local'),
+
+  // Payments
+  PAYMENT_WEBHOOK_SECRET: z
+    .string()
+    .min(16)
+    .default('dev_payment_webhook_secret_key_32chars_long'),
 });
 
 export type Env = z.infer<typeof envSchema>;

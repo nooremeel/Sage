@@ -27,3 +27,4 @@ export const adminAnalyticsDtoSchema = z.object({
 });
 
 export type AdminAnalyticsDto = z.infer<typeof adminAnalyticsDtoSchema>;
+

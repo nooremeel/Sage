@@ -11,3 +11,4 @@ import { CaslModule } from '../../common/casl/casl.module.js';
   exports: [AnalyticsService],
 })
 export class AnalyticsModule {}
+

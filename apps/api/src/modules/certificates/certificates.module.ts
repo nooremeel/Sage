@@ -12,3 +12,4 @@ import { ProgressModule } from '../progress/progress.module.js';
   exports: [CertificatesService],
 })
 export class CertificatesModule {}
+

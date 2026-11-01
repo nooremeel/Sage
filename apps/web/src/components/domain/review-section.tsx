@@ -286,3 +286,4 @@ export function ReviewSection({ courseId, locale }: ReviewSectionProps) {
     </div>
   );
 }
+

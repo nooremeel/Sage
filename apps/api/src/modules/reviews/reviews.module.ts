@@ -12,3 +12,4 @@ import { CacheModule } from '../../common/cache/cache.module.js';
   exports: [ReviewsService],
 })
 export class ReviewsModule {}
+

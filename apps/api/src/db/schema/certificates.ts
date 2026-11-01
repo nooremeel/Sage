@@ -35,3 +35,4 @@ export const certificates = pgTable(
 
 export type Certificate = typeof certificates.$inferSelect;
 export type NewCertificate = typeof certificates.$inferInsert;
+

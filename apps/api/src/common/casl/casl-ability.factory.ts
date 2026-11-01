@@ -56,6 +56,14 @@ export class ReviewSubject {
   userId!: string;
 }
 
+export class OrderSubject {
+  userId!: string;
+}
+
+export class PaymentSubject {
+  orderId!: string;
+}
+
 export type Subjects =
   | InferSubjects<
       | typeof UserSubject
@@ -69,6 +77,8 @@ export type Subjects =
       | typeof RealtimeSubject
       | typeof CertificateSubject
       | typeof ReviewSubject
+      | typeof OrderSubject
+      | typeof PaymentSubject
     >
   | 'all';
 
@@ -104,6 +114,7 @@ export class CaslAbilityFactory {
       can('read', RealtimeSubject);
       can('read', CertificateSubject);
       can('read', ReviewSubject);
+      can('read', OrderSubject);
 
       // Can manage their own profile
       can('read', UserSubject, { id: user.id } as any);
@@ -127,6 +138,9 @@ export class CaslAbilityFactory {
       can('read', CertificateSubject);
       can('manage', ReviewSubject, { userId: user.id } as any);
       can('read', ReviewSubject);
+      can('create', OrderSubject);
+      can('read', OrderSubject);
+      can('update', OrderSubject);
 
       // Profile management
       can('read', UserSubject, { id: user.id } as any);

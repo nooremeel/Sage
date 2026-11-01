@@ -255,5 +255,26 @@
     "beFirstToReview": "Be the first student to review this course after learning.",
     "reviewsCount": "{count} reviews",
     "enrollToReview": "Enroll in this course to share your review."
+  },
+  "Payments": {
+    "orderCheckout": "Order Checkout",
+    "checkoutTitle": "Scholarly Checkout",
+    "orderSummary": "Order Summary",
+    "unlimitedAccess": "Includes lifetime streaming access and verifiable certificate",
+    "totalDue": "Total Due",
+    "sandboxModeTitle": "Simulated Sandbox Payment",
+    "sandboxModeNotice": "This platform operates in demo sandbox mode. No real credit card or bank charges will occur. Use the simulation controls below to verify order state transitions and automatic course enrollment.",
+    "payAmount": "Simulate Payment ({amount})",
+    "processingPayment": "Simulating Gateway Processing...",
+    "simulateFailure": "Simulate Failure",
+    "cancelOrder": "Cancel Order",
+    "paymentSuccessTitle": "Payment Confirmed!",
+    "paymentSuccessDesc": "Your course enrollment is now active. You have full access to all curriculum modules and lessons.",
+    "startLearning": "Start Learning",
+    "paymentFailedTitle": "Payment Simulation Failed",
+    "paymentFailedDesc": "The simulated payment was rejected. You can retry with a successful payment simulation or cancel.",
+    "orderCancelledTitle": "Order Cancelled",
+    "orderCancelledDesc": "This checkout session has been cancelled. No changes were made to your account.",
+    "returnToCatalog": "Return to Courses"
   }
 }

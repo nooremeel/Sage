@@ -32,3 +32,4 @@ export const courseReviewsResponseDtoSchema = z.object({
 export type CourseReviewsResponseDto = z.infer<
   typeof courseReviewsResponseDtoSchema
 >;
+

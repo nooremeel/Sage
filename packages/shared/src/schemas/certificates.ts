@@ -31,3 +31,4 @@ export const publicCertificateVerificationDtoSchema = z.object({
 export type PublicCertificateVerificationDto = z.infer<
   typeof publicCertificateVerificationDtoSchema
 >;
+

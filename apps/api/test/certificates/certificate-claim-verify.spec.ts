@@ -127,3 +127,4 @@ describe('Certificate Issuance & Public Verification Suite', () => {
     ).rejects.toThrow(NotFoundException);
   });
 });
+

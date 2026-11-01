@@ -140,3 +140,4 @@ export function QrCodeSvg({ value, size = 120, className }: QrCodeSvgProps) {
     </svg>
   );
 }
+

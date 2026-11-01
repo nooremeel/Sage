@@ -39,3 +39,4 @@ export const reviews = pgTable(
 
 export type Review = typeof reviews.$inferSelect;
 export type NewReview = typeof reviews.$inferInsert;
+

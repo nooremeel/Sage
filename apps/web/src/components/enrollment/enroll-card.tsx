@@ -78,6 +78,32 @@ export function EnrollCard({
     }
   };
 
+  const handlePaidCheckout = async () => {
+    if (!user) {
+      router.push(`/${locale}/login?redirect=/${locale}/courses/${courseSlug}`);
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await apiClient<{ session: { checkoutUrl: string } }>(
+        `/payments/checkout/${courseId}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            couponCode: couponCode.trim() || undefined,
+          }),
+        }
+      );
+      router.push(res.session.checkoutUrl);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Checkout initiation failed');
+      setIsSubmitting(false);
+    }
+  };
+
   const handleCouponEnroll = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -179,7 +205,7 @@ export function EnrollCard({
       ) : (
         <div className="space-y-4">
           <button
-            onClick={handleFreeEnroll}
+            onClick={handlePaidCheckout}
             disabled={isSubmitting}
             className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-amber-500 hover:bg-amber-500/90 text-ink-900 font-semibold rounded-lg text-sm transition-colors shadow-sm disabled:opacity-50"
           >
