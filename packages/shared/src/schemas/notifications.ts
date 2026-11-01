@@ -19,3 +19,4 @@ export const notificationDtoSchema = z.object({
 });
 
 export type NotificationDto = z.infer<typeof notificationDtoSchema>;
+

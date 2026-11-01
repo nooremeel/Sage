@@ -12,3 +12,4 @@ import { NotificationsModule } from '../notifications/notifications.module.js';
   exports: [QAService],
 })
 export class QAModule {}
+

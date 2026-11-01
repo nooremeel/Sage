@@ -389,3 +389,4 @@ export function QASection({ lessonId, locale }: QASectionProps) {
     </div>
   );
 }
+

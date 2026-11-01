@@ -49,3 +49,4 @@ export const qaThreadDtoSchema = z.object({
 });
 
 export type QAThreadDto = z.infer<typeof qaThreadDtoSchema>;
+

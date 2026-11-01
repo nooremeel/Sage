@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { LessonVideoWithHeartbeat } from '@/components/media/lesson-video-with-heartbeat';
 import { QuizRunner } from '@/components/quiz/quiz-runner';
 import { QASection } from '@/components/domain/qa-section';
+import { ClaimCertificateBanner } from '@/components/certificates/claim-certificate-banner';
 import { Illustration } from '@/components/illustrations/illustration';
 import { Link } from '@/i18n/routing';
 import { apiClient } from '@/lib/api';
@@ -83,6 +84,13 @@ export default async function LessonPlaybackPage({ params }: LessonPageProps) {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Content: Player / Quiz / Lesson Body */}
         <div className="lg:col-span-3 space-y-6">
+          {/* Certificate Claim / Course Progress Milestone Banner */}
+          <ClaimCertificateBanner
+            courseId={course.id}
+            courseSlug={slug}
+            locale={currentLocale}
+          />
+
           {targetLesson.type === 'quiz' ? (
             <QuizRunner lessonId={lessonId} locale={currentLocale} />
           ) : playbackData ? (

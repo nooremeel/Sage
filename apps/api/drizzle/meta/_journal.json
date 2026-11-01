@@ -50,6 +50,13 @@
       "when": 1793548846861,
       "tag": "0006_cooing_firebrand",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793550458185,
+      "tag": "0007_exotic_la_nuit",
+      "breakpoints": true
     }
   ]
 }

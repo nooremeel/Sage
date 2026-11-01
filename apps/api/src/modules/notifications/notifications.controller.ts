@@ -62,3 +62,4 @@ export class NotificationsController {
     await this.notificationsService.markAllAsRead(user.id);
   }
 }
+

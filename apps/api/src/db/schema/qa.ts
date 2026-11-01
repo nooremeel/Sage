@@ -57,3 +57,4 @@ export type QAThread = typeof qaThreads.$inferSelect;
 export type NewQAThread = typeof qaThreads.$inferInsert;
 export type QAMessage = typeof qaMessages.$inferSelect;
 export type NewQAMessage = typeof qaMessages.$inferInsert;
+

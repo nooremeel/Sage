@@ -11,5 +11,8 @@ export * from './progress.js';
 export * from './quizzes.js';
 export * from './qa.js';
 export * from './notifications.js';
+export * from './certificates.js';
+export * from './reviews.js';
+
 
 

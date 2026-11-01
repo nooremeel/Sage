@@ -225,5 +225,35 @@
     "notifications": "الإشعارات",
     "markAllAsRead": "تحديد الكل كمقروء",
     "noNotifications": "ليس لديك إشعارات جديدة حالياً"
+  },
+  "Certificates": {
+    "certificateOfCompletion": "شهادة إتمام معتمدة",
+    "thisIsToCertify": "تشهد منصة سايج بأن",
+    "hasSuccessfullyCompleted": "قد أتم بنجاح متطلبات الدورة الأكاديمية",
+    "issuedOn": "تاريخ الإصدار",
+    "serialNumber": "الرقم التسلسلي",
+    "instructor": "المحاضر",
+    "verifyAuthenticity": "التحقق من صحة الشهادة",
+    "verifiedBySage": "معتمدة وموثقة عبر منصة سايج",
+    "printCertificate": "طباعة / حفظ كملف PDF",
+    "backToCourse": "العودة إلى الدورة",
+    "invalidCertificate": "شهادة غير صالحة",
+    "invalidCertificateDesc": "الرقم التسلسلي للشهادة الذي أدخلته غير موجود في سجلات المنصة الموثقة.",
+    "claimCertificate": "إصدار الشهادة",
+    "claimCertificateCelebration": "تهانينا! لقد أكملت 100% من محتوى هذه الدورة بنجاح.",
+    "claimingCertificate": "جاري إصدار الشهادة...",
+    "viewCertificate": "عرض الشهادة"
+  },
+  "Reviews": {
+    "courseReviews": "تقييمات وآراء الطلاب",
+    "writeReview": "كتابة تقييم",
+    "rating": "تقييمك",
+    "shareYourExperience": "شاركنا رأيك وتجربتك التعليمية في هذه الدورة (اختياري)...",
+    "submitReview": "إرسال التقييم",
+    "submitting": "جاري الإرسال...",
+    "noReviewsYet": "لا توجد تقييمات حتى الآن",
+    "beFirstToReview": "كن أول طالب يشارك تقييمه بعد دراسة هذه الدورة.",
+    "reviewsCount": "{count} تقييم",
+    "enrollToReview": "سجّل في هذه الدورة لتتمكن من كتابة تقييمك."
   }
 }

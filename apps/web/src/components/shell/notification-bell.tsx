@@ -180,3 +180,4 @@ export function NotificationBell({ locale }: NotificationBellProps) {
     </div>
   );
 }
+

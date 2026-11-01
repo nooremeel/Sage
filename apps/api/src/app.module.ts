@@ -21,6 +21,9 @@ import { QuizzesModule } from './modules/quizzes/quizzes.module.js';
 import { RealtimeModule } from './modules/realtime/realtime.module.js';
 import { NotificationsModule } from './modules/notifications/notifications.module.js';
 import { QAModule } from './modules/qa/qa.module.js';
+import { CertificatesModule } from './modules/certificates/certificates.module.js';
+import { ReviewsModule } from './modules/reviews/reviews.module.js';
+import { AnalyticsModule } from './modules/analytics/analytics.module.js';
 import { AdminModule } from './modules/admin/admin.module.js';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware.js';
 import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
@@ -75,6 +78,9 @@ import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
     RealtimeModule,
     NotificationsModule,
     QAModule,
+    CertificatesModule,
+    ReviewsModule,
+    AnalyticsModule,
     AdminModule,
     HealthModule,
   ],

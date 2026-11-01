@@ -50,3 +50,4 @@ Because Sage deploys 100% on Vercel (where serverless API functions terminate af
 - Completely serverless-native real-time delivery with zero external SaaS costs.
 - High reliability across network reconnects via `Last-Event-ID` buffering.
 - Full RTL and logical CSS compliance for MENA and international audiences.
+

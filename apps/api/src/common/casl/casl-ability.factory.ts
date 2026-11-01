@@ -48,6 +48,14 @@ export class RealtimeSubject {
   userId!: string;
 }
 
+export class CertificateSubject {
+  userId!: string;
+}
+
+export class ReviewSubject {
+  userId!: string;
+}
+
 export type Subjects =
   | InferSubjects<
       | typeof UserSubject
@@ -59,6 +67,8 @@ export type Subjects =
       | typeof QASubject
       | typeof NotificationSubject
       | typeof RealtimeSubject
+      | typeof CertificateSubject
+      | typeof ReviewSubject
     >
   | 'all';
 
@@ -92,6 +102,8 @@ export class CaslAbilityFactory {
       can('manage', QASubject);
       can('manage', NotificationSubject, { userId: user.id } as any);
       can('read', RealtimeSubject);
+      can('read', CertificateSubject);
+      can('read', ReviewSubject);
 
       // Can manage their own profile
       can('read', UserSubject, { id: user.id } as any);
@@ -111,7 +123,10 @@ export class CaslAbilityFactory {
       can('create', QASubject);
       can('manage', NotificationSubject, { userId: user.id } as any);
       can('read', RealtimeSubject);
-
+      can('manage', CertificateSubject, { userId: user.id } as any);
+      can('read', CertificateSubject);
+      can('manage', ReviewSubject, { userId: user.id } as any);
+      can('read', ReviewSubject);
 
       // Profile management
       can('read', UserSubject, { id: user.id } as any);

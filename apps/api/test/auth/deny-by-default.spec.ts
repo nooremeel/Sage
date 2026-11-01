@@ -15,6 +15,9 @@ import { QuizzesController } from '../../src/modules/quizzes/quizzes.controller.
 import { RealtimeController } from '../../src/modules/realtime/realtime.controller.js';
 import { NotificationsController } from '../../src/modules/notifications/notifications.controller.js';
 import { QAController } from '../../src/modules/qa/qa.controller.js';
+import { CertificatesController } from '../../src/modules/certificates/certificates.controller.js';
+import { ReviewsController } from '../../src/modules/reviews/reviews.controller.js';
+import { AnalyticsController } from '../../src/modules/analytics/analytics.controller.js';
 import { AdminController } from '../../src/modules/admin/admin.controller.js';
 
 describe('Deny-By-Default Authorization Guardrail', () => {
@@ -33,6 +36,9 @@ describe('Deny-By-Default Authorization Guardrail', () => {
     RealtimeController,
     NotificationsController,
     QAController,
+    CertificatesController,
+    ReviewsController,
+    AnalyticsController,
     AdminController,
   ];
 

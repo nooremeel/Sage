@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { RatingStars } from '@/components/ui/rating-stars';
 import { CurriculumAccordion } from '@/components/domain/curriculum-accordion';
+import { ReviewSection } from '@/components/domain/review-section';
 import { EnrollCard } from '@/components/enrollment/enroll-card';
 import { apiClient } from '@/lib/api';
 import type { CourseDto, Locale } from '@sage/shared';
@@ -125,6 +126,9 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
               <p className="text-sm text-text-muted">{t('curriculumUnderReview')}</p>
             )}
           </div>
+
+          {/* Student Reviews & Course Ratings */}
+          <ReviewSection courseId={course.id} locale={locale as 'ar' | 'en'} />
         </div>
 
         {/* Right Sticky Sidebar */}
