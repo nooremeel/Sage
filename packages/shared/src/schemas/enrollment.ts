@@ -56,3 +56,4 @@ export const couponDtoSchema = z.object({
 });
 
 export type CouponDto = z.infer<typeof couponDtoSchema>;
+

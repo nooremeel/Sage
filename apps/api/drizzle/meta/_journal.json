@@ -43,6 +43,13 @@
       "when": 1793546598433,
       "tag": "0005_spooky_tyger_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793548846861,
+      "tag": "0006_cooing_firebrand",
+      "breakpoints": true
     }
   ]
 }

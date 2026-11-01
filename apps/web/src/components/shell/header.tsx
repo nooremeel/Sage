@@ -1,11 +1,12 @@
 'use client';
 
 import * as React from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 import { Illustration } from '@/components/illustrations/illustration';
 import { LanguageSwitcher } from '@/components/shell/language-switcher';
 import { ThemeToggle } from '@/components/shell/theme-toggle';
+import { NotificationBell } from '@/components/shell/notification-bell';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
 import { Menu, X, User } from 'lucide-react';
@@ -14,6 +15,7 @@ import { cn } from '@/lib/utils';
 export function Header() {
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
+  const locale = useLocale();
   const pathname = usePathname();
   const { user, isLoading } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
@@ -62,6 +64,7 @@ export function Header() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <LanguageSwitcher />
+          <NotificationBell locale={locale as 'ar' | 'en'} />
 
           {/* User Auth Action (Desktop) */}
           <div className="hidden sm:flex items-center gap-2">

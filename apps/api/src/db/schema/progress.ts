@@ -32,3 +32,4 @@ export const lessonProgress = pgTable(
 
 export type LessonProgress = typeof lessonProgress.$inferSelect;
 export type NewLessonProgress = typeof lessonProgress.$inferInsert;
+

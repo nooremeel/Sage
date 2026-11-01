@@ -231,3 +231,4 @@ export function EnrollCard({
     </div>
   );
 }
+

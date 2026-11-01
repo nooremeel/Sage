@@ -12,6 +12,9 @@ import { MediaController } from '../../src/modules/media/media.controller.js';
 import { EnrollmentsController } from '../../src/modules/enrollments/enrollments.controller.js';
 import { ProgressController } from '../../src/modules/progress/progress.controller.js';
 import { QuizzesController } from '../../src/modules/quizzes/quizzes.controller.js';
+import { RealtimeController } from '../../src/modules/realtime/realtime.controller.js';
+import { NotificationsController } from '../../src/modules/notifications/notifications.controller.js';
+import { QAController } from '../../src/modules/qa/qa.controller.js';
 import { AdminController } from '../../src/modules/admin/admin.controller.js';
 
 describe('Deny-By-Default Authorization Guardrail', () => {
@@ -27,6 +30,9 @@ describe('Deny-By-Default Authorization Guardrail', () => {
     EnrollmentsController,
     ProgressController,
     QuizzesController,
+    RealtimeController,
+    NotificationsController,
+    QAController,
     AdminController,
   ];
 

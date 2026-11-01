@@ -84,3 +84,4 @@ export type CouponRedemption = typeof couponRedemptions.$inferSelect;
 export type NewCouponRedemption = typeof couponRedemptions.$inferInsert;
 export type Enrollment = typeof enrollments.$inferSelect;
 export type NewEnrollment = typeof enrollments.$inferInsert;
+

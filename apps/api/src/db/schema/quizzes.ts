@@ -97,3 +97,4 @@ export type Option = typeof options.$inferSelect;
 export type NewOption = typeof options.$inferInsert;
 export type QuizAttempt = typeof quizAttempts.$inferSelect;
 export type NewQuizAttempt = typeof quizAttempts.$inferInsert;
+

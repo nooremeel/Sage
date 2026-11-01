@@ -35,6 +35,19 @@ export class QuizSubject {
   id!: string;
 }
 
+export class QASubject {
+  id!: string;
+  authorId!: string;
+}
+
+export class NotificationSubject {
+  userId!: string;
+}
+
+export class RealtimeSubject {
+  userId!: string;
+}
+
 export type Subjects =
   | InferSubjects<
       | typeof UserSubject
@@ -43,6 +56,9 @@ export type Subjects =
       | typeof EnrollmentSubject
       | typeof ProgressSubject
       | typeof QuizSubject
+      | typeof QASubject
+      | typeof NotificationSubject
+      | typeof RealtimeSubject
     >
   | 'all';
 
@@ -73,6 +89,9 @@ export class CaslAbilityFactory {
       // Instructors can manage lessons for their courses
       can('manage', LessonSubject);
       can('manage', QuizSubject);
+      can('manage', QASubject);
+      can('manage', NotificationSubject, { userId: user.id } as any);
+      can('read', RealtimeSubject);
 
       // Can manage their own profile
       can('read', UserSubject, { id: user.id } as any);
@@ -88,6 +107,10 @@ export class CaslAbilityFactory {
       can('manage', ProgressSubject, { userId: user.id } as any);
       can('read', QuizSubject);
       can('create', QuizSubject);
+      can('read', QASubject);
+      can('create', QASubject);
+      can('manage', NotificationSubject, { userId: user.id } as any);
+      can('read', RealtimeSubject);
 
 
       // Profile management

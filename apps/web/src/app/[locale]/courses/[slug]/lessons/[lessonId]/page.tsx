@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { LessonVideoWithHeartbeat } from '@/components/media/lesson-video-with-heartbeat';
 import { QuizRunner } from '@/components/quiz/quiz-runner';
+import { QASection } from '@/components/domain/qa-section';
 import { Illustration } from '@/components/illustrations/illustration';
 import { Link } from '@/i18n/routing';
 import { apiClient } from '@/lib/api';
@@ -135,6 +136,9 @@ export default async function LessonPlaybackPage({ params }: LessonPageProps) {
               </p>
             )}
           </div>
+
+          {/* Lesson Q&A Discussion Section */}
+          <QASection lessonId={lessonId} locale={currentLocale} />
         </div>
 
         {/* Sidebar: Curriculum Outline */}

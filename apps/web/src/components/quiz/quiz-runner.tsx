@@ -270,3 +270,4 @@ export function QuizRunner({ lessonId, locale, onQuizPassed }: QuizRunnerProps) 
     </div>
   );
 }
+

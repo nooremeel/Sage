@@ -9,4 +9,7 @@ export * from './media.js';
 export * from './enrollments.js';
 export * from './progress.js';
 export * from './quizzes.js';
+export * from './qa.js';
+export * from './notifications.js';
+
 

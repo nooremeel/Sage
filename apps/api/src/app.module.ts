@@ -18,6 +18,9 @@ import { MediaModule } from './modules/media/media.module.js';
 import { EnrollmentsModule } from './modules/enrollments/enrollments.module.js';
 import { ProgressModule } from './modules/progress/progress.module.js';
 import { QuizzesModule } from './modules/quizzes/quizzes.module.js';
+import { RealtimeModule } from './modules/realtime/realtime.module.js';
+import { NotificationsModule } from './modules/notifications/notifications.module.js';
+import { QAModule } from './modules/qa/qa.module.js';
 import { AdminModule } from './modules/admin/admin.module.js';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware.js';
 import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
@@ -69,6 +72,9 @@ import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
     EnrollmentsModule,
     ProgressModule,
     QuizzesModule,
+    RealtimeModule,
+    NotificationsModule,
+    QAModule,
     AdminModule,
     HealthModule,
   ],

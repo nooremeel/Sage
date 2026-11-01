@@ -84,3 +84,4 @@ export const quizAttemptResultDtoSchema = z.object({
 });
 
 export type QuizAttemptResultDto = z.infer<typeof quizAttemptResultDtoSchema>;
+

@@ -56,3 +56,4 @@ export class ProgressController {
     return { items };
   }
 }
+

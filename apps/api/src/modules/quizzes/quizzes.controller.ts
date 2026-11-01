@@ -92,3 +92,4 @@ export class QuizzesController {
     return { attempts };
   }
 }
+

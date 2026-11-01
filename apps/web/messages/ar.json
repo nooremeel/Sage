@@ -201,5 +201,29 @@
     "couponExhausted": "تم استنفاد الحد الأقصى لاستخدام هذا الرمز الترويجي.",
     "couponExpired": "انتهت صلاحية هذا الرمز الترويجي.",
     "invalidCoupon": "رمز ترويجي غير صالح أو غير معروف."
+  },
+  "QA": {
+    "discussionTitle": "نقاش الدرس والاستفسارات",
+    "askQuestion": "طرح سؤال",
+    "cancel": "إلغاء",
+    "newQuestionTitle": "بدء استفسار أو نقاش جديد",
+    "questionSubject": "عنوان السؤال",
+    "subjectPlaceholder": "مثال: استفسار بخصوص مدة المقاطع",
+    "questionDetails": "تفاصيل السؤال",
+    "detailsPlaceholder": "اشرح استفسارك أو ملاحظتك بالتفصيل...",
+    "postQuestion": "نشر السؤال",
+    "loadingDiscussions": "جاري تحميل المناقشات...",
+    "noQuestionsYet": "لم يتم طرح أي أسئلة بعد",
+    "noQuestionsDesc": "كن أول من يبدأ نقاشاً علمياً حول هذا الدرس.",
+    "instructorAnswered": "تمت إجابة المدرب",
+    "replies": "ردود",
+    "instructorBadge": "مدرب",
+    "writeReplyPlaceholder": "اكتب إجابتك أو تعقيبك...",
+    "reply": "رد"
+  },
+  "Notifications": {
+    "notifications": "الإشعارات",
+    "markAllAsRead": "تحديد الكل كمقروء",
+    "noNotifications": "ليس لديك إشعارات جديدة حالياً"
   }
 }

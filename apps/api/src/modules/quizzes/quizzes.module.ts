@@ -11,3 +11,4 @@ import { CaslModule } from '../../common/casl/casl.module.js';
   exports: [QuizzesService],
 })
 export class QuizzesModule {}
+
