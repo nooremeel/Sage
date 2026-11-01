@@ -199,3 +199,4 @@ export function VideoUploader({ onUploadSuccess, title }: VideoUploaderProps) {
     </div>
   );
 }
+

@@ -1,10 +1,11 @@
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { VideoPlayer } from '@/components/media/video-player';
+import { LessonVideoWithHeartbeat } from '@/components/media/lesson-video-with-heartbeat';
+import { QuizRunner } from '@/components/quiz/quiz-runner';
 import { Illustration } from '@/components/illustrations/illustration';
 import { Link } from '@/i18n/routing';
 import { apiClient } from '@/lib/api';
-import { PlayCircle, FileText, CheckCircle, Lock, ArrowLeft, ArrowRight } from 'lucide-react';
+import { PlayCircle, FileText, CheckCircle, Lock, ArrowLeft, ArrowRight, HelpCircle } from 'lucide-react';
 import type { CourseDto, PlaybackResponseDto, Locale } from '@sage/shared';
 
 interface LessonPageProps {
@@ -79,12 +80,15 @@ export default async function LessonPlaybackPage({ params }: LessonPageProps) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Main Content: Player / Lesson Body */}
+        {/* Main Content: Player / Quiz / Lesson Body */}
         <div className="lg:col-span-3 space-y-6">
-          {playbackData ? (
-            <VideoPlayer
+          {targetLesson.type === 'quiz' ? (
+            <QuizRunner lessonId={lessonId} locale={currentLocale} />
+          ) : playbackData ? (
+            <LessonVideoWithHeartbeat
               manifestUrl={playbackData.manifestUrl}
               lessonId={lessonId}
+              durationSec={targetLesson.durationSec}
             />
           ) : accessDenied ? (
             <div className="aspect-video w-full rounded-lg border border-border bg-card flex flex-col items-center justify-center p-8 text-center space-y-4">
@@ -165,6 +169,8 @@ export default async function LessonPlaybackPage({ params }: LessonPageProps) {
                           <div className="flex items-center gap-2 truncate">
                             {les.type === 'video' ? (
                               <PlayCircle className="w-3.5 h-3.5 shrink-0" />
+                            ) : les.type === 'quiz' ? (
+                              <HelpCircle className="w-3.5 h-3.5 shrink-0" />
                             ) : (
                               <FileText className="w-3.5 h-3.5 shrink-0" />
                             )}

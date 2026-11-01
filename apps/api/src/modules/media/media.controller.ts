@@ -101,3 +101,4 @@ export class MediaController {
     res.redirect(HttpStatus.FOUND, redirectUrl);
   }
 }
+

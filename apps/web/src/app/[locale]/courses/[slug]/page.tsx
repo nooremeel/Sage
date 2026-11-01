@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { RatingStars } from '@/components/ui/rating-stars';
 import { CurriculumAccordion } from '@/components/domain/curriculum-accordion';
+import { EnrollCard } from '@/components/enrollment/enroll-card';
 import { apiClient } from '@/lib/api';
 import type { CourseDto, Locale } from '@sage/shared';
 import { Check, ShieldCheck, Globe, Award } from 'lucide-react';
@@ -129,19 +130,16 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
         {/* Right Sticky Sidebar */}
         <div className="lg:col-span-1">
           <div className="sticky top-24 space-y-6">
-            <Card elevation="e1" className="p-6 space-y-6 border-border bg-card">
-              <div className="space-y-1">
-                <span className="text-xs text-text-muted block">{t('tuition')}</span>
-                <div className="font-headline text-3xl font-bold text-primary">
-                  {priceText}
-                </div>
-              </div>
+            <EnrollCard
+              courseId={course.id}
+              courseSlug={slug}
+              priceCents={course.priceCents}
+              firstLessonId={formattedSections[0]?.lessons[0]?.id}
+              locale={locale as 'ar' | 'en'}
+            />
 
-              <Button variant="accent" size="lg" className="w-full">
-                {t('enrollNow')}
-              </Button>
-
-              <div className="border-t border-border pt-4 space-y-3 text-xs text-text-muted">
+            <Card elevation="e1" className="p-6 space-y-4 border-border bg-card">
+              <div className="border-t border-border pt-2 space-y-3 text-xs text-text-muted">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-sage-700 dark:text-sage-300 shrink-0" />
                   <span>{t('accessGuarantee')}</span>

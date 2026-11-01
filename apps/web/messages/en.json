@@ -166,5 +166,40 @@
     "option3": "Advanced Level",
     "toggleLabel": "Enable instant email course notifications",
     "checkboxLabel": "I accept the scholarly honor code and terms"
+  },
+  "Quiz": {
+    "loadingQuiz": "Loading quiz questions...",
+    "quizError": "Quiz Unavailable",
+    "retry": "Try Again",
+    "attemptsExhausted": "Attempts Limit Reached",
+    "finalScore": "Your final score is {score}%. Passing score is {passing}%.",
+    "congratulations": "Congratulations! You Passed!",
+    "quizPassedDesc": "You achieved {score}%, exceeding the required passing score of {passing}%.",
+    "lessonCompletedBadge": "Lesson Completed",
+    "attemptFailed": "Quiz Attempt Failed",
+    "attemptFailedDesc": "You scored {score}%. Passing requires {passing}%. You have {attemptsLeft} attempt(s) remaining.",
+    "tryAgain": "Retake Quiz",
+    "passingRequirement": "Passing Score: {score}%",
+    "attemptsLimit": "Attempt {current} of {max}",
+    "unlimitedAttempts": "Unlimited Attempts",
+    "selectMultiple": "Select all that apply",
+    "selectSingle": "Select one correct answer",
+    "evaluating": "Grading Answers...",
+    "submitQuiz": "Submit Answers"
+  },
+  "Enrollment": {
+    "alreadyEnrolled": "You are enrolled in this course",
+    "readyToLearn": "Resume your progress and access all lessons anytime.",
+    "continueLearning": "Continue Learning",
+    "courseAccess": "Course Access",
+    "free": "Free",
+    "enrollFreeNow": "Enroll for Free",
+    "buyCourse": "Enroll in Course",
+    "haveCoupon": "Have a coupon code?",
+    "couponCodeLabel": "Enter Coupon Code",
+    "apply": "Apply",
+    "couponExhausted": "This coupon usage limit has been reached.",
+    "couponExpired": "This coupon code has expired.",
+    "invalidCoupon": "Invalid or unrecognized coupon code."
   }
 }

@@ -15,6 +15,9 @@ import { CategoriesModule } from './modules/categories/categories.module.js';
 import { CoursesModule } from './modules/courses/courses.module.js';
 import { CurriculumModule } from './modules/curriculum/curriculum.module.js';
 import { MediaModule } from './modules/media/media.module.js';
+import { EnrollmentsModule } from './modules/enrollments/enrollments.module.js';
+import { ProgressModule } from './modules/progress/progress.module.js';
+import { QuizzesModule } from './modules/quizzes/quizzes.module.js';
 import { AdminModule } from './modules/admin/admin.module.js';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware.js';
 import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
@@ -63,6 +66,9 @@ import { JwtAuthMiddleware } from './common/middleware/jwt-auth.middleware.js';
     CoursesModule,
     CurriculumModule,
     MediaModule,
+    EnrollmentsModule,
+    ProgressModule,
+    QuizzesModule,
     AdminModule,
     HealthModule,
   ],

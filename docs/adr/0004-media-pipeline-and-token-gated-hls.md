@@ -45,3 +45,4 @@ Sage requires a robust media pipeline supporting large video lecture uploads (up
 - Direct media URLs are never exposed publicly; unentitled users cannot scrape raw video files.
 - Resumable chunked uploads prevent memory exhaustion on serverless function runtimes.
 - Full RTL-safe student learning experience with localized video playback.
+

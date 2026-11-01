@@ -20,3 +20,13 @@ export const MEDIA_STATUS = [
   'failed',
 ] as const;
 export type MediaStatus = (typeof MEDIA_STATUS)[number];
+
+export const ENROLLMENT_SOURCES = ['free', 'paid', 'coupon', 'admin'] as const;
+export type EnrollmentSource = (typeof ENROLLMENT_SOURCES)[number];
+
+export const COUPON_TYPES = ['percentage', 'fixed'] as const;
+export type CouponType = (typeof COUPON_TYPES)[number];
+
+export const QUESTION_TYPES = ['single_choice', 'multiple_choice'] as const;
+export type QuestionType = (typeof QUESTION_TYPES)[number];
+

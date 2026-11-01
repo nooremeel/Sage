@@ -27,8 +27,23 @@ export class EnrollmentSubject {
   courseId!: string;
 }
 
+export class ProgressSubject {
+  userId!: string;
+}
+
+export class QuizSubject {
+  id!: string;
+}
+
 export type Subjects =
-  | InferSubjects<typeof UserSubject | typeof CourseSubject | typeof LessonSubject | typeof EnrollmentSubject>
+  | InferSubjects<
+      | typeof UserSubject
+      | typeof CourseSubject
+      | typeof LessonSubject
+      | typeof EnrollmentSubject
+      | typeof ProgressSubject
+      | typeof QuizSubject
+    >
   | 'all';
 
 export type AppAbility = MongoAbility<[Action, Subjects]>;
@@ -57,6 +72,7 @@ export class CaslAbilityFactory {
 
       // Instructors can manage lessons for their courses
       can('manage', LessonSubject);
+      can('manage', QuizSubject);
 
       // Can manage their own profile
       can('read', UserSubject, { id: user.id } as any);
@@ -69,6 +85,10 @@ export class CaslAbilityFactory {
       // Students can manage only their own enrollments & progress
       can('read', EnrollmentSubject, { userId: user.id } as any);
       can('create', EnrollmentSubject, { userId: user.id } as any);
+      can('manage', ProgressSubject, { userId: user.id } as any);
+      can('read', QuizSubject);
+      can('create', QuizSubject);
+
 
       // Profile management
       can('read', UserSubject, { id: user.id } as any);

@@ -18,6 +18,7 @@ interface VideoPlayerProps {
   posterUrl?: string;
   lessonId: string;
   onEnded?: () => void;
+  onPause?: (currentTime: number) => void;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
 }
 
@@ -26,6 +27,7 @@ export function VideoPlayer({
   posterUrl,
   lessonId,
   onEnded,
+  onPause,
   onTimeUpdate,
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -280,7 +282,12 @@ export function VideoPlayer({
         onTimeUpdate={handleTimeUpdate}
         onEnded={onEnded}
         onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
+        onPause={() => {
+          setIsPlaying(false);
+          if (videoRef.current) {
+            onPause?.(videoRef.current.currentTime);
+          }
+        }}
         playsInline
       />
 

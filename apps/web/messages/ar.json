@@ -166,5 +166,40 @@
     "option3": "مستوى المتقدمين",
     "toggleLabel": "تفعيل التنبيهات الفورية عبر البريد",
     "checkboxLabel": "أوافق على الالتزام بالميثاق الأكاديمي للمنصة"
+  },
+  "Quiz": {
+    "loadingQuiz": "جاري تحميل أسئلة الاختبار...",
+    "quizError": "الاختبار غير متاح حالياً",
+    "retry": "إعادة المحاولة",
+    "attemptsExhausted": "استنفدت جميع المحاولات المتاحة",
+    "finalScore": "درجتك النهائية هي {score}%. درجة النجاح المطلوبة {passing}%.",
+    "congratulations": "تهانينا! لقد اجتزت الاختبار بنجاح!",
+    "quizPassedDesc": "حققت درجة {score}%، متجاوزاً درجة النجاح المطلوبة {passing}%.",
+    "lessonCompletedBadge": "تم إكمال الدرس",
+    "attemptFailed": "لم تجتز هذه المحاولة",
+    "attemptFailedDesc": "حققت {score}%. تتطلب درجة النجاح {passing}%. تبقى لديك {attemptsLeft} محاولة.",
+    "tryAgain": "إعادة أداء الاختبار",
+    "passingRequirement": "درجة النجاح: {score}%",
+    "attemptsLimit": "محاولة {current} من {max}",
+    "unlimitedAttempts": "محاولات غير محدودة",
+    "selectMultiple": "اختر كل الإجابات الصحيحة",
+    "selectSingle": "اختر إجابة صحيحة واحدة",
+    "evaluating": "جاري تقييم الإجابات...",
+    "submitQuiz": "تسليم الإجابات"
+  },
+  "Enrollment": {
+    "alreadyEnrolled": "أنت مسجل بالفعل في هذه الدورة",
+    "readyToLearn": "تابع مسيرتك التعليمية واستمتع بالوصول لجميع الدروس في أي وقت.",
+    "continueLearning": "متابعة التعلّم",
+    "courseAccess": "الالتحاق بالدورة",
+    "free": "مجاني",
+    "enrollFreeNow": "سجّل مجاناً الآن",
+    "buyCourse": "التسجيل في الدورة",
+    "haveCoupon": "هل لديك رمز ترويجي؟",
+    "couponCodeLabel": "أدخل رمز الخصم الترويجي",
+    "apply": "تطبيق",
+    "couponExhausted": "تم استنفاد الحد الأقصى لاستخدام هذا الرمز الترويجي.",
+    "couponExpired": "انتهت صلاحية هذا الرمز الترويجي.",
+    "invalidCoupon": "رمز ترويجي غير صالح أو غير معروف."
   }
 }

@@ -9,6 +9,9 @@ import { CategoriesController } from '../../src/modules/categories/categories.co
 import { CoursesController } from '../../src/modules/courses/courses.controller.js';
 import { CurriculumController } from '../../src/modules/curriculum/curriculum.controller.js';
 import { MediaController } from '../../src/modules/media/media.controller.js';
+import { EnrollmentsController } from '../../src/modules/enrollments/enrollments.controller.js';
+import { ProgressController } from '../../src/modules/progress/progress.controller.js';
+import { QuizzesController } from '../../src/modules/quizzes/quizzes.controller.js';
 import { AdminController } from '../../src/modules/admin/admin.controller.js';
 
 describe('Deny-By-Default Authorization Guardrail', () => {
@@ -21,6 +24,9 @@ describe('Deny-By-Default Authorization Guardrail', () => {
     CoursesController,
     CurriculumController,
     MediaController,
+    EnrollmentsController,
+    ProgressController,
+    QuizzesController,
     AdminController,
   ];
 
