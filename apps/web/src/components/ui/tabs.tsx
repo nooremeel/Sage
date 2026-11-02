@@ -4,7 +4,12 @@ import * as React from 'react';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
 import { cn } from '@/lib/utils';
 
-export const Tabs = TabsPrimitive.Root;
+export const Tabs = TabsPrimitive.Root as React.ComponentType<
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Root> & {
+    children?: React.ReactNode;
+    className?: string;
+  }
+>;
 
 export function TabsList({
   className,

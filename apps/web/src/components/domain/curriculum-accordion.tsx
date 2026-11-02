@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useTranslations } from 'next-intl';
 import * as AccordionPrimitive from '@radix-ui/react-accordion';
 import { ChevronDown, Video, FileText, HelpCircle, CheckCircle } from 'lucide-react';
 import { Link } from '@/i18n/routing';
@@ -29,9 +30,11 @@ export interface CurriculumAccordionProps {
 }
 
 export function CurriculumAccordion({ sections, courseSlug, className }: CurriculumAccordionProps) {
+  const t = useTranslations('courseDetail');
+
   const lessonIcons = {
-    video: <Video className="h-4 w-4 text-blue-700 dark:text-primary shrink-0" />,
-    article: <FileText className="h-4 w-4 text-ink-600 dark:text-text-muted shrink-0" />,
+    video: <Video className="h-4 w-4 text-primary shrink-0" />,
+    article: <FileText className="h-4 w-4 text-text-muted shrink-0" />,
     quiz: <HelpCircle className="h-4 w-4 text-amber-500 shrink-0" />,
   };
 
@@ -65,7 +68,7 @@ export function CurriculumAccordion({ sections, courseSlug, className }: Curricu
                       <span className="text-sm font-medium text-text">{lesson.title}</span>
                       {lesson.isFreePreview && (
                         <Badge variant="accent" className="text-[10px] py-0 px-1.5">
-                          Free Preview
+                          {t('freePreview')}
                         </Badge>
                       )}
                     </div>

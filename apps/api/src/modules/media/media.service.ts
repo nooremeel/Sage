@@ -16,10 +16,10 @@ import {
   GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { v7 as uuidv7 } from 'uuid';
 import { DRIZZLE_DB, type DrizzleDb } from '../../db/db.module.js';
-import { mediaAssets, lessons, sections, courses } from '../../db/schema/index.js';
+import { mediaAssets, lessons, sections, courses, enrollments } from '../../db/schema/index.js';
 import { TranscodeService } from './transcode.service.js';
 import {
   type InitiateUploadInput,
@@ -223,6 +223,14 @@ export class MediaService {
       throw new NotFoundException('Lesson has no associated media asset');
     }
 
+    const asset = await this.db.query.mediaAssets.findFirst({
+      where: eq(mediaAssets.id, lesson.mediaAssetId),
+    });
+
+    if (!asset || asset.status !== 'ready') {
+      throw new NotFoundException('Media asset is not ready for streaming');
+    }
+
     // Access authorization check
     let isAllowed = false;
 
@@ -240,6 +248,16 @@ export class MediaService {
 
         if (course && course.instructorId === userId) {
           isAllowed = true;
+        } else if (course && userId) {
+          const enrollment = await this.db.query.enrollments.findFirst({
+            where: and(
+              eq(enrollments.userId, userId),
+              eq(enrollments.courseId, course.id),
+            ),
+          });
+          if (enrollment) {
+            isAllowed = true;
+          }
         }
       }
     }
@@ -258,11 +276,13 @@ export class MediaService {
 
     const token = await this.jwtService.signAsync(
       { sub: userId, lessonId, assetId: lesson.mediaAssetId },
-      { secret, expiresIn: '4h' },
+      { secret, expiresIn: '4h' as any },
     );
 
     const expiresAt = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();
-    const manifestUrl = `/api/media/${lesson.mediaAssetId}/master.m3u8?token=${token}`;
+    const manifestUrl = asset.hlsPrefix?.startsWith('http')
+      ? asset.hlsPrefix
+      : `/api/media/${lesson.mediaAssetId}/master.m3u8?token=${token}`;
 
     return {
       manifestUrl,

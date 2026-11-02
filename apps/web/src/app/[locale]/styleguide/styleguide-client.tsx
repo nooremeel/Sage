@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
@@ -34,13 +34,14 @@ import { BookOpen, Users, Award, Sparkles } from 'lucide-react';
 
 export function StyleguideClient() {
   const t = useTranslations('styleguide');
+  const locale = useLocale();
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [switchChecked, setSwitchChecked] = React.useState(true);
   const [checkboxChecked, setCheckboxChecked] = React.useState(true);
   const [progressVal, setProgressVal] = React.useState(68);
 
   const illustrationNames: { name: IllustrationName; label: string }[] = [
-    { name: 'logo-leaf', label: 'Logo Leaf' },
+    { name: 'logo-leaf', label: 'Living Codex (Logo)' },
     { name: 'hero-study', label: 'Hero Study' },
     { name: 'empty-courses', label: 'Empty Courses' },
     { name: 'empty-enrollments', label: 'Empty Enrollments' },
@@ -58,57 +59,110 @@ export function StyleguideClient() {
     { name: 'certificate-border', label: 'Certificate Corner' },
   ];
 
-  const curriculumSample: SectionItem[] = [
-    {
-      id: 'section-1',
-      title: '1. مدخل إلى هندسة النظم البرمجية (System Architecture Fundamentals)',
-      lessons: [
-        {
-          id: 'l1',
-          title: 'الدرس الأول: مفهوم المعمارية ثنائية التنفيذ (Dual Execution Model)',
-          type: 'video',
-          duration: '14:20',
-          isFreePreview: true,
-          isCompleted: true,
-        },
-        {
-          id: 'l2',
-          title: 'الدرس الثاني: قواعد التصميم الأكاديمي والطباعة المزدوجة',
-          type: 'article',
-          duration: '8 min read',
-          isFreePreview: true,
-          isCompleted: true,
-        },
-        {
-          id: 'l3',
-          title: 'اختبار تقييمي: أساسيات قواعد البيانات والشبكات',
-          type: 'quiz',
-          duration: '15 min',
-          isCompleted: false,
-        },
-      ],
-    },
-    {
-      id: 'section-2',
-      title: '2. خط أنابيب الوسائط والتوزيع المحمي (Media Pipeline & HLS)',
-      lessons: [
-        {
-          id: 'l4',
-          title: 'الدرس الثالث: التقطيع التكيفي المتعدد الجودات عبر FFmpeg',
-          type: 'video',
-          duration: '22:45',
-          isCompleted: false,
-        },
-        {
-          id: 'l5',
-          title: 'الدرس الرابع: الرموز المميزة لحماية الروابط وتفادي التسريب',
-          type: 'article',
-          duration: '12 min read',
-          isCompleted: false,
-        },
-      ],
-    },
-  ];
+  const curriculumSample: SectionItem[] =
+    locale === 'ar'
+      ? [
+          {
+            id: 'section-1',
+            title: '1. مدخل إلى هندسة النظم البرمجية',
+            lessons: [
+              {
+                id: 'l1',
+                title: 'الدرس الأول: مفهوم المعمارية ثنائية التنفيذ',
+                type: 'video',
+                duration: '14:20',
+                isFreePreview: true,
+                isCompleted: true,
+              },
+              {
+                id: 'l2',
+                title: 'الدرس الثاني: قواعد التصميم الأكاديمي والطباعة المزدوجة',
+                type: 'article',
+                duration: '8 دقائق قراءة',
+                isFreePreview: true,
+                isCompleted: true,
+              },
+              {
+                id: 'l3',
+                title: 'اختبار تقييمي: أساسيات قواعد البيانات والشبكات',
+                type: 'quiz',
+                duration: '15 دقيقة',
+                isCompleted: false,
+              },
+            ],
+          },
+          {
+            id: 'section-2',
+            title: '2. خط أنابيب الوسائط والتوزيع المحمي',
+            lessons: [
+              {
+                id: 'l4',
+                title: 'الدرس الثالث: التقطيع التكيفي المتعدد الجودات عبر FFmpeg',
+                type: 'video',
+                duration: '22:45',
+                isCompleted: false,
+              },
+              {
+                id: 'l5',
+                title: 'الدرس الرابع: الرموز المميزة لحماية الروابط وتفادي التسريب',
+                type: 'article',
+                duration: '12 دقيقة قراءة',
+                isCompleted: false,
+              },
+            ],
+          },
+        ]
+      : [
+          {
+            id: 'section-1',
+            title: '1. Introduction to Systems Software Engineering',
+            lessons: [
+              {
+                id: 'l1',
+                title: 'Lesson 1: Dual Execution Model & Serverless Architecture',
+                type: 'video',
+                duration: '14:20',
+                isFreePreview: true,
+                isCompleted: true,
+              },
+              {
+                id: 'l2',
+                title: 'Lesson 2: Scholarly Typography and Dual-Script RTL Design',
+                type: 'article',
+                duration: '8 min read',
+                isFreePreview: true,
+                isCompleted: true,
+              },
+              {
+                id: 'l3',
+                title: 'Assessment Quiz: Database Sharding & Networking Fundamentals',
+                type: 'quiz',
+                duration: '15 min',
+                isCompleted: false,
+              },
+            ],
+          },
+          {
+            id: 'section-2',
+            title: '2. Protected Media Pipelines and HLS Delivery',
+            lessons: [
+              {
+                id: 'l4',
+                title: 'Lesson 3: Multi-Rendition Adaptive Transcoding with FFmpeg',
+                type: 'video',
+                duration: '22:45',
+                isCompleted: false,
+              },
+              {
+                id: 'l5',
+                title: 'Lesson 4: Short-Lived Signed Tokens for Playback Protection',
+                type: 'article',
+                duration: '12 min read',
+                isCompleted: false,
+              },
+            ],
+          },
+        ];
 
   return (
     <div className="mx-auto max-w-6xl space-y-16 px-4 py-12 sm:px-6">
@@ -119,7 +173,7 @@ export function StyleguideClient() {
             <Badge variant="accent">Phase 1 Design System</Badge>
             <Badge variant="sage">WCAG 2.2 AA</Badge>
           </div>
-          <h1 className="font-headline text-4xl sm:text-5xl font-bold tracking-tight text-text">
+          <h1 className="font-headline text-4xl sm:text-5xl font-bold tracking-tight text-text rtl:leading-snug rtl:tracking-normal rtl:py-1">
             {t('title')}
           </h1>
           <p className="mt-4 text-lg text-text-muted leading-relaxed">
@@ -166,11 +220,11 @@ export function StyleguideClient() {
             <span className="text-xs font-semibold text-text-muted uppercase tracking-wider">
               Display Serif Headlines (EB Garamond / Amiri)
             </span>
-            <p className="font-headline text-4xl sm:text-5xl font-bold text-text mt-2">
+            <p className="font-headline text-4xl sm:text-5xl font-bold text-text mt-2 rtl:leading-[1.4] rtl:py-1">
               تعلّم ما يستحق أن يُعرف · Learn something worth knowing
             </p>
-            <p className="font-headline text-2xl sm:text-3xl font-semibold text-text mt-3">
-              المعرفة المتأنية تبني أثراً يدوم في الذاكرة والعمل
+            <p className="font-headline text-2xl sm:text-3xl font-semibold text-text mt-3 rtl:leading-[1.4] rtl:py-1">
+              {locale === 'ar' ? 'المعرفة المتأنية تبني أثراً يدوم في الذاكرة والعمل' : 'Deliberate knowledge builds an enduring mark in memory and craft.'}
             </p>
           </div>
 
@@ -179,7 +233,7 @@ export function StyleguideClient() {
               UI & Body Font (IBM Plex Sans / Arabic)
             </span>
             <p className="mt-2 text-base text-text leading-relaxed reading-column">
-              تم تصميم هذه المنصة لتجمع بين رصانة الورق والمطالعة الهادئة، وأحدث معايير الأداء والتقنيات البرمجية. القراءة المريحة ذات السطر المتزن (68 حرفاً بالإنجليزية وقرابة 60 بالعربية) تمنح المتعلم تركيزاً مستداماً دون تشتيت بصري.
+              {t('typographySample')}
             </p>
           </div>
 
@@ -275,7 +329,7 @@ const manifestUrl = \`/api/lessons/\${lessonId}/manifest.m3u8?token=\${token}\`;
               <Checkbox
                 id="styleguide-checkbox"
                 checked={checkboxChecked}
-                onCheckedChange={(checked) => setCheckboxChecked(checked === true)}
+                onCheckedChange={(checked: boolean | 'indeterminate') => setCheckboxChecked(checked === true)}
               />
               <label htmlFor="styleguide-checkbox" className="text-sm font-medium text-text cursor-pointer">
                 {t('checkboxLabel')}

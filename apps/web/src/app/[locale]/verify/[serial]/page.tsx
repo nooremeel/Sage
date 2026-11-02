@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import { ShieldCheck, AlertCircle, ArrowLeft, ArrowRight, Award } from 'lucide-react';
+import { ShieldCheck, AlertCircle, Award } from 'lucide-react';
+import { ArrowStart } from '@/components/ui/directional-icon';
 import { CertificateView } from '@/components/certificates/certificate-view';
 import { apiClient } from '@/lib/api';
 import { Link } from '@/i18n/routing';
@@ -76,11 +77,7 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
               href="/courses"
               className="inline-flex items-center gap-2 px-6 py-2.5 rounded-md bg-primary text-on-primary text-xs font-semibold hover:bg-primary-hover transition-colors focus-ring"
             >
-              {currentLocale === 'ar' ? (
-                <ArrowRight className="w-4 h-4" />
-              ) : (
-                <ArrowLeft className="w-4 h-4" />
-              )}
+              <ArrowStart className="w-4 h-4" />
               <span>{t('backToCourse')}</span>
             </Link>
           </div>

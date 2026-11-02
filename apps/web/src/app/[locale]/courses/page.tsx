@@ -3,6 +3,7 @@ import { CourseCard } from '@/components/domain/course-card';
 import { Illustration } from '@/components/illustrations/illustration';
 import { Link } from '@/i18n/routing';
 import { apiClient } from '@/lib/api';
+import { getDemoCourses } from '@/lib/demo-courses';
 import type { CourseDto, Locale } from '@sage/shared';
 
 interface CoursesPageProps {
@@ -44,7 +45,16 @@ export default async function CoursesCatalogPage({ params, searchParams }: Cours
       courses = res.courses || [];
     }
   } catch {
-    courses = [];
+    courses = getDemoCourses({
+      categorySlug: category,
+      level,
+      price,
+      query: q,
+    });
+  }
+
+  if (courses.length === 0 && !q && !category && !level && !price) {
+    courses = getDemoCourses();
   }
 
   const categoryChips = [
@@ -81,11 +91,11 @@ export default async function CoursesCatalogPage({ params, searchParams }: Cours
   return (
     <div className="container mx-auto max-w-6xl py-12 px-4 sm:px-6 space-y-10">
       {/* Catalog Header */}
-      <div className="space-y-3 text-start max-w-2xl">
-        <h1 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight text-text">
+      <div className="space-y-3 text-start max-w-2xl rtl:space-y-4">
+        <h1 className="font-headline text-3xl sm:text-4xl font-bold tracking-tight text-text rtl:leading-[1.38] rtl:tracking-normal rtl:py-1">
           {t('title')}
         </h1>
-        <p className="text-base text-text-muted">
+        <p className="text-base text-text-muted rtl:leading-relaxed">
           {t('subtitle')}
         </p>
       </div>
@@ -104,7 +114,7 @@ export default async function CoursesCatalogPage({ params, searchParams }: Cours
         {price && <input type="hidden" name="price" value={price} />}
         <button
           type="submit"
-          className="absolute end-1.5 top-1.5 bottom-1.5 rounded-sm bg-primary px-3 text-xs font-medium text-on-primary hover:bg-primary/90 transition-colors focus-ring"
+          className="absolute end-1.5 top-1.5 bottom-1.5 rounded-sm bg-primary px-3 text-xs font-medium text-white dark:text-slate-950 hover:bg-primary/90 transition-colors focus-ring"
         >
           {t('searchBtn')}
         </button>
@@ -122,7 +132,7 @@ export default async function CoursesCatalogPage({ params, searchParams }: Cours
                 href={buildFilterUrl({ category: chip.slug || undefined })}
                 className={`rounded-full px-4 py-1.5 text-xs font-medium transition-colors focus-ring ${
                   isActive
-                    ? 'bg-primary text-on-primary font-semibold'
+                    ? 'bg-primary text-white dark:text-slate-950 font-semibold shadow-xs'
                     : 'bg-card border border-border text-text hover:bg-bg-subtle'
                 }`}
               >
@@ -143,8 +153,8 @@ export default async function CoursesCatalogPage({ params, searchParams }: Cours
                   href={buildFilterUrl({ level: lvl.val || undefined })}
                   className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
                     isActive
-                      ? 'bg-bg-subtle text-primary font-semibold border border-border'
-                      : 'text-text-muted hover:text-text'
+                      ? 'bg-primary/10 text-primary font-semibold border border-primary shadow-xs dark:bg-primary/20 dark:border-primary/50'
+                      : 'border border-transparent text-text-muted hover:text-text hover:border-border'
                   }`}
                 >
                   {lvl.label}
@@ -164,8 +174,8 @@ export default async function CoursesCatalogPage({ params, searchParams }: Cours
                   href={buildFilterUrl({ price: pr.val || undefined })}
                   className={`rounded-md px-2.5 py-1 text-xs transition-colors ${
                     isActive
-                      ? 'bg-bg-subtle text-primary font-semibold border border-border'
-                      : 'text-text-muted hover:text-text'
+                      ? 'bg-primary/10 text-primary font-semibold border border-primary shadow-xs dark:bg-primary/20 dark:border-primary/50'
+                      : 'border border-transparent text-text-muted hover:text-text hover:border-border'
                   }`}
                 >
                   {pr.label}
@@ -199,7 +209,7 @@ export default async function CoursesCatalogPage({ params, searchParams }: Cours
                   price={priceText}
                   level={course.level}
                   lessonsCount={10}
-                  duration="3h 20m"
+                  duration={locale === 'ar' ? '3 س 20 د' : '3h 20m'}
                   href={`/courses/${slug}`}
                 />
               );

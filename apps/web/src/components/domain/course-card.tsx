@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useLocale, useTranslations } from 'next-intl';
 import { Link } from '@/i18n/routing';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -32,10 +33,21 @@ export function CourseCard({
   lessonsCount,
   duration,
   categoryIcon = 'category-code',
-  languageChip = 'العربية / EN',
+  languageChip,
   href,
   className,
 }: CourseCardProps) {
+  const locale = useLocale();
+  const tCatalog = useTranslations('catalog');
+
+  const resolvedLanguageChip =
+    languageChip || (locale === 'ar' ? 'العربية / EN' : 'EN / Arabic');
+
+  const levelLower = level.toLowerCase();
+  const levelLabel = ['beginner', 'intermediate', 'advanced'].includes(levelLower)
+    ? tCatalog(levelLower as 'beginner' | 'intermediate' | 'advanced')
+    : level;
+
   const content = (
     <Card
       elevation="flat"
@@ -53,8 +65,8 @@ export function CourseCard({
           className="transition-transform duration-300 group-hover:scale-105"
         />
         <div className="absolute end-3 top-3 flex gap-1.5">
-          <Badge variant="secondary">{level}</Badge>
-          <Badge variant="default">{languageChip}</Badge>
+          <Badge variant="secondary">{levelLabel}</Badge>
+          <Badge variant="default">{resolvedLanguageChip}</Badge>
         </div>
       </div>
 
@@ -74,7 +86,7 @@ export function CourseCard({
         <div className="mt-4 flex items-center gap-4 text-xs text-text-muted border-t border-border/60 pt-3">
           <span className="flex items-center gap-1">
             <BookOpen className="h-3.5 w-3.5" />
-            {lessonsCount} lessons
+            {lessonsCount} {tCatalog('lessons')}
           </span>
           <span className="flex items-center gap-1">
             <Clock className="h-3.5 w-3.5" />

@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { CheckCircle2, Ticket, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle2, Ticket, Sparkles, Loader2 } from 'lucide-react';
+import { ArrowEnd } from '@/components/ui/directional-icon';
 import { apiClient, ApiError } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
 
@@ -140,9 +141,9 @@ export function EnrollCard({
 
   if (checkingEnrollment) {
     return (
-      <div className="p-6 bg-surface rounded-xl border border-rule animate-pulse">
-        <div className="h-6 bg-rule/50 rounded w-1/3 mb-4" />
-        <div className="h-10 bg-rule/50 rounded w-full" />
+      <div className="p-6 bg-card rounded-xl border border-border animate-pulse">
+        <div className="h-6 bg-border/50 rounded w-1/3 mb-4" />
+        <div className="h-10 bg-border/50 rounded w-full" />
       </div>
     );
   }
@@ -150,21 +151,21 @@ export function EnrollCard({
   // Already Enrolled View
   if (isEnrolled) {
     return (
-      <div className="p-6 bg-surface rounded-xl border border-rule shadow-sm space-y-4">
-        <div className="flex items-center gap-2 text-sage-700 font-medium text-sm">
-          <CheckCircle2 className="w-5 h-5 text-sage-700" />
+      <div className="p-6 bg-card rounded-xl border border-border shadow-sm space-y-4">
+        <div className="flex items-center gap-2 text-sage-700 dark:text-sage-300 font-medium text-sm">
+          <CheckCircle2 className="w-5 h-5 text-sage-700 dark:text-sage-300" />
           <span>{t('alreadyEnrolled')}</span>
         </div>
-        <p className="text-xs text-ink-600">{t('readyToLearn')}</p>
+        <p className="text-xs text-text-muted">{t('readyToLearn')}</p>
         {firstLessonId && (
           <button
             onClick={() =>
               router.push(`/${locale}/courses/${courseSlug}/lessons/${firstLessonId}`)
             }
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-ink-900 hover:bg-blue-800 text-white font-medium rounded-lg text-sm transition-colors shadow-sm"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-primary hover:bg-primary-hover text-on-primary font-medium rounded-lg text-sm transition-colors shadow-sm focus-ring"
           >
             <span>{t('continueLearning')}</span>
-            <ArrowRight className="w-4 h-4 rtl:-scale-x-100" />
+            <ArrowEnd className="w-4 h-4" />
           </button>
         )}
       </div>
@@ -175,10 +176,10 @@ export function EnrollCard({
   const isFree = priceCents === 0;
 
   return (
-    <div className="p-6 bg-surface rounded-xl border border-rule shadow-sm space-y-5">
-      <div className="flex items-baseline justify-between border-b border-rule/60 pb-4">
-        <span className="text-sm text-ink-600 font-medium">{t('courseAccess')}</span>
-        <span className="text-2xl font-serif font-bold text-ink-900">
+    <div className="p-6 bg-card rounded-xl border border-border shadow-sm space-y-5">
+      <div className="flex items-baseline justify-between border-b border-border/60 pb-4">
+        <span className="text-sm text-text-muted font-medium">{t('courseAccess')}</span>
+        <span className="text-2xl font-headline font-bold text-text">
           {isFree ? t('free') : `$${(priceCents / 100).toFixed(2)}`}
         </span>
       </div>
@@ -193,7 +194,7 @@ export function EnrollCard({
         <button
           onClick={handleFreeEnroll}
           disabled={isSubmitting}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-amber-500 hover:bg-amber-500/90 text-ink-900 font-semibold rounded-lg text-sm transition-colors shadow-sm disabled:opacity-50"
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-accent hover:opacity-95 text-accent-foreground font-semibold rounded-lg text-sm transition-colors shadow-sm disabled:opacity-50 focus-ring"
         >
           {isSubmitting ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -207,7 +208,7 @@ export function EnrollCard({
           <button
             onClick={handlePaidCheckout}
             disabled={isSubmitting}
-            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-amber-500 hover:bg-amber-500/90 text-ink-900 font-semibold rounded-lg text-sm transition-colors shadow-sm disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-accent hover:opacity-95 text-accent-foreground font-semibold rounded-lg text-sm transition-colors shadow-sm disabled:opacity-50 focus-ring"
           >
             {isSubmitting ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -218,19 +219,19 @@ export function EnrollCard({
           </button>
 
           {/* Coupon Accordion */}
-          <div className="border-t border-rule/60 pt-3">
+          <div className="border-t border-border/60 pt-3">
             {!showCouponInput ? (
               <button
                 type="button"
                 onClick={() => setShowCouponInput(true)}
-                className="flex items-center gap-1.5 text-xs text-blue-700 hover:underline font-medium"
+                className="flex items-center gap-1.5 text-xs text-primary hover:underline font-medium focus-ring rounded-xs"
               >
                 <Ticket className="w-3.5 h-3.5" />
                 <span>{t('haveCoupon')}</span>
               </button>
             ) : (
               <form onSubmit={handleCouponEnroll} className="space-y-2">
-                <label className="block text-xs font-medium text-ink-600">
+                <label className="block text-xs font-medium text-text-muted">
                   {t('couponCodeLabel')}
                 </label>
                 <div className="flex gap-2">
@@ -239,12 +240,12 @@ export function EnrollCard({
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
                     placeholder="e.g. SAGE100"
-                    className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-rule focus:outline-none focus:ring-1 focus:ring-blue-700 uppercase"
+                    className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-border bg-card text-text focus-ring uppercase"
                   />
                   <button
                     type="submit"
                     disabled={isSubmitting || !couponCode.trim()}
-                    className="px-3 py-1.5 bg-ink-900 hover:bg-blue-800 disabled:opacity-50 text-white text-xs font-medium rounded-lg transition-colors"
+                    className="px-3 py-1.5 bg-primary hover:bg-primary-hover disabled:opacity-50 text-on-primary text-xs font-medium rounded-lg transition-colors focus-ring"
                   >
                     {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : t('apply')}
                   </button>

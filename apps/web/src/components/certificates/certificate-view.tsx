@@ -129,7 +129,7 @@ export function CertificateView({
                 {t('certificateOfCompletion')}
               </h1>
               <p className="text-xs uppercase tracking-widest text-ink-600 print:text-black">
-                Official Credential of Academic Distinction
+                {t('credentialSubtitle')}
               </p>
             </div>
 

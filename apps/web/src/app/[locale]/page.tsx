@@ -27,7 +27,7 @@ function HomeContent() {
     <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       {/* Hero Section */}
       <section className="flex flex-col-reverse md:flex-row items-center justify-between gap-12 text-start">
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 space-y-6 rtl:space-y-8">
           <div className="flex items-center gap-2">
             <Badge variant="sage" className="gap-1.5 py-1 px-2.5">
               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -35,7 +35,7 @@ function HomeContent() {
             </Badge>
           </div>
 
-          <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-text leading-[1.15]">
+          <h1 className="font-headline text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-text leading-[1.15] rtl:leading-[1.4] rtl:tracking-normal rtl:py-2">
             {tHome('heroTitle')}
           </h1>
 

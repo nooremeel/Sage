@@ -29,6 +29,7 @@ export function LanguageSwitcher({ className, variant = 'button' }: LanguageSwit
       type="button"
       onClick={handleToggle}
       aria-label={`Switch language to ${nextLocaleLabel}`}
+      title={currentLocale === 'ar' ? 'التحويل إلى اللغة الإنجليزية' : 'Switch interface to Arabic'}
       className={cn(
         'inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-semibold text-text transition-colors hover:bg-bg-subtle focus-ring',
         variant === 'compact' && 'px-2 py-1 text-xs',

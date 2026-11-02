@@ -104,7 +104,7 @@ export function ReviewSection({ courseId, locale }: ReviewSectionProps) {
       setTimeout(() => setSubmitSuccess(false), 4000);
     } catch (err: any) {
       setErrorMessage(
-        err?.message || 'Could not submit review. You must be enrolled in the course.'
+        err?.message || t('mustBeEnrolled')
       );
     } finally {
       setSubmitting(false);
@@ -194,7 +194,7 @@ export function ReviewSection({ courseId, locale }: ReviewSectionProps) {
           {submitSuccess && (
             <div className="flex items-center gap-2 text-xs text-success font-medium text-start">
               <CheckCircle2 className="w-4 h-4" />
-              <span>Review submitted successfully!</span>
+              <span>{t('reviewSuccess')}</span>
             </div>
           )}
 

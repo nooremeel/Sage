@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <style>
+    .bg { fill: #fbf7ee; stroke: #e2d8c2; }
+    .amber-wash { fill: #e39b35; fill-opacity: 0.28; }
+    .pages { fill: #fffdf8; stroke: #15233f; }
+    .ink { stroke: #15233f; }
+    .stem { stroke: #1f3a6e; }
+    .leaf-left { fill: #44614a; fill-opacity: 0.45; stroke: #15233f; }
+    .leaf-right { fill: #44614a; fill-opacity: 0.65; stroke: #15233f; }
+    .bud { fill: #e39b35; }
+
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #121c33; stroke: #26345a; }
+      .amber-wash { fill: #edaa4e; fill-opacity: 0.25; }
+      .pages { fill: #15203a; stroke: #f1ebdd; }
+      .ink { stroke: #f1ebdd; }
+      .stem { stroke: #6c8fdc; }
+      .leaf-left { fill: #9cbf9f; fill-opacity: 0.55; stroke: #f1ebdd; }
+      .leaf-right { fill: #9cbf9f; fill-opacity: 0.75; stroke: #f1ebdd; }
+      .bud { fill: #edaa4e; }
+    }
+  </style>
+
+  <!-- Background Squircle for high visibility across all browser tab themes -->
+  <rect x="4" y="4" width="92" height="92" rx="22" class="bg" stroke-width="2"/>
+
+  <!-- Warm Amber Misregistered Wash behind codex pages -->
+  <rect x="22" y="44" width="56" height="32" rx="4" class="amber-wash" transform="rotate(-1 50 60)"/>
+
+  <!-- Open Codex Pages -->
+  <path d="M18 68C28 62 42 62 50 68C58 62 72 62 82 68V42C72 36 58 36 50 42C42 36 28 36 18 42V68Z" class="pages" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Book Spine Contour -->
+  <path d="M50 42V73M50 73C42 69 28 69 18 73M50 73C58 69 72 69 82 73" class="ink" stroke-width="2.2" stroke-linecap="round"/>
+
+  <!-- Subtle Page Ruling Lines -->
+  <path d="M25 48C32 45 40 45 45 49" class="ink" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M25 55C32 52 40 52 45 56" class="ink" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M55 49C60 45 68 45 75 48" class="ink" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M55 56C60 52 68 52 75 55" class="ink" stroke-width="1.2" stroke-linecap="round" stroke-opacity="0.6"/>
+
+  <!-- Living Sage Stem Rising from Spine -->
+  <path d="M50 42V17" class="stem" stroke-width="2.6" stroke-linecap="round"/>
+
+  <!-- Left Sage Leaflet -->
+  <path d="M50 31C42 29 34 23 36 15C44 15 49 23 50 31Z" class="leaf-left" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- Right Sage Leaflet -->
+  <path d="M50 25C58 23 66 17 64 9C56 9 51 17 50 25Z" class="leaf-right" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- Golden Knowledge Bud at Apex -->
+  <circle cx="50" cy="17" r="2.6" class="bud"/>
+</svg>
+

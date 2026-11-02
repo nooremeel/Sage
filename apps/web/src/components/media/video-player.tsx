@@ -11,7 +11,11 @@ import {
   Minimize,
   Settings,
   RotateCcw,
+  RotateCw,
+  Check,
+  Radio,
 } from 'lucide-react';
+import { DEMO_STREAM_URL } from '@/lib/demo-courses';
 
 interface VideoPlayerProps {
   manifestUrl: string;
@@ -34,35 +38,69 @@ export function VideoPlayer({
   const containerRef = useRef<HTMLDivElement>(null);
   const hlsRef = useRef<Hls | null>(null);
 
+  const [currentSource, setCurrentSource] = useState<string>(manifestUrl || DEMO_STREAM_URL);
+  const [isFallback, setIsFallback] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(1);
+  const [bufferedEnd, setBufferedEnd] = useState(0);
+  const [volume, setVolume] = useState(0.85);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [qualities, setQualities] = useState<{ id: number; height: number }[]>([]);
+  const [qualities, setQualities] = useState<{ id: number; height: number; bitrate?: number }[]>([]);
   const [currentQuality, setCurrentQuality] = useState(-1); // -1 is auto
   const [showSettings, setShowSettings] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [userInteracted, setUserInteracted] = useState(false);
 
-  const storageKey = `sage_playback_pos_${lessonId}`;
+  const storagePosKey = `sage_playback_pos_${lessonId}`;
+  const storageVolKey = 'sage_player_volume';
+  const storageMutedKey = 'sage_player_muted';
 
-  // Initialize Hls.js
+  // Read saved volume on mount
+  useEffect(() => {
+    try {
+      const savedVol = localStorage.getItem(storageVolKey);
+      if (savedVol !== null) {
+        const v = parseFloat(savedVol);
+        if (!isNaN(v) && v >= 0 && v <= 1) setVolume(v);
+      }
+      const savedMuted = localStorage.getItem(storageMutedKey);
+      if (savedMuted === 'true') setIsMuted(true);
+    } catch {
+      // Storage access blocked or unavailable
+    }
+  }, []);
+
+  // Update source if prop changes
+  useEffect(() => {
+    if (manifestUrl) {
+      setCurrentSource(manifestUrl);
+      setIsFallback(false);
+    }
+  }, [manifestUrl]);
+
+  // Initialize HLS
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !manifestUrl) return;
+    if (!video || !currentSource) return;
 
     setIsLoading(true);
 
     if (Hls.isSupported()) {
+      if (hlsRef.current) {
+        hlsRef.current.destroy();
+      }
+
       const hls = new Hls({
         enableWorker: true,
-        lowLatencyMode: true,
+        lowLatencyMode: false,
+        backBufferLength: 90,
       });
 
       hlsRef.current = hls;
-      hls.loadSource(manifestUrl);
+      hls.loadSource(currentSource);
       hls.attachMedia(video);
 
       hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
@@ -70,16 +108,22 @@ export function VideoPlayer({
         const available = data.levels.map((lvl, index) => ({
           id: index,
           height: lvl.height,
+          bitrate: lvl.bitrate,
         }));
         setQualities(available);
 
-        // Resume position from localStorage
-        const savedPos = localStorage.getItem(storageKey);
-        if (savedPos) {
-          const parsed = parseFloat(savedPos);
-          if (!isNaN(parsed) && parsed > 0 && parsed < video.duration) {
-            video.currentTime = parsed;
+        // Resume playback position if saved
+        try {
+          const savedPos = localStorage.getItem(storagePosKey);
+          if (savedPos) {
+            const parsed = parseFloat(savedPos);
+            if (!isNaN(parsed) && parsed > 3 && parsed < (video.duration || 99999)) {
+              video.currentTime = parsed;
+              setCurrentTime(parsed);
+            }
           }
+        } catch {
+          // ignore storage read error
         }
       });
 
@@ -91,13 +135,25 @@ export function VideoPlayer({
         if (data.fatal) {
           switch (data.type) {
             case Hls.ErrorTypes.NETWORK_ERROR:
-              hls.startLoad();
+              // If the local manifest/segment failed and we haven't tried fallback yet
+              if (!isFallback && currentSource !== DEMO_STREAM_URL) {
+                console.warn('[Sage VideoPlayer] Primary stream unavailable, switching to adaptive demo stream...');
+                setIsFallback(true);
+                setCurrentSource(DEMO_STREAM_URL);
+              } else {
+                hls.startLoad();
+              }
               break;
             case Hls.ErrorTypes.MEDIA_ERROR:
               hls.recoverMediaError();
               break;
             default:
-              hls.destroy();
+              if (!isFallback && currentSource !== DEMO_STREAM_URL) {
+                setIsFallback(true);
+                setCurrentSource(DEMO_STREAM_URL);
+              } else {
+                hls.destroy();
+              }
               break;
           }
         }
@@ -108,26 +164,44 @@ export function VideoPlayer({
         hlsRef.current = null;
       };
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Native Safari HLS
-      video.src = manifestUrl;
-      video.addEventListener('loadedmetadata', () => {
+      // Native Apple Safari HLS
+      video.src = currentSource;
+      const onLoaded = () => {
         setIsLoading(false);
-        const savedPos = localStorage.getItem(storageKey);
-        if (savedPos) {
-          const parsed = parseFloat(savedPos);
-          if (!isNaN(parsed)) video.currentTime = parsed;
+        try {
+          const savedPos = localStorage.getItem(storagePosKey);
+          if (savedPos) {
+            const parsed = parseFloat(savedPos);
+            if (!isNaN(parsed) && parsed > 3) video.currentTime = parsed;
+          }
+        } catch {
+          // ignore
         }
-      });
-    }
-  }, [manifestUrl, storageKey]);
+      };
+      const onError = () => {
+        if (!isFallback && currentSource !== DEMO_STREAM_URL) {
+          setIsFallback(true);
+          setCurrentSource(DEMO_STREAM_URL);
+        }
+      };
+      video.addEventListener('loadedmetadata', onLoaded);
+      video.addEventListener('error', onError);
 
-  // Video Event Handlers
+      return () => {
+        video.removeEventListener('loadedmetadata', onLoaded);
+        video.removeEventListener('error', onError);
+      };
+    }
+  }, [currentSource, isFallback, storagePosKey]);
+
+  // Video playback handlers
   const togglePlay = useCallback(() => {
     const video = videoRef.current;
     if (!video) return;
 
+    setUserInteracted(true);
     if (video.paused) {
-      video.play();
+      video.play().catch(() => {});
       setIsPlaying(true);
     } else {
       video.pause();
@@ -142,9 +216,23 @@ export function VideoPlayer({
     setCurrentTime(video.currentTime);
     setDuration(video.duration || 0);
 
-    // Save position periodically to localStorage
+    // Track buffer
+    if (video.buffered.length > 0) {
+      try {
+        const bufferedEndSec = video.buffered.end(video.buffered.length - 1);
+        setBufferedEnd(bufferedEndSec);
+      } catch {
+        // ignore buffer index errors
+      }
+    }
+
+    // Persist position every ~5 seconds
     if (Math.floor(video.currentTime) % 5 === 0) {
-      localStorage.setItem(storageKey, String(video.currentTime));
+      try {
+        localStorage.setItem(storagePosKey, String(video.currentTime));
+      } catch {
+        // ignore
+      }
     }
 
     onTimeUpdate?.(video.currentTime, video.duration || 0);
@@ -166,20 +254,35 @@ export function VideoPlayer({
     const newVol = parseFloat(e.target.value);
     video.volume = newVol;
     setVolume(newVol);
-    setIsMuted(newVol === 0);
+    const muted = newVol === 0;
+    setIsMuted(muted);
+    video.muted = muted;
+
+    try {
+      localStorage.setItem(storageVolKey, String(newVol));
+      localStorage.setItem(storageMutedKey, String(muted));
+    } catch {
+      // ignore
+    }
   };
 
   const toggleMute = () => {
     const video = videoRef.current;
     if (!video) return;
 
-    if (isMuted) {
-      video.muted = false;
-      setIsMuted(false);
-      video.volume = volume || 0.5;
-    } else {
-      video.muted = true;
-      setIsMuted(true);
+    const nextMuted = !isMuted;
+    video.muted = nextMuted;
+    setIsMuted(nextMuted);
+
+    if (!nextMuted && volume === 0) {
+      video.volume = 0.5;
+      setVolume(0.5);
+    }
+
+    try {
+      localStorage.setItem(storageMutedKey, String(nextMuted));
+    } catch {
+      // ignore
     }
   };
 
@@ -212,11 +315,18 @@ export function VideoPlayer({
     setShowSettings(false);
   };
 
-  // Keyboard Navigation
+  const skipSeconds = (delta: number) => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = Math.max(0, Math.min(video.duration || 0, video.currentTime + delta));
+    setCurrentTime(video.currentTime);
+  };
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't intercept if user is typing in an input
-      if (['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) return;
+      const activeTag = (e.target as HTMLElement)?.tagName;
+      if (['INPUT', 'TEXTAREA'].includes(activeTag)) return;
 
       const video = videoRef.current;
       if (!video) return;
@@ -227,13 +337,21 @@ export function VideoPlayer({
           e.preventDefault();
           togglePlay();
           break;
+        case 'j':
+          e.preventDefault();
+          skipSeconds(-10);
+          break;
+        case 'l':
+          e.preventDefault();
+          skipSeconds(10);
+          break;
         case 'arrowright':
           e.preventDefault();
-          video.currentTime = Math.min(video.duration, video.currentTime + 5);
+          skipSeconds(5);
           break;
         case 'arrowleft':
           e.preventDefault();
-          video.currentTime = Math.max(0, video.currentTime - 5);
+          skipSeconds(-5);
           break;
         case 'arrowup':
           e.preventDefault();
@@ -262,17 +380,27 @@ export function VideoPlayer({
   }, [togglePlay]);
 
   const formatTime = (seconds: number) => {
-    if (isNaN(seconds)) return '0:00';
-    const mins = Math.floor(seconds / 60);
+    if (isNaN(seconds) || seconds <= 0) return '00:00';
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+
+    if (hrs > 0) {
+      return `${hrs}:${pad(mins)}:${pad(secs)}`;
+    }
+    return `${pad(mins)}:${pad(secs)}`;
   };
+
+  const bufferPercent = duration > 0 ? Math.min(100, (bufferedEnd / duration) * 100) : 0;
+  const currentPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
 
   return (
     <div
       ref={containerRef}
       dir="ltr"
-      className="group relative w-full aspect-video bg-black rounded-lg overflow-hidden select-none shadow-md font-sans"
+      className="group relative w-full aspect-video bg-black rounded-lg overflow-hidden select-none shadow-lg font-sans border border-rule/30"
     >
       <video
         ref={videoRef}
@@ -293,168 +421,213 @@ export function VideoPlayer({
 
       {/* Loading Spinner */}
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-          <div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin" />
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-xs">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-10 h-10 border-3 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
+            <span className="text-xs text-white/80 font-mono tracking-wider">HLS STREAM</span>
+          </div>
         </div>
       )}
 
+      {/* Top Banner (Status & Fallback Badge) */}
+      <div className="absolute top-3 end-3 flex items-center gap-2 pointer-events-none z-10">
+        {isFallback && (
+          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider bg-amber-500/90 text-slate-950 px-2.5 py-1 rounded-md shadow-md backdrop-blur-xs">
+            <Radio className="w-3 h-3 animate-pulse" />
+            <span>Adaptive Demo Stream</span>
+          </span>
+        )}
+        {qualities.length > 0 && (
+          <span className="text-[11px] font-mono uppercase bg-black/70 border border-white/10 px-2 py-0.5 rounded text-white/90 shadow-sm backdrop-blur-xs">
+            {currentQuality === -1
+              ? 'Auto'
+              : `${qualities[currentQuality]?.height || 720}p`}
+          </span>
+        )}
+      </div>
+
+      {/* Center Big Play Button (when paused) */}
+      {!isPlaying && !isLoading && (
+        <button
+          onClick={togglePlay}
+          className="absolute inset-0 m-auto w-16 h-16 rounded-full bg-primary/90 text-on-primary hover:scale-110 active:scale-95 transition-all shadow-xl flex items-center justify-center border border-white/20 hover:bg-primary"
+          aria-label="Play video"
+        >
+          <Play className="w-7 h-7 fill-current ms-1" />
+        </button>
+      )}
+
       {/* Controls Overlay */}
-      <div className="absolute inset-0 flex flex-col justify-between p-4 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-        {/* Top Info */}
-        <div className="flex justify-end">
-          {qualities.length > 0 && (
-            <span className="text-[11px] font-mono uppercase bg-black/60 px-2 py-0.5 rounded text-white/80">
-              {currentQuality === -1
-                ? 'Auto'
-                : `${qualities[currentQuality]?.height || 720}p`}
-            </span>
-          )}
+      <div className="absolute inset-0 flex flex-col justify-end p-4 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-200">
+        {/* Custom Progress / Scrub Bar */}
+        <div className="relative w-full mb-3 flex items-center">
+          {/* Buffer Bar */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 start-0 h-1 bg-white/25 rounded-full pointer-events-none transition-all"
+            style={{ width: `${bufferPercent}%` }}
+          />
+          {/* Progress Bar (Fill) */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 start-0 h-1 bg-amber-500 rounded-full pointer-events-none"
+            style={{ width: `${currentPercent}%` }}
+          />
+          {/* Interactive Range Input */}
+          <input
+            type="range"
+            min={0}
+            max={duration || 100}
+            step={0.1}
+            value={currentTime}
+            onChange={handleSeek}
+            className="w-full h-1 bg-white/15 rounded-full appearance-none cursor-pointer accent-amber-500 relative z-10 focus:outline-none"
+            aria-label="Video timeline scrubber"
+          />
         </div>
 
-        {/* Center Big Play Button (when paused) */}
-        {!isPlaying && !isLoading && (
-          <button
-            onClick={togglePlay}
-            className="self-center p-4 rounded-full bg-primary/90 text-on-primary hover:scale-110 transition-transform shadow-lg"
-            aria-label="Play video"
-          >
-            <Play className="w-8 h-8 fill-current ms-1" />
-          </button>
-        )}
+        {/* Bottom Control Bar */}
+        <div className="flex items-center justify-between text-white text-xs">
+          {/* Left Controls (Playback & Audio) */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={togglePlay}
+              className="p-1.5 rounded hover:bg-white/10 hover:text-amber-400 transition-colors"
+              aria-label={isPlaying ? 'Pause video' : 'Play video'}
+            >
+              {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+            </button>
 
-        {/* Bottom Bar */}
-        <div className="space-y-2">
-          {/* Seek Bar */}
-          <div className="flex items-center gap-2">
-            <input
-              type="range"
-              min={0}
-              max={duration || 100}
-              value={currentTime}
-              onChange={handleSeek}
-              className="w-full h-1.5 bg-white/30 rounded-lg appearance-none cursor-pointer accent-accent"
-              aria-label="Seek slider"
-            />
-          </div>
+            <button
+              onClick={() => skipSeconds(-10)}
+              className="p-1.5 rounded hover:bg-white/10 hover:text-amber-400 transition-colors"
+              aria-label="Rewind 10 seconds"
+              title="Rewind 10s (J)"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
 
-          <div className="flex items-center justify-between text-white text-xs">
-            {/* Left Controls */}
-            <div className="flex items-center gap-3">
+            <button
+              onClick={() => skipSeconds(10)}
+              className="p-1.5 rounded hover:bg-white/10 hover:text-amber-400 transition-colors"
+              aria-label="Forward 10 seconds"
+              title="Forward 10s (L)"
+            >
+              <RotateCw className="w-3.5 h-3.5" />
+            </button>
+
+            {/* Volume Control */}
+            <div className="flex items-center gap-1.5 group/vol">
               <button
-                onClick={togglePlay}
-                className="hover:text-accent transition-colors p-1"
-                aria-label={isPlaying ? 'Pause' : 'Play'}
+                onClick={toggleMute}
+                className="p-1.5 rounded hover:bg-white/10 hover:text-amber-400 transition-colors"
+                aria-label={isMuted ? 'Unmute audio' : 'Mute audio'}
+                title="Mute / Unmute (M)"
               >
-                {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current" />}
+                {isMuted || volume === 0 ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4" />}
               </button>
-
-              <button
-                onClick={() => {
-                  if (videoRef.current) videoRef.current.currentTime = Math.max(0, currentTime - 10);
-                }}
-                className="hover:text-accent transition-colors p-1"
-                aria-label="Rewind 10 seconds"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
-
-              <div className="flex items-center gap-1.5">
-                <button
-                  onClick={toggleMute}
-                  className="hover:text-accent transition-colors p-1"
-                  aria-label={isMuted ? 'Unmute' : 'Mute'}
-                >
-                  {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-                </button>
-                <input
-                  type="range"
-                  min={0}
-                  max={1}
-                  step={0.05}
-                  value={isMuted ? 0 : volume}
-                  onChange={handleVolumeChange}
-                  className="w-16 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer accent-accent"
-                  aria-label="Volume slider"
-                />
-              </div>
-
-              <span className="font-mono text-[11px] text-white/80">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.05}
+                value={isMuted ? 0 : volume}
+                onChange={handleVolumeChange}
+                className="w-16 h-1 bg-white/20 rounded-full appearance-none cursor-pointer accent-amber-500"
+                aria-label="Volume level"
+              />
             </div>
 
-            {/* Right Controls */}
-            <div className="relative flex items-center gap-3">
-              {/* Settings / Speed Dropdown */}
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="hover:text-accent transition-colors p-1"
-                aria-label="Playback settings"
-              >
-                <Settings className="w-4 h-4" />
-              </button>
+            {/* Timestamps */}
+            <span className="font-mono text-[11px] text-white/80 tabular-nums">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </span>
+          </div>
 
-              {showSettings && (
-                <div className="absolute bottom-8 end-0 bg-zinc-900 border border-zinc-700 rounded-md py-2 px-3 shadow-xl text-xs space-y-2 w-36 z-20">
-                  <div className="font-semibold text-zinc-400 text-[10px] uppercase">Speed</div>
-                  <div className="grid grid-cols-3 gap-1">
+          {/* Right Controls (Settings & Fullscreen) */}
+          <div className="relative flex items-center gap-2">
+            {/* Settings Trigger */}
+            <button
+              onClick={() => setShowSettings(!showSettings)}
+              className={`p-1.5 rounded transition-colors ${
+                showSettings ? 'bg-white/20 text-amber-400' : 'hover:bg-white/10 hover:text-amber-400'
+              }`}
+              aria-label="Playback settings"
+              title="Settings (Speed & Quality)"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+
+            {/* Settings Popover Menu */}
+            {showSettings && (
+              <div className="absolute bottom-9 end-0 bg-slate-900/95 border border-slate-700/80 rounded-lg p-3 shadow-2xl text-xs space-y-3 w-44 z-30 backdrop-blur-md">
+                {/* Speed Controls */}
+                <div>
+                  <div className="font-semibold text-slate-400 text-[10px] uppercase tracking-wider mb-1.5">
+                    Playback Speed
+                  </div>
+                  <div className="grid grid-cols-5 gap-1">
                     {[0.75, 1, 1.25, 1.5, 2].map((spd) => (
                       <button
                         key={spd}
                         onClick={() => setSpeed(spd)}
-                        className={`px-1.5 py-0.5 rounded text-[11px] ${
+                        className={`py-1 rounded text-[11px] font-mono transition-colors ${
                           playbackRate === spd
-                            ? 'bg-accent text-zinc-950 font-bold'
-                            : 'hover:bg-zinc-800 text-zinc-200'
+                            ? 'bg-amber-500 text-slate-950 font-bold'
+                            : 'hover:bg-slate-800 text-slate-200'
                         }`}
                       >
                         {spd}x
                       </button>
                     ))}
                   </div>
+                </div>
 
-                  {qualities.length > 0 && (
-                    <>
-                      <div className="font-semibold text-zinc-400 text-[10px] uppercase pt-1 border-t border-zinc-800">Quality</div>
-                      <div className="space-y-1">
+                {/* Quality Renditions */}
+                {qualities.length > 0 && (
+                  <div className="pt-2 border-t border-slate-800">
+                    <div className="font-semibold text-slate-400 text-[10px] uppercase tracking-wider mb-1.5">
+                      Stream Quality
+                    </div>
+                    <div className="space-y-1">
+                      <button
+                        onClick={() => setQualityLevel(-1)}
+                        className={`w-full flex items-center justify-between text-start px-2 py-1 rounded text-[11px] transition-colors ${
+                          currentQuality === -1
+                            ? 'bg-amber-500 text-slate-950 font-bold'
+                            : 'hover:bg-slate-800 text-slate-200'
+                        }`}
+                      >
+                        <span>Auto (Adaptive)</span>
+                        {currentQuality === -1 && <Check className="w-3.5 h-3.5" />}
+                      </button>
+                      {qualities.map((q) => (
                         <button
-                          onClick={() => setQualityLevel(-1)}
-                          className={`w-full text-start px-1.5 py-0.5 rounded text-[11px] ${
-                            currentQuality === -1
-                              ? 'bg-accent text-zinc-950 font-bold'
-                              : 'hover:bg-zinc-800 text-zinc-200'
+                          key={q.id}
+                          onClick={() => setQualityLevel(q.id)}
+                          className={`w-full flex items-center justify-between text-start px-2 py-1 rounded text-[11px] transition-colors ${
+                            currentQuality === q.id
+                              ? 'bg-amber-500 text-slate-950 font-bold'
+                              : 'hover:bg-slate-800 text-slate-200'
                           }`}
                         >
-                          Auto
+                          <span>{q.height}p HD</span>
+                          {currentQuality === q.id && <Check className="w-3.5 h-3.5" />}
                         </button>
-                        {qualities.map((q) => (
-                          <button
-                            key={q.id}
-                            onClick={() => setQualityLevel(q.id)}
-                            className={`w-full text-start px-1.5 py-0.5 rounded text-[11px] ${
-                              currentQuality === q.id
-                                ? 'bg-accent text-zinc-950 font-bold'
-                                : 'hover:bg-zinc-800 text-zinc-200'
-                            }`}
-                          >
-                            {q.height}p
-                          </button>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
-              {/* Fullscreen Toggle */}
-              <button
-                onClick={toggleFullscreen}
-                className="hover:text-accent transition-colors p-1"
-                aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-              >
-                {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-              </button>
-            </div>
+            {/* Fullscreen Button */}
+            <button
+              onClick={toggleFullscreen}
+              className="p-1.5 rounded hover:bg-white/10 hover:text-amber-400 transition-colors"
+              aria-label={isFullscreen ? 'Exit fullscreen mode' : 'Enter fullscreen mode'}
+              title="Fullscreen (F)"
+            >
+              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+            </button>
           </div>
         </div>
       </div>

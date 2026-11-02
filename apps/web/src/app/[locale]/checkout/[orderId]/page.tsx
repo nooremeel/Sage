@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { ShoppingBag, ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react';
+import { ShoppingBag, ShieldCheck } from 'lucide-react';
+import { ArrowStart } from '@/components/ui/directional-icon';
 import { CheckoutSandboxCard } from '@/components/checkout/checkout-sandbox-card';
 import { apiClient } from '@/lib/api';
 import { Link } from '@/i18n/routing';
@@ -43,12 +44,8 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     <div className="container mx-auto max-w-2xl py-12 px-4 sm:px-6 space-y-8">
       {/* Breadcrumb / Back link */}
       <div className="flex items-center gap-2 text-xs text-text-muted text-start">
-        <Link href="/courses" className="hover:text-primary transition-colors flex items-center gap-1.5">
-          {currentLocale === 'ar' ? (
-            <ArrowRight className="w-3.5 h-3.5" />
-          ) : (
-            <ArrowLeft className="w-3.5 h-3.5" />
-          )}
+        <Link href="/courses" className="hover:text-primary transition-colors flex items-center gap-1.5 focus-ring rounded-xs">
+          <ArrowStart className="w-3.5 h-3.5" />
           <span>{t('returnToCatalog')}</span>
         </Link>
       </div>

@@ -55,7 +55,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
 
   return (
     <html lang={locale} dir={dir} data-theme={theme} className={fontVariables} suppressHydrationWarning>
-      <body className="min-h-screen bg-bg text-text antialiased flex flex-col">
+      <body className="min-h-screen bg-bg text-text antialiased flex flex-col" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages} locale={locale}>
           <DirectionProvider dir={dir}>
             <AuthProvider>

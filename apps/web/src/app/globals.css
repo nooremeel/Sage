@@ -47,15 +47,24 @@
 }
 
 [data-theme='dark'] {
+  /* Sage palette dark overrides */
+  --paper: #0e1729;
+  --paper-200: #121c33;
+  --surface: #15203a;
+  --rule: #26345a;
+  --ink-900: #f1ebdd;
+  --ink-600: #a9b2c7;
+
+  /* Semantic tokens */
   --bg: #0e1729;
   --bg-subtle: #121c33;
   --card: #15203a;
   --border: #26345a;
   --text: #f1ebdd;
   --text-muted: #a9b2c7;
-  --primary: #9db5ee;
-  --primary-hover: #b7c8f3;
-  --on-primary: #0e1729;
+  --primary: #6c8fdc;
+  --primary-hover: #7ea0e6;
+  --on-primary: #080f1d;
   --primary-tint: #1d2a4b;
   --accent: #edaa4e;
   --on-accent: #0e1729;
@@ -72,6 +81,35 @@ html[lang='ar'] {
   --font-headline: var(--font-amiri), serif;
   --font-sans: var(--font-plex-sans-arabic), sans-serif;
   font-size: 105%;
+}
+
+/* In Arabic typography, cursive connections require normal letter-spacing (no negative tracking),
+   and the tall ascenders and descenders of the Amiri headline font require generous vertical line-height. */
+html[lang='ar'] .font-headline,
+html[dir='rtl'] .font-headline {
+  letter-spacing: 0 !important;
+  line-height: 1.45 !important;
+}
+
+html[lang='ar'] h1,
+html[lang='ar'] h2,
+html[lang='ar'] h3,
+html[dir='rtl'] h1,
+html[dir='rtl'] h2,
+html[dir='rtl'] h3 {
+  letter-spacing: 0;
+}
+
+html[dir='rtl'] h1.font-headline {
+  line-height: 1.45 !important;
+  padding-top: 0.25rem;
+  padding-bottom: 0.35rem;
+}
+
+html[dir='rtl'] h2.font-headline {
+  line-height: 1.42 !important;
+  padding-top: 0.15rem;
+  padding-bottom: 0.25rem;
 }
 
 html[lang='en'] {
@@ -105,6 +143,17 @@ body {
 .focus-ring:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
+}
+
+/* Explicit high-contrast utilities for primary & accent elements */
+.text-on-primary {
+  color: #ffffff !important;
+}
+[data-theme='dark'] .text-on-primary {
+  color: #080f1d !important;
+}
+.text-on-accent {
+  color: var(--on-accent) !important;
 }
 
 /* Reading container constraints */

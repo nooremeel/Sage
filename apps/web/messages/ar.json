@@ -4,7 +4,8 @@
     "tagline": "تعلّم ما يستحق أن يُعرف.",
     "language": "اللغة",
     "arabic": "العربية",
-    "english": "English",
+    "english": "الإنجليزية",
+    "switchTo": "التحويل إلى",
     "theme": "المظهر",
     "lightMode": "نهاري",
     "darkMode": "ليلي",
@@ -61,7 +62,10 @@
     "noCoursesFound": "لم يتم العثور على دورات",
     "noCoursesFoundDesc": "لا توجد دورات منشورة تطابق معايير التصفية المحددة حالياً.",
     "clearFilters": "إعادة ضبط التصفية",
-    "loadMore": "تحميل المزيد من الدورات"
+    "loadMore": "تحميل المزيد من الدورات",
+    "lessons": "دروس",
+    "hours": "ساعات",
+    "hoursShort": "{count} س"
   },
   "courseDetail": {
     "instructor": "المدرّب",
@@ -78,7 +82,26 @@
     "freePreview": "معاينة مجانية",
     "watchLesson": "مشاهدة الدرس",
     "protectedLesson": "محتوى محمي",
-    "protectedLessonDesc": "هذا الدرس جزء من المنهج الكامل. التحق بالدورة لفتح إمكانية المشاهدة غير المحدودة."
+    "protectedLessonDesc": "هذا الدرس جزء من المنهج الكامل. التحق بالدورة لفتح إمكانية المشاهدة غير المحدودة.",
+    "loadingPlayer": "جارٍ تحميل مشغّل الفيديو...",
+    "durationMinutes": "المدة: {mins} دقيقة",
+    "moduleTitle": "الوحدة {num}:",
+    "coursesBreadcrumb": "الدورات"
+  },
+  "player": {
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "mute": "كتم الصوت",
+    "unmute": "إلغاء كتم الصوت",
+    "settings": "الإعدادات",
+    "speed": "سرعة التشغيل",
+    "quality": "جودة البث",
+    "auto": "تلقائي",
+    "fullscreen": "ملء الشاشة",
+    "exitFullscreen": "إنهاء ملء الشاشة",
+    "rewind10s": "إرجاع 10 ثوانٍ",
+    "forward10s": "تقديم 10 ثوانٍ",
+    "demoStream": "بث توضيحي متكيف"
   },
   "studio": {
     "dashboardTitle": "أستوديو المدرّب",
@@ -126,15 +149,35 @@
     "signOut": "تسجيل الخروج"
   },
   "profile": {
-    "title": "الملف الشخصي",
-    "subtitle": "إدارة إعدادات حسابك وتفضيلاتك.",
+    "title": "لوحة التعلّم الأكاديمي",
+    "subtitle": "متابعة مسيرتك التعليمية، استكمال الدروس النشطة، واستعراض شهاداتك المعتمدة.",
     "accountDetails": "تفاصيل الحساب",
     "email": "البريد الإلكتروني",
     "role": "الدور",
     "memberSince": "عضو منذ",
     "languagePreference": "تفضيل اللغة",
     "updateLanguage": "حفظ التفضيل",
-    "updateSuccess": "تم تحديث الملف الشخصي بنجاح."
+    "updateSuccess": "تم تحديث الملف الشخصي بنجاح.",
+    "myLearning": "مسيرتي التعليمية",
+    "enrolledCourses": "الدورات المسجلة",
+    "certificatesGallery": "معرض الشهادات والأوسمة",
+    "accountSettings": "إعدادات الحساب",
+    "activeCourses": "دورات قيد التعلّم",
+    "completedCertificates": "شهادات معتمدة",
+    "hoursLogged": "ساعات دراسة مسجلة",
+    "averageScore": "متوسط درجات الاختبارات",
+    "continueLearning": "متابعة التعلّم",
+    "courseOverview": "نظرة عامة على الدورة",
+    "lessonsCompleted": "أنجزت {completed} من {total} دروس",
+    "noCoursesEnrolled": "لم تلتحق بأي دورات بعد",
+    "noCoursesEnrolledDesc": "استكشف دليل الدورات الأكاديمية لبدء مسيرتك العلمية.",
+    "exploreCatalog": "تصفح دليل الدورات",
+    "noCertificatesYet": "لا توجد شهادات صادرة بعد",
+    "completeCourseToEarn": "أكمل كافة دروس المنهج واجتز الاختبار النهائي لأي دورة لإصدار شهادتك المعتمدة.",
+    "viewVerify": "عرض الشهادة والتحقق منها",
+    "issuedOn": "صدرت بتاريخ {date}",
+    "officialSerial": "الرقم التسلسلي: {serial}",
+    "academicScholar": "طالب علم معتمد"
   },
   "styleguide": {
     "title": "دليل التصميم ونظام المكونات",
@@ -171,7 +214,34 @@
     "option2": "مستوى المتوسطين",
     "option3": "مستوى المتقدمين",
     "toggleLabel": "تفعيل التنبيهات الفورية عبر البريد",
-    "checkboxLabel": "أوافق على الالتزام بالميثاق الأكاديمي للمنصة"
+    "checkboxLabel": "أوافق على الالتزام بالميثاق الأكاديمي للمنصة",
+    "academicLevelLabel": "المستوى المطلوب",
+    "studentNotesLabel": "ملاحظات المتدرب",
+    "alertInfoTitle": "معلومة هامة",
+    "alertInfoDesc": "يتم تشفير تدفق الفيديو بنظام تقسيم مقاطع HLS وإصدار روابط صالحة لـ 60 ثانية فقط لمنع النسخ غير المصرح.",
+    "alertSuccessTitle": "تم اكتمال المهمة",
+    "alertSuccessDesc": "أنهى نظام الاختبارات التحقق من 250 حالة اختبار بنجاح تام وبنسبة تغطية مرتفعة.",
+    "alertWarningTitle": "تنبيه الاستخدام",
+    "alertWarningDesc": "قاربت مساحة التخزين المجانية في Backblaze B2 على الوصول إلى الحد الأقصى (9.2 من 10 جيجابايت).",
+    "alertDangerTitle": "خطأ في المصادقة",
+    "alertDangerDesc": "انتهت صلاحية رمز التحديث المرفق، يرجى تسجيل الدخول مجدداً للمتابعة.",
+    "statActiveLearners": "إجمالي المتدربين النشطين",
+    "statActiveLearnersTrend": "+18% هذا الشهر",
+    "statPublishedCourses": "الدورات المعتمدة",
+    "statPublishedCoursesTrend": "+4 دورات جديدة",
+    "statIssuedCertificates": "الشهادات الصادرة",
+    "statIssuedCertificatesTrend": "+12% إنجاز",
+    "progressLabel": "نسبة إكمال المسار التعليمي",
+    "sampleInstructorName": "نور إميل",
+    "sampleInstructorRole": "مدرّب معتمد",
+    "openDialogBtn": "فتح نموذج الحوار",
+    "dialogTitle": "نموذج أكاديمي منبثق",
+    "dialogDesc": "هذا النموذج مبني على مواصفات Radix UI مع احترام التركيز البصري ودعم كامل للملء والتمرير بالاتجاهين.",
+    "dialogInputLabel": "رمز التحقق الأكاديمي",
+    "dialogInputPlaceholder": "مثال: SG-2026-X8",
+    "cancelBtn": "إلغاء",
+    "confirmBtn": "تأكيد المعاملة",
+    "typographySample": "تم تصميم هذه المنصة لتجمع بين رصانة الورق والمطالعة الهادئة، وأحدث معايير الأداء والتقنيات البرمجية. القراءة المريحة ذات السطر المتزن (68 حرفاً بالإنجليزية وقرابة 60 بالعربية) تمنح المتعلم تركيزاً مستداماً دون تشتيت بصري."
   },
   "Quiz": {
     "loadingQuiz": "جاري تحميل أسئلة الاختبار...",
@@ -248,7 +318,11 @@
     "claimCertificate": "إصدار الشهادة",
     "claimCertificateCelebration": "تهانينا! لقد أكملت 100% من محتوى هذه الدورة بنجاح.",
     "claimingCertificate": "جاري إصدار الشهادة...",
-    "viewCertificate": "عرض الشهادة"
+    "viewCertificate": "عرض الشهادة",
+    "credentialSubtitle": "وثيقة رسمية للإنجاز الأكاديمي والتميّز",
+    "courseCompletion": "نسبة إكمال الدورة: {percent}% ({completed} من {total} دروس)",
+    "officialSerial": "الرقم التسلسلي المعتمد: {serial}",
+    "claimDistinctionDesc": "احصل الآن على شهادة الإتمام الأكاديمية المعتمدة والقابلة للتحقق."
   },
   "Reviews": {
     "courseReviews": "تقييمات وآراء الطلاب",
@@ -260,7 +334,9 @@
     "noReviewsYet": "لا توجد تقييمات حتى الآن",
     "beFirstToReview": "كن أول طالب يشارك تقييمه بعد دراسة هذه الدورة.",
     "reviewsCount": "{count} تقييم",
-    "enrollToReview": "سجّل في هذه الدورة لتتمكن من كتابة تقييمك."
+    "enrollToReview": "سجّل في هذه الدورة لتتمكن من كتابة تقييمك.",
+    "reviewSuccess": "تم إرسال تقييمك بنجاح!",
+    "mustBeEnrolled": "تعذّر إرسال التقييم. يجب أن تكون مسجلاً في الدورة أولاً."
   },
   "Payments": {
     "orderCheckout": "إتمام الطلب",

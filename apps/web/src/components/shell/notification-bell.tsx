@@ -98,11 +98,11 @@ export function NotificationBell({ locale }: NotificationBellProps) {
       <button
         onClick={handleToggleOpen}
         aria-label={t('notifications')}
-        className="relative p-2 rounded-lg text-ink-600 hover:text-ink-900 hover:bg-paper-200 transition-colors"
+        className="relative p-2 rounded-lg text-text-muted hover:text-text hover:bg-bg-subtle transition-colors focus-ring"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
-          <span className="absolute top-1 end-1 flex items-center justify-center min-w-4 h-4 px-1 text-[10px] font-bold text-white bg-amber-500 rounded-full">
+          <span className="absolute top-1 end-1 flex items-center justify-center min-w-4 h-4 px-1 text-[10px] font-bold text-on-accent bg-accent rounded-full">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -110,15 +110,15 @@ export function NotificationBell({ locale }: NotificationBellProps) {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute end-0 mt-2 w-80 sm:w-96 bg-surface rounded-xl border border-rule shadow-lg z-50 overflow-hidden text-start">
-          <div className="flex items-center justify-between p-3.5 border-b border-rule bg-paper/40">
-            <h4 className="text-xs font-bold text-ink-900 uppercase tracking-wider">
+        <div className="absolute end-0 mt-2 w-80 sm:w-96 bg-card rounded-xl border border-border shadow-e2 z-50 overflow-hidden text-start">
+          <div className="flex items-center justify-between p-3.5 border-b border-border bg-bg-subtle/50">
+            <h4 className="text-xs font-bold text-text uppercase tracking-wider">
               {t('notifications')}
             </h4>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                className="flex items-center gap-1 text-[11px] text-blue-700 hover:underline font-medium"
+                className="flex items-center gap-1 text-[11px] text-primary hover:underline font-medium focus-ring rounded-xs"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
                 <span>{t('markAllAsRead')}</span>
@@ -126,13 +126,13 @@ export function NotificationBell({ locale }: NotificationBellProps) {
             )}
           </div>
 
-          <div className="max-h-80 overflow-y-auto divide-y divide-rule/60">
+          <div className="max-h-80 overflow-y-auto divide-y divide-border/60">
             {isLoading ? (
               <div className="p-6 text-center">
-                <Loader2 className="w-5 h-5 animate-spin mx-auto text-ink-600" />
+                <Loader2 className="w-5 h-5 animate-spin mx-auto text-text-muted" />
               </div>
             ) : notifications.length === 0 ? (
-              <div className="p-6 text-center text-xs text-ink-600">
+              <div className="p-6 text-center text-xs text-text-muted">
                 <p>{t('noNotifications')}</p>
               </div>
             ) : (
@@ -142,25 +142,25 @@ export function NotificationBell({ locale }: NotificationBellProps) {
                   <div
                     key={n.id}
                     className={`p-3 text-xs transition-colors ${
-                      isUnread ? 'bg-blue-100/20 font-medium' : 'hover:bg-paper/30'
+                      isUnread ? 'bg-primary-tint/40 font-medium' : 'hover:bg-bg-subtle/50'
                     }`}
                   >
                     <div className="flex items-start gap-2.5">
-                      <div className="p-1.5 rounded-full bg-paper-200 text-ink-900 mt-0.5 shrink-0">
+                      <div className="p-1.5 rounded-full bg-bg-subtle text-text mt-0.5 shrink-0">
                         {n.type === 'qa_reply' ? (
-                          <MessageSquare className="w-3.5 h-3.5 text-blue-700" />
+                          <MessageSquare className="w-3.5 h-3.5 text-primary" />
                         ) : (
-                          <BookOpen className="w-3.5 h-3.5 text-sage-700" />
+                          <BookOpen className="w-3.5 h-3.5 text-sage-700 dark:text-sage-300" />
                         )}
                       </div>
                       <div className="space-y-0.5 flex-1">
-                        <p className="text-ink-900 line-clamp-2">
+                        <p className="text-text line-clamp-2">
                           <span className="font-bold">{n.payload?.authorName || 'Sage'}: </span>
                           <span>
                             {n.payload?.title || n.payload?.textSnippet || 'New update'}
                           </span>
                         </p>
-                        <span className="text-[10px] text-ink-600 block">
+                        <span className="text-[10px] text-text-muted block">
                           {new Date(n.createdAt).toLocaleDateString(locale, {
                             month: 'short',
                             day: 'numeric',

@@ -8,6 +8,7 @@ import { CurriculumAccordion } from '@/components/domain/curriculum-accordion';
 import { ReviewSection } from '@/components/domain/review-section';
 import { EnrollCard } from '@/components/enrollment/enroll-card';
 import { apiClient } from '@/lib/api';
+import { getDemoCourseBySlug } from '@/lib/demo-courses';
 import type { CourseDto, Locale } from '@sage/shared';
 import { Check, ShieldCheck, Globe, Award } from 'lucide-react';
 
@@ -28,6 +29,14 @@ export async function generateMetadata({ params }: CourseDetailPageProps) {
       description: trans?.subtitle || trans?.description?.slice(0, 160),
     };
   } catch {
+    const demo = getDemoCourseBySlug(slug);
+    if (demo) {
+      const trans = demo.translations.find((t) => t.locale === locale) || demo.translations[0];
+      return {
+        title: `${trans?.title || 'Course'} — Sage (سايج)`,
+        description: trans?.subtitle || trans?.description?.slice(0, 160),
+      };
+    }
     return {
       title: 'Course Not Found — Sage',
     };
@@ -37,13 +46,20 @@ export async function generateMetadata({ params }: CourseDetailPageProps) {
 export default async function CourseDetailPage({ params }: CourseDetailPageProps) {
   const { locale, slug } = await params;
   const t = await getTranslations('courseDetail');
+  const tCatalog = await getTranslations('catalog');
+  const tCommon = await getTranslations('common');
 
   let course: CourseDto;
   try {
     const res = await apiClient<{ course: CourseDto }>(`/courses/detail/${slug}?locale=${locale}`);
     course = res.course;
   } catch {
-    notFound();
+    const demo = getDemoCourseBySlug(slug);
+    if (demo) {
+      course = demo;
+    } else {
+      notFound();
+    }
   }
 
   const activeTrans =
@@ -64,20 +80,25 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
 
   const priceText = course.priceCents === 0 ? t('free') : `$${(course.priceCents / 100).toFixed(2)}`;
 
+  const levelLower = course.level.toLowerCase();
+  const levelLabel = ['beginner', 'intermediate', 'advanced'].includes(levelLower)
+    ? tCatalog(levelLower as 'beginner' | 'intermediate' | 'advanced')
+    : course.level;
+
   return (
     <div className="min-h-screen">
       {/* Course Hero Header */}
       <section className="border-b border-border bg-paper-200/50 dark:bg-bg-subtle/70 py-12 px-4 sm:px-6">
         <div className="container mx-auto max-w-6xl space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">{course.level}</Badge>
+            <Badge variant="secondary">{levelLabel}</Badge>
             <Badge variant="default" className="flex items-center gap-1">
               <Globe className="h-3 w-3" />
-              <span>{course.primaryLocale === 'ar' ? 'العربية' : 'English'}</span>
+              <span>{course.primaryLocale === 'ar' ? tCommon('arabic') : tCommon('english')}</span>
             </Badge>
           </div>
 
-          <h1 className="font-headline text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-text max-w-4xl">
+          <h1 className="font-headline text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-text max-w-4xl rtl:leading-[1.38] rtl:tracking-normal rtl:py-1">
             {activeTrans?.title}
           </h1>
 

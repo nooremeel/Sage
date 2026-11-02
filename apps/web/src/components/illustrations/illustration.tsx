@@ -43,36 +43,89 @@ export function Illustration({
       case 'logo-leaf':
         return (
           <>
-            {/* Misregistered offset wash */}
-            <path
-              d="M32 44C30 30 42 16 54 14C56 26 48 40 38 46Z"
+            {/* Warm Amber Misregistered Wash behind codex pages */}
+            <rect
+              x="22"
+              y="44"
+              width="56"
+              height="32"
+              rx="4"
               fill={washFill}
-              fillOpacity="0.45"
-              transform="translate(4, -3)"
+              fillOpacity="0.3"
+              transform="rotate(-1 50 60)"
             />
-            {/* Hand-drawn ink line work */}
+            {/* Open Codex Pages */}
             <path
-              d="M28 50C28 35 40 18 54 16C54 32 44 48 30 52C26 53 28 50 28 50Z"
-              fill="none"
+              d="M18 68C28 62 42 62 50 68C58 62 72 62 82 68V42C72 36 58 36 50 42C42 36 28 36 18 42V68Z"
+              fill="var(--card)"
               stroke="currentColor"
-              strokeWidth="2.2"
+              strokeWidth="2.6"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            {/* Central vein with hatching */}
+            {/* Book Spine Contour */}
             <path
-              d="M30 48C36 38 44 28 52 18"
-              fill="none"
+              d="M50 42V73M50 73C42 69 28 69 18 73M50 73C58 69 72 69 82 73"
               stroke="currentColor"
-              strokeWidth="1.8"
+              strokeWidth="2.2"
               strokeLinecap="round"
             />
+            {/* Subtle Page Ruling Lines */}
             <path
-              d="M35 41L39 43M40 34L45 37M45 27L49 30"
+              d="M25 48C32 45 40 45 45 49"
               stroke="currentColor"
               strokeWidth="1.2"
               strokeLinecap="round"
+              strokeOpacity="0.6"
             />
+            <path
+              d="M25 55C32 52 40 52 45 56"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeOpacity="0.6"
+            />
+            <path
+              d="M55 49C60 45 68 45 75 48"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeOpacity="0.6"
+            />
+            <path
+              d="M55 56C60 52 68 52 75 55"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinecap="round"
+              strokeOpacity="0.6"
+            />
+            {/* Living Sage Stem Rising from Spine */}
+            <path
+              d="M50 42V17"
+              stroke="var(--primary)"
+              strokeWidth="2.6"
+              strokeLinecap="round"
+            />
+            {/* Left Sage Leaflet */}
+            <path
+              d="M50 31C42 29 34 23 36 15C44 15 49 23 50 31Z"
+              fill="var(--sage-700)"
+              fillOpacity="0.45"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+            {/* Right Sage Leaflet */}
+            <path
+              d="M50 25C58 23 66 17 64 9C56 9 51 17 50 25Z"
+              fill="var(--sage-700)"
+              fillOpacity="0.65"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+            {/* Golden Knowledge Bud at Apex */}
+            <circle cx="50" cy="17" r="2.6" fill="var(--amber-500)" />
           </>
         );
 

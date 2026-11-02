@@ -494,6 +494,30 @@ async function main() {
 
         for (let lIdx = 0; lIdx < sec.lessons.length; lIdx++) {
           const les = sec.lessons[lIdx]!;
+          let mediaAssetId: string | undefined = undefined;
+
+          if (les.type === 'video') {
+            const assetValues: schema.NewMediaAsset = {
+              ownerId: cData.instructorId,
+              kind: 'video',
+              status: 'ready',
+              sourceKey: `raw/${cData.translations[0]!.slug}/lesson-${sIdx}-${lIdx}.mp4`,
+              hlsPrefix: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+              durationSec: les.durationSec,
+              renditions: [
+                { height: 360, width: 640, bitrate: 800000, playlistFile: '360p.m3u8' },
+                { height: 720, width: 1280, bitrate: 2000000, playlistFile: '720p.m3u8' },
+                { height: 1080, width: 1920, bitrate: 4500000, playlistFile: '1080p.m3u8' },
+              ],
+              sizeBytes: 45000000,
+            };
+            const [createdAsset] = await db
+              .insert(schema.mediaAssets)
+              .values(assetValues)
+              .returning();
+            mediaAssetId = createdAsset!.id;
+          }
+
           const [newLes] = await db
             .insert(schema.lessons)
             .values({
@@ -503,6 +527,7 @@ async function main() {
               title: les.title,
               isFreePreview: les.isFreePreview,
               durationSec: les.durationSec,
+              mediaAssetId,
             })
             .returning();
 

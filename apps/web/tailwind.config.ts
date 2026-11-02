@@ -26,10 +26,12 @@ const config: Config = {
           tint: 'var(--primary-tint)',
           foreground: 'var(--on-primary)',
         },
+        'on-primary': 'var(--on-primary)',
         accent: {
           DEFAULT: 'var(--accent)',
           foreground: 'var(--on-accent)',
         },
+        'on-accent': 'var(--on-accent)',
         sage: {
           300: 'var(--sage-300)',
           700: 'var(--sage-700)',
