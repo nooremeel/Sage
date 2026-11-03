@@ -6,6 +6,8 @@ import type {
   QuizAttemptResultDto,
   CourseLevel,
   LessonType,
+  AuthUserDto,
+  UserRole,
 } from '@sage/shared';
 
 export const DEMO_STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
@@ -1108,5 +1110,185 @@ export function evaluateDemoQuizAttempt(
     maxAttempts: quiz.maxAttempts,
     completedAt: new Date().toISOString(),
   };
+}
+
+export interface AdminAuditLogItem {
+  id: string;
+  actor: string;
+  action: string;
+  target: string;
+  timestamp: string;
+}
+
+export const DEMO_USERS: AuthUserDto[] = [
+  {
+    id: 'usr-admin-001',
+    email: 'admin@sage.local',
+    role: 'admin',
+    locale: 'en',
+    emailVerifiedAt: '2026-08-01T10:00:00Z',
+    createdAt: '2026-08-01T10:00:00Z',
+  },
+  {
+    id: 'usr-nour-001',
+    email: 'nour@sage.local',
+    role: 'instructor',
+    locale: 'ar',
+    emailVerifiedAt: '2026-08-15T10:00:00Z',
+    createdAt: '2026-08-15T10:00:00Z',
+  },
+  {
+    id: 'usr-tariq-002',
+    email: 'tariq@sage.local',
+    role: 'instructor',
+    locale: 'ar',
+    emailVerifiedAt: '2026-08-20T10:00:00Z',
+    createdAt: '2026-08-20T10:00:00Z',
+  },
+  {
+    id: 'usr-sarah-003',
+    email: 'sarah@sage.local',
+    role: 'instructor',
+    locale: 'en',
+    emailVerifiedAt: '2026-09-01T10:00:00Z',
+    createdAt: '2026-09-01T10:00:00Z',
+  },
+  {
+    id: 'usr-student-001',
+    email: 'student@sage.dev',
+    role: 'student',
+    locale: 'en',
+    emailVerifiedAt: '2026-09-10T10:00:00Z',
+    createdAt: '2026-09-10T10:00:00Z',
+  },
+  {
+    id: 'usr-student-002',
+    email: 'fatima@sage.local',
+    role: 'student',
+    locale: 'ar',
+    emailVerifiedAt: '2026-09-15T10:00:00Z',
+    createdAt: '2026-09-15T10:00:00Z',
+  },
+  {
+    id: 'usr-student-003',
+    email: 'omar@sage.local',
+    role: 'student',
+    locale: 'ar',
+    emailVerifiedAt: '2026-09-22T10:00:00Z',
+    createdAt: '2026-09-22T10:00:00Z',
+  },
+];
+
+export const DEMO_AUDIT_LOGS: AdminAuditLogItem[] = [
+  {
+    id: 'log-01',
+    actor: 'admin@sage.local',
+    action: 'Approved & Published Course',
+    target: 'Modern Web Architecture & Distributed Systems',
+    timestamp: '2 hours ago',
+  },
+  {
+    id: 'log-02',
+    actor: 'admin@sage.local',
+    action: 'Promoted User to Instructor',
+    target: 'nour@sage.local',
+    timestamp: '5 hours ago',
+  },
+  {
+    id: 'log-03',
+    actor: 'system',
+    action: 'Promotional Coupon Created (100% OFF)',
+    target: 'SAGE100',
+    timestamp: '1 day ago',
+  },
+  {
+    id: 'log-04',
+    actor: 'admin@sage.local',
+    action: 'Approved Instructor Application',
+    target: 'tariq@sage.local',
+    timestamp: '3 days ago',
+  },
+];
+
+export function getDemoAdminKPIs() {
+  const publishedCount = DEMO_COURSES.filter((c) => c.status === 'published').length;
+  const inReviewCount = DEMO_COURSES.filter((c) => c.status === 'in_review').length;
+  const draftCount = DEMO_COURSES.filter((c) => c.status === 'draft').length;
+
+  return {
+    totalUsers: DEMO_USERS.length + 120,
+    studentsCount: DEMO_USERS.filter((u) => u.role === 'student').length + 115,
+    instructorsCount: DEMO_USERS.filter((u) => u.role === 'instructor').length,
+    adminsCount: DEMO_USERS.filter((u) => u.role === 'admin').length,
+    totalCourses: DEMO_COURSES.length,
+    publishedCount,
+    inReviewCount,
+    draftCount,
+    videoHoursHosted: '48.5h',
+    storageUsageGB: '64.2 GB',
+    grossVolumeUSD: 38450,
+  };
+}
+
+export function getDemoReviewQueue(): CourseDto[] {
+  return DEMO_COURSES.filter((c) => c.status === 'in_review');
+}
+
+export function reviewDemoCourse(
+  courseId: string,
+  action: 'approve' | 'reject',
+  reason?: string
+): { course: CourseDto; message: string } {
+  const course = DEMO_COURSES.find((c) => c.id === courseId);
+  if (!course) {
+    throw new Error('Course not found in review queue');
+  }
+
+  if (action === 'approve') {
+    course.status = 'published';
+    course.publishedAt = new Date().toISOString();
+    DEMO_AUDIT_LOGS.unshift({
+      id: `log-${Date.now()}`,
+      actor: 'admin@sage.local',
+      action: 'Approved & Published Course',
+      target: course.translations[0]?.title || course.id,
+      timestamp: 'Just now',
+    });
+    return { course, message: 'Course approved and published to public catalog.' };
+  } else {
+    course.status = 'draft';
+    DEMO_AUDIT_LOGS.unshift({
+      id: `log-${Date.now()}`,
+      actor: 'admin@sage.local',
+      action: `Requested Course Revisions: ${reason || 'Updates required'}`,
+      target: course.translations[0]?.title || course.id,
+      timestamp: 'Just now',
+    });
+    return { course, message: 'Course returned to draft for instructor revisions.' };
+  }
+}
+
+export function getDemoUsers(): AuthUserDto[] {
+  return DEMO_USERS;
+}
+
+export function updateDemoUserRole(userId: string, newRole: UserRole): AuthUserDto {
+  const user = DEMO_USERS.find((u) => u.id === userId);
+  if (!user) {
+    throw new Error('User not found');
+  }
+  user.role = newRole;
+  DEMO_AUDIT_LOGS.unshift({
+    id: `log-${Date.now()}`,
+    actor: 'admin@sage.local',
+    action: `Updated User Role to ${newRole}`,
+    target: user.email,
+    timestamp: 'Just now',
+  });
+  return user;
+}
+
+export function getDemoAuditLogs(): AdminAuditLogItem[] {
+  return DEMO_AUDIT_LOGS;
 }
 

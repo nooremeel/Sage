@@ -173,6 +173,18 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `apps/web/src/app/[locale]/studio/page.tsx`, `apps/web/src/components/studio/curriculum-editor.tsx`, `apps/web/src/components/studio/video-uploader.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/src/lib/auth-context.tsx`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/instructor-studio.spec.ts`, `Improvement_Plan.md`
 - **Tags**: studio, instructor, curriculum, video-uploader, kpi, tabs, e2e, i18n, frontend
 
+### [2026-11-03] Feature: Platform Admin Portal & Course Review Queue (Phase 11.5)
+- **Symptom**: Platform administrators lacked a central governance portal to review and approve submitted courses, inspect curriculum outlines, manage user roles, and monitor institutional health metrics.
+- **Root cause**: Platform previously lacked dedicated administrative routes, review queue adjudication cards, and user directory management tables.
+- **Fix**:
+  1. Built `CourseReviewCard` (`apps/web/src/components/admin/course-review-card.tsx`) enabling curriculum outline inspection, 1-click "Approve & Publish" action, and "Request Revisions" dialog with instructor guidance textarea.
+  2. Built `UserDirectoryTable` (`apps/web/src/components/admin/user-directory-table.tsx`) with search, role filters, and dynamic role assignment dropdowns (`student`, `instructor`, `admin`).
+  3. Created `/[locale]/admin` (`apps/web/src/app/[locale]/admin/page.tsx`) with 4 executive KPI StatCards (Scholars, Catalog Courses, Video Streaming Assets, Gross Volume), tabbed sub-views (Review Queue, Users, Audit Feed), and role protection with 1-click admin demo sign-in (`admin@sage.local`).
+  4. Added complete bilingual translations in `admin.*` with 100% key parity across `ar.json` and `en.json`.
+  5. Added Playwright E2E test suite in `apps/web/e2e/admin-portal.spec.ts` passing all 5 tests across English and Arabic RTL.
+- **Files**: `apps/web/src/app/[locale]/admin/page.tsx`, `apps/web/src/components/admin/course-review-card.tsx`, `apps/web/src/components/admin/user-directory-table.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/admin-portal.spec.ts`, `Improvement_Plan.md`
+- **Tags**: admin, governance, review-queue, users, audit-log, kpi, e2e, i18n, frontend
+
 ---
 
 ## 2. Technical Debt Tracker
