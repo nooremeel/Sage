@@ -505,9 +505,9 @@ async function main() {
               hlsPrefix: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
               durationSec: les.durationSec,
               renditions: [
-                { height: 360, width: 640, bitrate: 800000, playlistFile: '360p.m3u8' },
-                { height: 720, width: 1280, bitrate: 2000000, playlistFile: '720p.m3u8' },
-                { height: 1080, width: 1920, bitrate: 4500000, playlistFile: '1080p.m3u8' },
+                { resolution: '360p', height: 360, width: 640, bitrate: 800000, playlist: '360p.m3u8' },
+                { resolution: '720p', height: 720, width: 1280, bitrate: 2000000, playlist: '720p.m3u8' },
+                { resolution: '1080p', height: 1080, width: 1920, bitrate: 4500000, playlist: '1080p.m3u8' },
               ],
               sizeBytes: 45000000,
             };

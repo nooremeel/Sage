@@ -154,6 +154,25 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `apps/web/src/app/[locale]/profile/page.tsx`, `apps/web/playwright.config.ts`, `Improvement_Plan.md`
 - **Tags**: dashboard, profile, performance, latency, state-initialization, offline-resilience, bugfix
 
+### [2026-11-03] Bug: MediaRendition Property Mismatch in Database Seed Script
+- **Symptom**: `apps/api typecheck` failed with `src/scripts/seed.ts(508,61): error TS2561: Object literal may only specify known properties, but 'playlistFile' does not exist in type 'MediaRendition'. Did you mean to write 'playlist'?`
+- **Root cause**: Seed script constructed `MediaRendition` objects using `playlistFile` instead of `playlist` and omitted required `resolution` field (`'360p' | '720p' | '1080p'`).
+- **Fix**: Updated seed rendition literals in `apps/api/src/scripts/seed.ts` to include `resolution` and map to `playlist`.
+- **Files**: `apps/api/src/scripts/seed.ts`, `Improvement_Plan.md`
+- **Tags**: media, rendition, typecheck, typescript, seed, backend
+
+### [2026-11-03] Feature: Instructor Studio & Interactive Curriculum Builder (Phase 11.4)
+- **Symptom**: Instructors lacked an academic command center to view engagement KPIs, manage authored courses, create new course drafts, and dynamically structure sections and video lectures.
+- **Root cause**: Studio previously contained a bare placeholder page without KPI ribbons, filter tabs, curriculum editing drawers, or offline demo resilience.
+- **Fix**:
+  1. Built `CurriculumEditor` (`apps/web/src/components/studio/curriculum-editor.tsx`) enabling section/lesson creation, transactional reordering (`Move Up` / `Move Down`), free preview toggles, and embedded video uploads.
+  2. Localized `VideoUploader` with `studio.uploader.*` keys and graceful fallback progress simulation for offline demo workflows.
+  3. Rebuilt `/[locale]/studio` with 4 KPI StatCards (Students, Completion Rate, Rating, Net Revenue), course status filters (All, Published, In Review, Drafts), and "New Course Draft" creation modal.
+  4. Added full bilingual translations with 100% key parity across `ar.json` and `en.json`.
+  5. Added Playwright E2E test suite in `apps/web/e2e/instructor-studio.spec.ts` passing all 4 test specs across English and Arabic RTL.
+- **Files**: `apps/web/src/app/[locale]/studio/page.tsx`, `apps/web/src/components/studio/curriculum-editor.tsx`, `apps/web/src/components/studio/video-uploader.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/src/lib/auth-context.tsx`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/instructor-studio.spec.ts`, `Improvement_Plan.md`
+- **Tags**: studio, instructor, curriculum, video-uploader, kpi, tabs, e2e, i18n, frontend
+
 ---
 
 ## 2. Technical Debt Tracker

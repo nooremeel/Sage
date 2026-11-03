@@ -4,6 +4,8 @@ import type {
   SectionDto,
   PublicQuizDto,
   QuizAttemptResultDto,
+  CourseLevel,
+  LessonType,
 } from '@sage/shared';
 
 export const DEMO_STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
@@ -349,6 +351,137 @@ export const DEMO_COURSES: CourseDto[] = [
       },
     ],
   },
+  {
+    id: 'course-dist-005',
+    instructorId: 'usr-nour-001',
+    instructorName: 'Nour Emil (نور إميل)',
+    categoryId: 'cat-eng-001',
+    categoryName: 'Software Engineering',
+    status: 'in_review',
+    level: 'advanced',
+    priceCents: 6500,
+    currency: 'USD',
+    primaryLocale: 'ar',
+    ratingAvg: 0,
+    ratingCount: 0,
+    publishedAt: null,
+    createdAt: defaultDate,
+    translations: [
+      {
+        locale: 'ar',
+        title: 'قواعد البيانات الموزعة ونظم التوسع السحابي',
+        subtitle: 'تصميم نظم تخزين مرنة تتحمل الإخفاقات باستخدام PostgreSQL و Neon',
+        description: 'دورة هندسية متقدمة في تجزئة البيانات (Sharding)، التكرار متعدد المناطق (Multi-Region Replication)، ومطابقة حمولة المعاملات تحت ضغط شديد.',
+        slug: 'distributed-databases-ar',
+      },
+      {
+        locale: 'en',
+        title: 'Distributed Databases & Cloud Scale Systems',
+        subtitle: 'Architecting resilient, fault-tolerant storage using PostgreSQL and Neon',
+        description: 'An advanced engineering deep-dive into database sharding, multi-region replication, and ACID transaction semantics under extreme scale.',
+        slug: 'distributed-databases',
+      },
+    ],
+    sections: [
+      {
+        id: 'sec-dist-01',
+        courseId: 'course-dist-005',
+        position: 0,
+        createdAt: defaultDate,
+        title: {
+          ar: 'الفصل الأول: أسس التكرار والتوافق',
+          en: 'Module 1: Replication & Consensus Foundations',
+        },
+        lessons: [
+          {
+            id: 'les-dist-01-vid',
+            sectionId: 'sec-dist-01',
+            position: 0,
+            type: 'video',
+            createdAt: defaultDate,
+            title: {
+              ar: 'بروتوكولات التوافق الموزع: Raft و Paxos',
+              en: 'Distributed Consensus: Raft & Paxos Protocols',
+            },
+            isFreePreview: true,
+            durationSec: 540,
+          },
+          {
+            id: 'les-dist-02-art',
+            sectionId: 'sec-dist-01',
+            position: 1,
+            type: 'article',
+            createdAt: defaultDate,
+            title: {
+              ar: 'مستويات العزل في المعاملات ومفارقات التزامن',
+              en: 'Transaction Isolation Levels & Concurrency Anomalies',
+            },
+            isFreePreview: false,
+            durationSec: 420,
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'course-rust-006',
+    instructorId: 'usr-nour-001',
+    instructorName: 'Nour Emil (نور إميل)',
+    categoryId: 'cat-eng-001',
+    categoryName: 'Software Engineering',
+    status: 'draft',
+    level: 'intermediate',
+    priceCents: 3900,
+    currency: 'USD',
+    primaryLocale: 'en',
+    ratingAvg: 0,
+    ratingCount: 0,
+    publishedAt: null,
+    createdAt: defaultDate,
+    translations: [
+      {
+        locale: 'ar',
+        title: 'برمجة النظم السحابية بلغة ريست (Rust)',
+        subtitle: 'أمان الذاكرة وبناء خوادم الويب عالية الإنتاجية',
+        description: 'تعلم البرمجة غير المتزامنة عبر Tokio، إدارة ملكية الذاكرة دون جامع مهملات (Borrow Checker)، وبناء خدمات API فائقة السرعة.',
+        slug: 'rust-cloud-systems-ar',
+      },
+      {
+        locale: 'en',
+        title: 'Cloud Systems Programming with Rust',
+        subtitle: 'Memory safety, Tokio async runtimes, and high-throughput web microservices',
+        description: 'Master systems programming with Rust: ownership, lifetimes, Tokio asynchronous I/O, and zero-allocation high-performance web services.',
+        slug: 'rust-cloud-systems',
+      },
+    ],
+    sections: [
+      {
+        id: 'sec-rust-01',
+        courseId: 'course-rust-006',
+        position: 0,
+        createdAt: defaultDate,
+        title: {
+          ar: 'الفصل الأول: نموذج الملكية وتدقيق الاستعارة',
+          en: 'Module 1: Ownership & The Borrow Checker',
+        },
+        lessons: [
+          {
+            id: 'les-rust-01-vid',
+            sectionId: 'sec-rust-01',
+            position: 0,
+            type: 'video',
+            createdAt: defaultDate,
+            title: {
+              ar: 'مقدمة في الملكية وأمان الذاكرة دون مجمع قمامة',
+              en: 'Zero-Cost Abstractions & Memory Safety Without GC',
+            },
+            isFreePreview: true,
+            durationSec: 620,
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export function getDemoCourseBySlug(slug: string): CourseDto | undefined {
@@ -398,6 +531,205 @@ export function getDemoCourses(params?: {
   }
 
   return list;
+}
+
+export function getDemoInstructorCourses(instructorId = 'usr-nour-001'): CourseDto[] {
+  return DEMO_COURSES.filter((c) => c.instructorId === instructorId);
+}
+
+export function getDemoInstructorKPIs(instructorId = 'usr-nour-001') {
+  const authored = DEMO_COURSES.filter((c) => c.instructorId === instructorId);
+  const totalCourses = authored.length;
+  const publishedCount = authored.filter((c) => c.status === 'published').length;
+
+  return {
+    totalStudents: 456,
+    completionRate: 78.4,
+    avgRating: 4.95,
+    ratingCount: 142,
+    netRevenueUSD: 14820,
+    totalCourses,
+    publishedCount,
+  };
+}
+
+export function submitDemoCourseForReview(courseId: string): CourseDto | undefined {
+  const course = DEMO_COURSES.find((c) => c.id === courseId);
+  if (course) {
+    course.status = 'in_review';
+  }
+  return course;
+}
+
+export function createDemoCourseDraft(params: {
+  instructorId?: string;
+  titleAr: string;
+  titleEn: string;
+  categoryId: string;
+  categoryName?: string;
+  level: CourseLevel;
+  priceCents: number;
+}): CourseDto {
+  const id = `course-draft-${Date.now()}`;
+  const slugEn = params.titleEn
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '') || `draft-${Date.now()}`;
+  const slugAr = `${slugEn}-ar`;
+
+  const newCourse: CourseDto = {
+    id,
+    instructorId: params.instructorId || 'usr-nour-001',
+    instructorName: 'Nour Emil (نور إميل)',
+    categoryId: params.categoryId,
+    categoryName: params.categoryName || 'Software Engineering',
+    status: 'draft',
+    level: params.level,
+    priceCents: params.priceCents,
+    currency: 'USD',
+    primaryLocale: 'en',
+    ratingAvg: 0,
+    ratingCount: 0,
+    publishedAt: null,
+    createdAt: new Date().toISOString(),
+    translations: [
+      {
+        locale: 'ar',
+        title: params.titleAr,
+        subtitle: params.titleAr,
+        description: params.titleAr,
+        slug: slugAr,
+      },
+      {
+        locale: 'en',
+        title: params.titleEn,
+        subtitle: params.titleEn,
+        description: params.titleEn,
+        slug: slugEn,
+      },
+    ],
+    sections: [],
+  };
+
+  DEMO_COURSES.unshift(newCourse);
+  return newCourse;
+}
+
+export function addDemoSection(
+  courseId: string,
+  title: { ar: string; en: string }
+): SectionDto | undefined {
+  const course = DEMO_COURSES.find((c) => c.id === courseId);
+  if (!course) return undefined;
+
+  if (!course.sections) {
+    course.sections = [];
+  }
+
+  const newSection: SectionDto = {
+    id: `sec-${Date.now()}`,
+    courseId,
+    position: course.sections.length,
+    title,
+    lessons: [],
+    createdAt: new Date().toISOString(),
+  };
+
+  course.sections.push(newSection);
+  return newSection;
+}
+
+export function addDemoLesson(
+  sectionId: string,
+  data: {
+    title: { ar: string; en: string };
+    type: LessonType;
+    isFreePreview: boolean;
+    durationSec: number;
+  }
+): LessonDto | undefined {
+  for (const course of DEMO_COURSES) {
+    const sec = course.sections?.find((s) => s.id === sectionId);
+    if (sec) {
+      if (!sec.lessons) sec.lessons = [];
+      const newLesson: LessonDto = {
+        id: `les-${Date.now()}`,
+        sectionId,
+        position: sec.lessons.length,
+        type: data.type,
+        title: data.title,
+        isFreePreview: data.isFreePreview,
+        durationSec: data.durationSec,
+        createdAt: new Date().toISOString(),
+      };
+      sec.lessons.push(newLesson);
+      return newLesson;
+    }
+  }
+  return undefined;
+}
+
+export function reorderDemoSections(courseId: string, sectionIds: string[]): boolean {
+  const course = DEMO_COURSES.find((c) => c.id === courseId);
+  if (!course?.sections) return false;
+
+  const map = new Map(course.sections.map((s) => [s.id, s]));
+  const reordered: SectionDto[] = [];
+
+  sectionIds.forEach((id, index) => {
+    const s = map.get(id);
+    if (s) {
+      s.position = index;
+      reordered.push(s);
+    }
+  });
+
+  course.sections = reordered;
+  return true;
+}
+
+export function reorderDemoLessons(sectionId: string, lessonIds: string[]): boolean {
+  for (const course of DEMO_COURSES) {
+    const sec = course.sections?.find((s) => s.id === sectionId);
+    if (sec?.lessons) {
+      const map = new Map(sec.lessons.map((l) => [l.id, l]));
+      const reordered: LessonDto[] = [];
+      lessonIds.forEach((id, index) => {
+        const l = map.get(id);
+        if (l) {
+          l.position = index;
+          reordered.push(l);
+        }
+      });
+      sec.lessons = reordered;
+      return true;
+    }
+  }
+  return false;
+}
+
+export function deleteDemoSection(courseId: string, sectionId: string): boolean {
+  const course = DEMO_COURSES.find((c) => c.id === courseId);
+  if (!course?.sections) return false;
+  course.sections = course.sections.filter((s) => s.id !== sectionId);
+  course.sections.forEach((s, idx) => {
+    s.position = idx;
+  });
+  return true;
+}
+
+export function deleteDemoLesson(sectionId: string, lessonId: string): boolean {
+  for (const course of DEMO_COURSES) {
+    const sec = course.sections?.find((s) => s.id === sectionId);
+    if (sec?.lessons) {
+      sec.lessons = sec.lessons.filter((l) => l.id !== lessonId);
+      sec.lessons.forEach((l, idx) => {
+        l.position = idx;
+      });
+      return true;
+    }
+  }
+  return false;
 }
 
 export function getDemoLessonById(lessonId: string): {

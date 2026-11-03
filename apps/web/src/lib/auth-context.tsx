@@ -112,14 +112,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       clearTimeout(timeoutId);
       // Offline fallback login when backend is offline
+      const isInstructor = Boolean(
+        data.email?.toLowerCase().includes('instructor') ||
+        data.email?.toLowerCase().includes('nour')
+      );
+      const isAdmin = Boolean(data.email?.toLowerCase().includes('admin'));
       const demoUser: AuthUserDto = {
-        id: 'usr-student-001',
-        email: data.email || 'nour.student@sage.dev',
-        role: data.email?.includes('instructor')
-          ? 'instructor'
-          : data.email?.includes('admin')
-          ? 'admin'
-          : 'student',
+        id: isInstructor ? 'usr-nour-001' : isAdmin ? 'usr-admin-001' : 'usr-student-001',
+        email: data.email || (isInstructor ? 'nour@sage.local' : 'nour.student@sage.dev'),
+        role: isInstructor ? 'instructor' : isAdmin ? 'admin' : 'student',
         locale: 'en',
         emailVerifiedAt: new Date().toISOString(),
         createdAt: '2026-09-01T10:00:00Z',
