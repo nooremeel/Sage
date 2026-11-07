@@ -15,6 +15,7 @@ import type {
   NotificationDto,
   ReviewDto,
 } from '@sage/shared';
+import type { IllustrationName } from '@/components/illustrations/illustration';
 
 export const DEMO_STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
 
@@ -1817,6 +1818,182 @@ export function addDemoCourseReview(
 
   return newRev;
 }
+
+export interface DemoCategoryInfo {
+  id: string;
+  slug: string;
+  icon: IllustrationName;
+  name: { ar: string; en: string };
+  description: { ar: string; en: string };
+  courseCount: number;
+}
+
+export const DEMO_CATEGORIES: DemoCategoryInfo[] = [
+  {
+    id: 'cat-eng-001',
+    slug: 'software-engineering',
+    icon: 'category-code',
+    name: {
+      ar: 'هندسة البرمجيات والنظم',
+      en: 'Software Engineering & Systems',
+    },
+    description: {
+      ar: 'معمارية النظم الموزعة، وهندسة السحابية، والبرمجة منخفضة المستوى بأسس متينة.',
+      en: 'Distributed systems architecture, cloud infrastructure, and systems-level programming.',
+    },
+    courseCount: 3,
+  },
+  {
+    id: 'cat-arts-002',
+    slug: 'islamic-arts',
+    icon: 'category-design',
+    name: {
+      ar: 'الفنون الكلاسيكية والخط العربي',
+      en: 'Classical Arts & Calligraphy',
+    },
+    description: {
+      ar: 'إتقان قواعد وهندسة الخطوط الكلاسيكية، وتذهيب المخطوطات الأثرية وصناعة الورق المقهر.',
+      en: 'Mastery of classical Arabic script geometry, archival gold leaf illumination, and paper marbling.',
+    },
+    courseCount: 2,
+  },
+  {
+    id: 'cat-biz-003',
+    slug: 'business-leadership',
+    icon: 'category-business',
+    name: {
+      ar: 'الأعمال والقيادة التقنية',
+      en: 'Business & Technology Leadership',
+    },
+    description: {
+      ar: 'إدارة المنتجات الرقمية، واقتصاديات الوحدة، وتوجيه الفرق الهندسية لبناء شركات مستدامة.',
+      en: 'Digital product strategy, scalable unit economics, and leading high-performing technical teams.',
+    },
+    courseCount: 1,
+  },
+];
+
+export interface DemoTestimonial {
+  id: string;
+  author: { ar: string; en: string };
+  role: { ar: string; en: string };
+  courseTitle: { ar: string; en: string };
+  quote: { ar: string; en: string };
+  rating: number;
+  avatarSeed: string;
+}
+
+export const DEMO_TESTIMONIALS: DemoTestimonial[] = [
+  {
+    id: 'test-01',
+    author: {
+      ar: 'مريم المنصور',
+      en: 'Mariam Al-Mansoor',
+    },
+    role: {
+      ar: 'مهندسة نظم موزعة أولى',
+      en: 'Lead Distributed Systems Architect',
+    },
+    courseTitle: {
+      ar: 'معمارية الويب الحديثة والأنظمة الموزعة',
+      en: 'Modern Web Architecture & Distributed Systems',
+    },
+    quote: {
+      ar: 'تركيز سايج على الصرامة المعمارية وتدفق الوسائط المحمي يحاكي هندسة الأنظمة الحقيقية في كبرى المنصات. المنهج لا يقبل بأنصاف الحلول.',
+      en: 'Sage’s focus on deep architectural rigor and token-gated streaming mirrors real production engineering. The curriculum didn’t cut corners.',
+    },
+    rating: 5,
+    avatarSeed: 'MM',
+  },
+  {
+    id: 'test-02',
+    author: {
+      ar: 'طارق الخطيب',
+      en: 'Tarek El-Khatib',
+    },
+    role: {
+      ar: 'خطاط ومصمم خطوط كلاسيكية',
+      en: 'Master Calligrapher & Typography Artisan',
+    },
+    courseTitle: {
+      ar: 'الخط العربي الكلاسيكي: هندسة خط الثلث',
+      en: 'Classical Arabic Calligraphy: The Geometry of Thuluth',
+    },
+    quote: {
+      ar: 'التوازن الرائع بين الهندسة الدقيقة لقواعد خط الثلث وتجربة المشاهدة التفاعلية استثنائي. والشهادة المؤرخة تضفي مصداقية أكاديمية حقيقية.',
+      en: 'The balance between traditional Arabic calligraphy geometry and interactive video lessons is exquisite. The verifiable certificates add genuine archival weight.',
+    },
+    rating: 5,
+    avatarSeed: 'TK',
+  },
+  {
+    id: 'test-03',
+    author: {
+      ar: 'د. أمينة زكي',
+      en: 'Dr. Amina Zaki',
+    },
+    role: {
+      ar: 'مديرة استراتيجيات التقنية الرقمية',
+      en: 'Digital Technology Strategy Director',
+    },
+    courseTitle: {
+      ar: 'استراتيجيات المنتجات الرقمية واقتصاديات الوحدة',
+      en: 'Digital Product Strategy & Unit Economics',
+    },
+    quote: {
+      ar: 'من النادر أن تجد منصة تجمع بين التصميم الأكاديمي الرصين والدعم الأصيل لكل من اللغتين العربية والإنجليزية. سايج ترسي معياراً جديداً.',
+      en: 'Finding a platform that treats both Arabic and English with first-class scholarly design is rare. Sage sets a new benchmark for academic craft.',
+    },
+    rating: 5,
+    avatarSeed: 'AZ',
+  },
+];
+
+export interface DemoPersona {
+  role: 'student' | 'instructor' | 'admin';
+  email: string;
+  name: { ar: string; en: string };
+  badge: { ar: string; en: string };
+  description: { ar: string; en: string };
+  targetPath: string;
+}
+
+export const DEMO_PERSONAS: DemoPersona[] = [
+  {
+    role: 'student',
+    email: 'student@sage.local',
+    name: { ar: 'طالب علم معتمد', en: 'Student Scholar' },
+    badge: { ar: 'طالب', en: 'Student' },
+    description: {
+      ar: 'مسجل في دورة خط الثلث، ولديه تقدم تدريبي وشهادة معتمدة',
+      en: 'Enrolled in Thuluth Calligraphy, active learning progress, earned certificate',
+    },
+    targetPath: '/profile',
+  },
+  {
+    role: 'instructor',
+    email: 'nour@sage.local',
+    name: { ar: 'نور إميل (مدرّب معتمد)', en: 'Nour Emil (Lead Instructor)' },
+    badge: { ar: 'مدرّب', en: 'Instructor' },
+    description: {
+      ar: 'مؤلف دورة معمارية الويب، ولديه مسودات قيد الإعداد في الاستوديو',
+      en: 'Author of Web Architecture, has active drafts in Studio',
+    },
+    targetPath: '/studio',
+  },
+  {
+    role: 'admin',
+    email: 'admin@sage.local',
+    name: { ar: 'مدير المنصة', en: 'Platform Administrator' },
+    badge: { ar: 'إدارة', en: 'Admin' },
+    description: {
+      ar: 'صلاحيات كاملة لمراجعة الدورات، إدارة المستخدمين، ومتابعة مؤشرات المنصة',
+      en: 'Full access to Course Review Queue, user directory, and platform analytics',
+    },
+    targetPath: '/admin',
+  },
+];
+
 
 
 

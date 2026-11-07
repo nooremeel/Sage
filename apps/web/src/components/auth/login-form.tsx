@@ -30,7 +30,14 @@ export function LoginForm() {
     try {
       setErrorMsg(null);
       await login(data);
-      router.push('/');
+      const email = data.email.toLowerCase();
+      if (email.includes('admin')) {
+        router.push('/admin');
+      } else if (email.includes('nour') || email.includes('instructor')) {
+        router.push('/studio');
+      } else {
+        router.push('/profile');
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setErrorMsg(err.message);

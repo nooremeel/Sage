@@ -29,14 +29,20 @@ export function Footer() {
           </div>
 
           {/* Quick links */}
-          <div className="flex items-center gap-6 text-xs text-text-muted">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-2 text-xs text-text-muted">
             <Link href="/" className="hover:text-primary transition-colors">
               {tNav('home')}
             </Link>
-            <Link href="/styleguide" className="hover:text-primary transition-colors">
-              {tNav('styleguide')}
+            <Link href="/courses" className="hover:text-primary transition-colors">
+              {tFooter('catalog')}
             </Link>
-            <span>·</span>
+            <Link href="/verify/SAGE-2026-ALPHA1" className="hover:text-primary transition-colors">
+              {tFooter('verify')}
+            </Link>
+            <Link href="/studio" className="hover:text-primary transition-colors">
+              {tFooter('studio')}
+            </Link>
+            <span className="hidden sm:inline">·</span>
             <span>{tFooter('copyright')}</span>
           </div>
         </div>

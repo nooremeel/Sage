@@ -238,6 +238,41 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `apps/web/src/components/domain/review-section.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/course-reviews.spec.ts`, `Improvement_Plan.md`
 - **Tags**: reviews, ratings, social-proof, histogram, e2e, i18n, rtl, frontend
 
+### [2026-11-07] Feature: Academic Homepage, Category Explorer & Social Proof Showcase (Phase 11.10)
+- **Symptom**: The homepage was a minimal early stub that lacked an academic discipline explorer, featured course showcase, pedagogical value pillars, authentic scholar testimonials, and deep-linked CTAs.
+- **Root cause**: `/[locale]/page.tsx` was an initial placeholder containing only a static hero with an obsolete link to the styleguide and basic generic cards.
+- **Fix**:
+  1. Rebuilt `apps/web/src/app/[locale]/page.tsx` featuring:
+     - Scholarly Hero with display serif typography (Amiri with `rtl:leading-[1.45]` in Arabic, EB Garamond in English), The Living Codex illustration with warm amber wash, and dual CTAs ("Explore Catalog" & "Browse Classical Arts").
+     - Discipline/Category Explorer grid with custom ink illustrations (`category-code`, `category-design`, `category-business`), course counts, and deep links to `/courses?category=...`.
+     - Featured Courses section rendering curated `CourseCard` components with accurate pricing, rating stars, duration, and difficulty badges.
+     - Pedagogical Pillars highlighting protected multi-bitrate HLS streaming, interactive anti-leakage quizzes, and verifiable certificates.
+     - Student Testimonials grid showcasing authentic reviews from scholars across the MENA region and worldwide.
+     - Closing Scholarly CTA banner prompting catalog exploration and account access.
+  2. Added full bilingual translations with 100% key and placeholder parity in `ar.json` and `en.json`.
+  3. Added Playwright E2E test suite in `apps/web/e2e/home-page.spec.ts` passing all tests across English and Arabic RTL with zero horizontal scroll overflow.
+- **Files**: `apps/web/src/app/[locale]/page.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/home-page.spec.ts`, `Improvement_Plan.md`
+- **Tags**: homepage, hero, category-explorer, featured-courses, testimonials, e2e, i18n, rtl, frontend
+
+### [2026-11-07] Feature: Production Cleanup & Zero-Friction Persona Switcher (Phase 11.11)
+- **Symptom**: Navigation menus exposed development routes (`/styleguide`) to public visitors, lacked direct links to the Admin portal for administrators, and client evaluators had no friction-free way to test the 3 platform personas (Student, Instructor, Admin).
+- **Root cause**: `header.tsx` and `footer.tsx` included hardcoded links to `/styleguide`, omitted `/admin` role navigation, and the login page lacked pre-configured 1-click test credentials.
+- **Fix**:
+  1. Navigation Cleanup:
+     - Removed `/styleguide` from header navigation and mobile drawer while retaining the route for developer inspection.
+     - Added conditional Platform Admin link (`/admin`) for users with administrative roles.
+     - Enhanced `footer.tsx` with academic platform links (Course Catalog, Verify Credential, Instructor Studio).
+  2. Zero-Friction Persona Switcher:
+     - Built `DemoPersonasCard` (`apps/web/src/components/auth/demo-personas-card.tsx`) featuring 3 pre-configured 1-click accounts:
+       * **Student Scholar** (`student@sage.local` -> routes directly to `/profile`).
+       * **Lead Instructor** (`nour@sage.local` -> routes directly to `/studio`).
+       * **Platform Administrator** (`admin@sage.local` -> routes directly to `/admin`).
+     - Integrated `DemoPersonasCard` into `/[locale]/login` with an elegant divider before manual credentials.
+     - Updated `LoginForm` to route intelligently based on authenticated role.
+  3. Added Playwright E2E test suite in `apps/web/e2e/demo-personas.spec.ts` passing all 5 test specs across English and Arabic RTL.
+- **Files**: `apps/web/src/components/shell/header.tsx`, `apps/web/src/components/shell/footer.tsx`, `apps/web/src/components/auth/demo-personas-card.tsx`, `apps/web/src/components/auth/login-form.tsx`, `apps/web/src/app/[locale]/(auth)/login/page.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/demo-personas.spec.ts`, `Improvement_Plan.md`
+- **Tags**: cleanup, navigation, persona-switcher, auth, admin, studio, student, e2e, i18n, rtl, frontend
+
 ---
 
 ## 2. Technical Debt Tracker

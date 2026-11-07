@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { LoginForm } from '@/components/auth/login-form';
+import { DemoPersonasCard } from '@/components/auth/demo-personas-card';
 
 export default function LoginPage() {
   const tAuth = useTranslations('auth');
@@ -15,8 +16,19 @@ export default function LoginPage() {
         </p>
       </div>
 
+      {/* 1-Click Demo Persona Quick Picker */}
+      <DemoPersonasCard />
+
+      <div className="relative flex items-center justify-center">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border" />
+        </div>
+        <span className="relative bg-card px-3 text-[11px] uppercase tracking-wider text-text-muted">
+          {tAuth('orDivider')}
+        </span>
+      </div>
+
       <LoginForm />
     </div>
   );
 }
-
