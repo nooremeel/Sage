@@ -74,6 +74,9 @@ describe('Media Pipeline & Protected HLS Playback Suite', () => {
             return coursesList.find((c) => c.id === id) || null;
           },
         },
+        enrollments: {
+          findFirst: async () => null,
+        },
       },
       insert: () => ({
         values: (item: any) => ({
@@ -141,6 +144,7 @@ describe('Media Pipeline & Protected HLS Playback Suite', () => {
   });
 
   it('denies playback token to unenrolled student on paid lesson', async () => {
+    assetsList.push({ id: 'asset-1', ownerId: 'instructor-1', status: 'ready' });
     coursesList.push({ id: 'course-1', instructorId: 'instructor-1' });
     sectionsList.push({ id: 'section-1', courseId: 'course-1' });
     lessonsList.push({
@@ -156,6 +160,7 @@ describe('Media Pipeline & Protected HLS Playback Suite', () => {
   });
 
   it('grants playback token for free preview lessons even to guest / student', async () => {
+    assetsList.push({ id: 'asset-1', ownerId: 'instructor-1', status: 'ready' });
     coursesList.push({ id: 'course-1', instructorId: 'instructor-1' });
     sectionsList.push({ id: 'section-1', courseId: 'course-1' });
     lessonsList.push({
@@ -173,6 +178,7 @@ describe('Media Pipeline & Protected HLS Playback Suite', () => {
   });
 
   it('grants playback token to course instructor and platform admin', async () => {
+    assetsList.push({ id: 'asset-1', ownerId: 'instructor-owner', status: 'ready' });
     coursesList.push({ id: 'course-1', instructorId: 'instructor-owner' });
     sectionsList.push({ id: 'section-1', courseId: 'course-1' });
     lessonsList.push({

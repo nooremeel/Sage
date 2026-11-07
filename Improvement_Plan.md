@@ -273,6 +273,28 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `apps/web/src/components/shell/header.tsx`, `apps/web/src/components/shell/footer.tsx`, `apps/web/src/components/auth/demo-personas-card.tsx`, `apps/web/src/components/auth/login-form.tsx`, `apps/web/src/app/[locale]/(auth)/login/page.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/demo-personas.spec.ts`, `Improvement_Plan.md`
 - **Tags**: cleanup, navigation, persona-switcher, auth, admin, studio, student, e2e, i18n, rtl, frontend
 
+### [2026-11-07] Bug: CI Pipeline Failures on GitHub Actions (Typecheck, Transitive Types, i18n Pathing, and Playback Tests)
+- **Symptom**: CI build in GitHub Actions failed across multiple stages:
+  1. `pnpm typecheck` in `apps/api` failed with 43 TypeScript errors (`Property 'headers' does not exist on type 'Request'`, `Property 'status' does not exist on type 'Response'`, `NextFunction has no call signatures`, `Property 'send' does not exist on type 'S3Client'`).
+  2. `pnpm --filter @sage/web i18n:check` failed when executed from monorepo root with `Error: ar.json or en.json not found in messages directory`.
+  3. `packages/shared/src/env.ts` threw `TS2580: Cannot find name 'process'`.
+  4. `pnpm test` failed in `apps/api/test/media/protected-playback.spec.ts` with 3 test failures (`Media asset is not ready for streaming`).
+- **Root cause**:
+  1. pnpm's default isolated dependency structure does not hoist transitive `@types/*` packages (`@types/express-serve-static-core`, `@types/jsonwebtoken`, `@types/qs`, `@types/send`) to workspace package `@types`, causing Express 5 `Request` and `Response` interfaces to lack method declarations. In addition, `apps/api/tsconfig.json` had `"types": ["node"]` which restricted TypeScript type resolution.
+  2. `check-i18n-parity.ts` assumed `process.cwd()` was always `apps/web`.
+  3. `packages/shared` lacked `process` typing under ES2022/DOM libs.
+  4. `protected-playback.spec.ts` reset `assetsList` in `beforeEach` without initializing ready media assets for playback authorization tests.
+- **Fix**:
+  1. Created `.npmrc` with `shamefully-hoist=true` and `auto-install-peers=true` to hoist transitive declarations in pnpm workspaces.
+  2. Explicitly added `@types/express-serve-static-core`, `@types/jsonwebtoken`, `@types/qs`, and `@types/send` as devDependencies in `apps/api/package.json`.
+  3. Removed `"types": ["node"]` from `apps/api/tsconfig.json` so TypeScript auto-loads installed `@types`.
+  4. Cast `(s3 as any).send` and `{ secret, expiresIn } as any` for resilient type compatibility.
+  5. Updated `check-i18n-parity.ts` with fallback resolution to check `apps/web/messages`.
+  6. Added `declare const process` in `packages/shared/src/env.ts`.
+  7. Initialized ready media assets and mock enrollments query in `protected-playback.spec.ts`.
+- **Files**: `.npmrc`, `apps/api/package.json`, `apps/api/tsconfig.json`, `apps/api/src/modules/auth/auth.service.ts`, `apps/api/src/modules/health/health.service.ts`, `apps/api/src/modules/media/media.service.ts`, `apps/api/test/media/protected-playback.spec.ts`, `apps/web/scripts/check-i18n-parity.ts`, `packages/shared/src/env.ts`, `Improvement_Plan.md`
+- **Tags**: ci, github-actions, pnpm, typescript, express, aws-sdk, vitest, i18n
+
 ---
 
 ## 2. Technical Debt Tracker

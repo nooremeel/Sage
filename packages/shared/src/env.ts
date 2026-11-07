@@ -1,3 +1,4 @@
+declare const process: { env: Record<string, string | undefined> };
 import { z } from 'zod';
 
 export const envSchema = z.object({

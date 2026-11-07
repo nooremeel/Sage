@@ -4,8 +4,10 @@
     "rootDir": "./",
     "outDir": "./dist",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "types": ["node", "express"]
+    "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*", "api/**/*"]
+  "include": [
+    "src/**/*",
+    "api/**/*"
+  ]
 }

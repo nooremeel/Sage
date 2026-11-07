@@ -112,7 +112,7 @@ export class HealthService {
     const start = Date.now();
     try {
       const s3 = this.getS3Client();
-      await s3.send(new ListBucketsCommand({}));
+      await (s3 as any).send(new ListBucketsCommand({}));
       return { status: 'up', latencyMs: Date.now() - start };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);

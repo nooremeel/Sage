@@ -79,7 +79,7 @@ export class MediaService {
         Key: key,
         ContentType: input.contentType,
       });
-      const createRes = await s3.send(createCommand);
+      const createRes = await (s3 as any).send(createCommand);
       if (createRes.UploadId) {
         uploadId = createRes.UploadId;
       }
@@ -165,7 +165,7 @@ export class MediaService {
           })),
         },
       });
-      await s3.send(completeCommand);
+      await (s3 as any).send(completeCommand);
     } catch (err: unknown) {
       this.logger.warn(
         `S3 CompleteMultipartUpload error: ${err instanceof Error ? err.message : String(err)}`,
@@ -276,7 +276,7 @@ export class MediaService {
 
     const token = await this.jwtService.signAsync(
       { sub: userId, lessonId, assetId: lesson.mediaAssetId },
-      { secret, expiresIn: '4h' as any },
+      { secret, expiresIn: '4h' } as any,
     );
 
     const expiresAt = new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString();

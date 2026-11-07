@@ -89,7 +89,10 @@ function traverseAndCompare(
 }
 
 function main(): void {
-  const messagesDir = path.resolve(process.cwd(), 'messages');
+  let messagesDir = path.resolve(process.cwd(), 'messages');
+  if (!fs.existsSync(messagesDir)) {
+    messagesDir = path.resolve(process.cwd(), 'apps/web/messages');
+  }
   const arPath = path.join(messagesDir, 'ar.json');
   const enPath = path.join(messagesDir, 'en.json');
 

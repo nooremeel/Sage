@@ -409,8 +409,8 @@ export class AuthService {
 
     return this.jwtService.signAsync(payload, {
       secret: this.jwtSecret,
-      expiresIn: '15m' as any,
-    });
+      expiresIn: '15m',
+    } as any);
   }
 
   getCookieOptions(type: 'access' | 'refresh') {
