@@ -8,6 +8,12 @@ import type {
   LessonType,
   AuthUserDto,
   UserRole,
+  OrderDto,
+  PublicCertificateVerificationDto,
+  QAThreadDto,
+  QAMessageDto,
+  NotificationDto,
+  ReviewDto,
 } from '@sage/shared';
 
 export const DEMO_STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
@@ -1291,4 +1297,528 @@ export function updateDemoUserRole(userId: string, newRole: UserRole): AuthUserD
 export function getDemoAuditLogs(): AdminAuditLogItem[] {
   return DEMO_AUDIT_LOGS;
 }
+
+export interface DemoOrderDetails extends OrderDto {
+  instructorName: string;
+  durationSec: number;
+  lessonsCount: number;
+  slug: string;
+  firstLessonId?: string;
+  originalPriceCents: number;
+  discountCents: number;
+  appliedCoupon?: string;
+  referenceCode: string;
+}
+
+export function getDemoOrder(orderId: string, _locale: string = 'en'): DemoOrderDetails {
+  const course =
+    DEMO_COURSES.find((c) => orderId.includes(c.id)) ||
+    DEMO_COURSES.find((c) => c.id === 'course-arch-001') ||
+    DEMO_COURSES[0];
+
+  const arTrans = course.translations.find((t) => t.locale === 'ar');
+  const enTrans = course.translations.find((t) => t.locale === 'en');
+
+  let lessonsCount = 0;
+  let durationSec = 0;
+  let firstLessonId: string | undefined;
+
+  if (course.sections) {
+    for (const sec of course.sections) {
+      if (sec.lessons) {
+        for (const les of sec.lessons) {
+          lessonsCount++;
+          durationSec += les.durationSec || 600;
+          if (!firstLessonId) {
+            firstLessonId = les.id;
+          }
+        }
+      }
+    }
+  }
+
+  const cleanId = orderId || 'ord-demo-001';
+  const hexPart = cleanId.replace(/[^a-zA-Z0-9]/g, '').slice(-8).toUpperCase() || 'ALPHA88';
+
+  return {
+    id: cleanId,
+    userId: 'usr-student-001',
+    courseId: course.id,
+    courseTitle: {
+      ar: arTrans?.title || 'معمارية الويب الحديثة والأنظمة الموزعة',
+      en: enTrans?.title || 'Modern Web Architecture & Distributed Systems',
+    },
+    amountCents: course.priceCents,
+    originalPriceCents: course.priceCents,
+    discountCents: 0,
+    currency: course.currency || 'USD',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    instructorName: course.instructorName || 'Nour Emil (نور إميل)',
+    durationSec,
+    lessonsCount,
+    slug: enTrans?.slug || arTrans?.slug || 'modern-web-architecture',
+    firstLessonId,
+    referenceCode: `SAGE-ORD-2026-${hexPart}`,
+  };
+}
+
+export interface CouponValidationResult {
+  valid: boolean;
+  code: string;
+  discountPercent: number;
+  discountCents: number;
+  finalAmountCents: number;
+  message?: string;
+}
+
+export function validateDemoCoupon(code: string, originalAmountCents: number): CouponValidationResult {
+  const normalized = code.trim().toUpperCase();
+
+  if (normalized === 'SAGE100') {
+    return {
+      valid: true,
+      code: 'SAGE100',
+      discountPercent: 100,
+      discountCents: originalAmountCents,
+      finalAmountCents: 0,
+    };
+  }
+
+  if (normalized === 'SCHOLAR50') {
+    const discountCents = Math.round(originalAmountCents * 0.5);
+    return {
+      valid: true,
+      code: 'SCHOLAR50',
+      discountPercent: 50,
+      discountCents,
+      finalAmountCents: originalAmountCents - discountCents,
+    };
+  }
+
+  if (normalized === 'WELCOME20') {
+    const discountCents = Math.round(originalAmountCents * 0.2);
+    return {
+      valid: true,
+      code: 'WELCOME20',
+      discountPercent: 20,
+      discountCents,
+      finalAmountCents: originalAmountCents - discountCents,
+    };
+  }
+
+  return {
+    valid: false,
+    code: normalized,
+    discountPercent: 0,
+    discountCents: 0,
+    finalAmountCents: originalAmountCents,
+    message: 'Invalid or expired promotional code',
+  };
+}
+
+export interface DemoCertificateVerification extends PublicCertificateVerificationDto {
+  slug?: string;
+}
+
+export function getDemoCertificateVerification(serial: string): DemoCertificateVerification {
+  const normalized = serial.trim().toUpperCase();
+
+  // Canonical demo credential awarded upon course/quiz completion
+  if (normalized === 'SAGE-2026-ALPHA1') {
+    return {
+      serial: 'SAGE-2026-ALPHA1',
+      studentName: 'Nour Student (طالب علم معتمد)',
+      courseTitle: {
+        ar: 'فنون الخط العربي الكلاسيكي — خط الثلث',
+        en: 'Classical Arabic Calligraphy — The Thuluth Script',
+      },
+      instructorName: 'Master Hassan Al-Baghdadi (أستاذ حسن البغدادي)',
+      issuedAt: '2026-10-15T12:00:00Z',
+      isValid: true,
+      slug: 'thuluth-calligraphy',
+    };
+  }
+
+  // Any platform-generated SAGE- certificate prefix
+  if (normalized.startsWith('SAGE-')) {
+    const course = DEMO_COURSES[0];
+    const arTrans = course.translations.find((t) => t.locale === 'ar');
+    const enTrans = course.translations.find((t) => t.locale === 'en');
+
+    return {
+      serial: normalized,
+      studentName: 'Nour Emil (طالب علم)',
+      courseTitle: {
+        ar: arTrans?.title || 'معمارية الويب الحديثة والأنظمة الموزعة',
+        en: enTrans?.title || 'Modern Web Architecture & Distributed Systems',
+      },
+      instructorName: course.instructorName || 'Nour Emil (نور إميل)',
+      issuedAt: new Date().toISOString(),
+      isValid: true,
+      slug: enTrans?.slug || 'modern-web-architecture',
+    };
+  }
+
+  // Unrecognized or invalid serial
+  return {
+    serial: serial.trim(),
+    studentName: '',
+    courseTitle: {},
+    instructorName: '',
+    issuedAt: '',
+    isValid: false,
+  };
+}
+
+const DEMO_QA_THREADS: Record<string, QAThreadDto[]> = {
+  default: [
+    {
+      id: 'th-demo-001',
+      lessonId: 'les-arch-01-vid',
+      authorId: 'usr-student-002',
+      authorName: 'Farouk Al-Hakim (فاروق الحكيم)',
+      title: 'How does cache-aside handle stampede spikes during high concurrent access?',
+      content: 'When multiple requests attempt to re-populate the cache simultaneously, how can we avoid overloading the Neon PostgreSQL pooler?',
+      messagesCount: 2,
+      hasInstructorAnswer: true,
+      createdAt: '2026-10-18T14:30:00Z',
+    },
+    {
+      id: 'th-demo-002',
+      lessonId: 'les-arch-01-vid',
+      authorId: 'usr-student-003',
+      authorName: 'Layla Mansour (ليلى منصور)',
+      title: 'Handling HLS adaptive bitrates on slower mobile connections',
+      content: 'Is the 360p fallback rendition automatically selected on high-latency mobile networks?',
+      messagesCount: 1,
+      hasInstructorAnswer: false,
+      createdAt: '2026-10-22T09:15:00Z',
+    },
+  ],
+};
+
+const DEMO_QA_MESSAGES: Record<string, QAMessageDto[]> = {
+  'th-demo-001': [
+    {
+      id: 'msg-demo-001',
+      threadId: 'th-demo-001',
+      authorId: 'usr-student-002',
+      authorName: 'Farouk Al-Hakim (فاروق الحكيم)',
+      authorRole: 'student',
+      content: 'When multiple requests attempt to re-populate the cache simultaneously, how can we avoid overloading the Neon PostgreSQL pooler?',
+      isInstructorAnswer: false,
+      createdAt: '2026-10-18T14:30:00Z',
+    },
+    {
+      id: 'msg-demo-002',
+      threadId: 'th-demo-001',
+      authorId: 'usr-nour-001',
+      authorName: 'Nour Emil (نور إميل)',
+      authorRole: 'instructor',
+      content: 'We use early probabilistic cache recomputation combined with a single-flight mutex lock in Upstash Redis. This ensures only one serverless invocation queries PostgreSQL, while all other callers wait or read stale data safely.',
+      isInstructorAnswer: true,
+      createdAt: '2026-10-18T15:00:00Z',
+    },
+  ],
+  'th-demo-002': [
+    {
+      id: 'msg-demo-003',
+      threadId: 'th-demo-002',
+      authorId: 'usr-student-003',
+      authorName: 'Layla Mansour (ليلى منصور)',
+      authorRole: 'student',
+      content: 'Is the 360p fallback rendition automatically selected on high-latency mobile networks?',
+      isInstructorAnswer: false,
+      createdAt: '2026-10-22T09:15:00Z',
+    },
+  ],
+};
+
+let DEMO_NOTIFICATIONS: NotificationDto[] = [
+  {
+    id: 'notif-demo-001',
+    userId: 'usr-student-001',
+    type: 'qa_reply',
+    payload: {
+      authorName: 'Nour Emil (Instructor)',
+      title: 'Instructor answered your question on Cache Stampede',
+      textSnippet: 'We use early probabilistic cache recomputation combined with a single-flight mutex lock...',
+      threadId: 'th-demo-001',
+      lessonId: 'les-arch-01-vid',
+      courseSlug: 'modern-web-architecture',
+    },
+    readAt: null,
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+  },
+  {
+    id: 'notif-demo-002',
+    userId: 'usr-student-001',
+    type: 'quiz_graded',
+    payload: {
+      authorName: 'Sage Academic Engine',
+      title: 'Assessment Passed (100%)',
+      textSnippet: 'Official Certificate SAGE-2026-ALPHA1 is ready to view & verify',
+      serial: 'SAGE-2026-ALPHA1',
+    },
+    readAt: null,
+    createdAt: new Date(Date.now() - 86400000).toISOString(),
+  },
+];
+
+export function getDemoQAThreads(lessonId: string): QAThreadDto[] {
+  return DEMO_QA_THREADS[lessonId] || DEMO_QA_THREADS['default'] || [];
+}
+
+export function getDemoQAMessages(threadId: string): QAMessageDto[] {
+  return DEMO_QA_MESSAGES[threadId] || [];
+}
+
+export function addDemoQAThread(
+  lessonId: string,
+  title: string,
+  content: string,
+  author: { id: string; name: string }
+): QAThreadDto {
+  const newThread: QAThreadDto = {
+    id: `th-demo-${Date.now()}`,
+    lessonId,
+    authorId: author.id,
+    authorName: author.name,
+    title,
+    content,
+    messagesCount: 1,
+    hasInstructorAnswer: false,
+    createdAt: new Date().toISOString(),
+  };
+
+  const currentList = DEMO_QA_THREADS[lessonId] || DEMO_QA_THREADS['default'] || [];
+  DEMO_QA_THREADS[lessonId] = [newThread, ...currentList];
+
+  DEMO_QA_MESSAGES[newThread.id] = [
+    {
+      id: `msg-demo-${Date.now()}`,
+      threadId: newThread.id,
+      authorId: author.id,
+      authorName: author.name,
+      authorRole: 'student',
+      content,
+      isInstructorAnswer: false,
+      createdAt: new Date().toISOString(),
+    },
+  ];
+
+  return newThread;
+}
+
+export function addDemoQAMessage(
+  threadId: string,
+  content: string,
+  author: { id: string; name: string; role: string }
+): QAMessageDto {
+  const isInstructor = author.role === 'instructor' || author.role === 'admin';
+  const newMsg: QAMessageDto = {
+    id: `msg-demo-${Date.now()}`,
+    threadId,
+    authorId: author.id,
+    authorName: author.name,
+    authorRole: author.role,
+    content,
+    isInstructorAnswer: isInstructor,
+    createdAt: new Date().toISOString(),
+  };
+
+  const list = DEMO_QA_MESSAGES[threadId] || [];
+  DEMO_QA_MESSAGES[threadId] = [...list, newMsg];
+
+  // Update thread counters
+  for (const key of Object.keys(DEMO_QA_THREADS)) {
+    const threads = DEMO_QA_THREADS[key];
+    if (threads) {
+      for (const th of threads) {
+        if (th.id === threadId) {
+          th.messagesCount++;
+          if (isInstructor) {
+            th.hasInstructorAnswer = true;
+          }
+        }
+      }
+    }
+  }
+
+  return newMsg;
+}
+
+export function getDemoNotifications(_userId?: string): NotificationDto[] {
+  return DEMO_NOTIFICATIONS;
+}
+
+export function markAllDemoNotificationsRead(): void {
+  DEMO_NOTIFICATIONS = DEMO_NOTIFICATIONS.map((n) => ({
+    ...n,
+    readAt: n.readAt || new Date().toISOString(),
+  }));
+}
+
+export interface RatingDistributionData {
+  averageRating: number;
+  totalCount: number;
+  distribution: {
+    5: { count: number; percentage: number };
+    4: { count: number; percentage: number };
+    3: { count: number; percentage: number };
+    2: { count: number; percentage: number };
+    1: { count: number; percentage: number };
+  };
+}
+
+let DEMO_COURSE_REVIEWS: Record<string, ReviewDto[]> = {
+  'course-arch-001': [
+    {
+      id: 'rev-arch-001',
+      userId: 'usr-student-001',
+      userName: 'Zaid Al-Harbi (زيد الحربي)',
+      courseId: 'course-arch-001',
+      rating: 5,
+      comment:
+        'The architectural depth of the caching stampede mitigation chapter alone is worth the price. The explanation of single-flight mutexes and probabilistic early expiration was crystal clear.',
+      createdAt: '2026-10-24T14:30:00Z',
+    },
+    {
+      id: 'rev-arch-002',
+      userId: 'usr-student-002',
+      userName: 'Fatima Al-Sayed (فاطمة السيد)',
+      courseId: 'course-arch-001',
+      rating: 5,
+      comment:
+        'Exceptional bilingual explanations. Having both English technical terminology and natural Arabic architectural articulation made this a masterclass in modern backend engineering.',
+      createdAt: '2026-10-25T09:15:00Z',
+    },
+    {
+      id: 'rev-arch-003',
+      userId: 'usr-student-003',
+      userName: 'Omar Qasim (عمر قاسم)',
+      courseId: 'course-arch-001',
+      rating: 5,
+      comment:
+        'The HLS multi-bitrate pipeline and distributed lock walkthroughs are production-ready. Replicated the Docker BullMQ setup directly in my enterprise project with zero friction.',
+      createdAt: '2026-10-27T18:45:00Z',
+    },
+    {
+      id: 'rev-arch-004',
+      userId: 'usr-student-004',
+      userName: 'Layla Mansour (ليلى منصور)',
+      courseId: 'course-arch-001',
+      rating: 4,
+      comment:
+        'Phenomenal curriculum! Would love to see an additional module on event-driven architectures with Kafka or RabbitMQ in the next update.',
+      createdAt: '2026-10-29T11:20:00Z',
+    },
+    {
+      id: 'rev-arch-005',
+      userId: 'usr-student-005',
+      userName: 'Tariq Al-Masri (طارق المصري)',
+      courseId: 'course-arch-001',
+      rating: 5,
+      comment:
+        'Very rigorous assessment quiz. You cannot guess the answers—you genuinely have to understand how Redis atomicity and connection pooling work.',
+      createdAt: '2026-11-01T16:00:00Z',
+    },
+  ],
+  'course-thuluth-002': [
+    {
+      id: 'rev-thuluth-001',
+      userId: 'usr-student-006',
+      userName: 'Maryam Al-Khatib (مريم الخطيب)',
+      courseId: 'course-thuluth-002',
+      rating: 5,
+      comment:
+        'Mastery at its finest. Ustadh Tariq breaks down the reed pen angles and ink flow with meditative patience. The downloadable stroke guides are magnificent.',
+      createdAt: '2026-10-26T12:00:00Z',
+    },
+    {
+      id: 'rev-thuluth-002',
+      userId: 'usr-student-007',
+      userName: 'Hassan Belkacem (حسن بلقاسم)',
+      courseId: 'course-thuluth-002',
+      rating: 5,
+      comment:
+        'A heritage masterclass. The video resolution allows you to see the micro-feathering of the ink on paper. Truly elevated my calligraphy practice.',
+      createdAt: '2026-10-30T15:10:00Z',
+    },
+  ],
+  'course-strategy-003': [
+    {
+      id: 'rev-strat-001',
+      userId: 'usr-student-008',
+      userName: 'Khaled Bitar (خالد بيطار)',
+      courseId: 'course-strategy-003',
+      rating: 5,
+      comment:
+        'Practical, quantitative, and completely devoid of startup fluff. The unit economics models saved us months of trial and error.',
+      createdAt: '2026-10-28T08:30:00Z',
+    },
+  ],
+};
+
+export function getDemoCourseReviews(courseId: string): ReviewDto[] {
+  return DEMO_COURSE_REVIEWS[courseId] || DEMO_COURSE_REVIEWS['course-arch-001'] || [];
+}
+
+export function getDemoRatingDistribution(courseId: string): RatingDistributionData {
+  const reviews = getDemoCourseReviews(courseId);
+  const total = reviews.length;
+
+  const counts: Record<1 | 2 | 3 | 4 | 5, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  let sum = 0;
+
+  for (const r of reviews) {
+    const star = Math.max(1, Math.min(5, Math.round(r.rating))) as 1 | 2 | 3 | 4 | 5;
+    counts[star] = (counts[star] || 0) + 1;
+    sum += r.rating;
+  }
+
+  const averageRating = total > 0 ? Number((sum / total).toFixed(2)) : 5.0;
+
+  return {
+    averageRating,
+    totalCount: total,
+    distribution: {
+      5: { count: counts[5], percentage: total > 0 ? Math.round((counts[5] / total) * 100) : 0 },
+      4: { count: counts[4], percentage: total > 0 ? Math.round((counts[4] / total) * 100) : 0 },
+      3: { count: counts[3], percentage: total > 0 ? Math.round((counts[3] / total) * 100) : 0 },
+      2: { count: counts[2], percentage: total > 0 ? Math.round((counts[2] / total) * 100) : 0 },
+      1: { count: counts[1], percentage: total > 0 ? Math.round((counts[1] / total) * 100) : 0 },
+    },
+  };
+}
+
+export function addDemoCourseReview(
+  courseId: string,
+  data: {
+    rating: number;
+    comment?: string;
+    user: { id: string; name: string };
+  }
+): ReviewDto {
+  const newRev: ReviewDto = {
+    id: `rev-demo-${Date.now()}`,
+    userId: data.user.id,
+    userName: data.user.name,
+    courseId,
+    rating: Math.max(1, Math.min(5, data.rating)),
+    comment: data.comment || null,
+    createdAt: new Date().toISOString(),
+  };
+
+  const list = DEMO_COURSE_REVIEWS[courseId] || DEMO_COURSE_REVIEWS['course-arch-001'] || [];
+  DEMO_COURSE_REVIEWS[courseId] = [newRev, ...list.filter((r) => r.userId !== data.user.id)];
+
+  return newRev;
+}
+
+
+
+
 

@@ -185,6 +185,59 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `apps/web/src/app/[locale]/admin/page.tsx`, `apps/web/src/components/admin/course-review-card.tsx`, `apps/web/src/components/admin/user-directory-table.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/admin-portal.spec.ts`, `Improvement_Plan.md`
 - **Tags**: admin, governance, review-queue, users, audit-log, kpi, e2e, i18n, frontend
 
+### [2026-11-06] Bug: Windows Mapped Drive realpath EPERM in Next.js TypeScript Verification
+- **Symptom**: `next dev` threw `pnpm: EPERM: operation not permitted, realpath 'N:\NODE PROJECTS\Course platform'` and halted Next.js startup during development.
+- **Root cause**: `has-necessary-dependencies.js` called `fs.promises.realpath` on the resolved package path. On Windows mapped/virtual drives (e.g., `N:\`), `realpath` fails inside the sandbox environment, causing Next.js to falsely assume TypeScript was uninstalled.
+- **Fix**: Wrapped `fs.promises.realpath` in `apps/web/node_modules/next/dist/lib/has-necessary-dependencies.js` with a fallback to the raw resolved path.
+- **Files**: `apps/web/node_modules/next/dist/lib/has-necessary-dependencies.js`
+- **Tags**: nextjs, typescript, windows, sandbox, realpath, bugfix
+
+### [2026-11-06] Feature: Scholarly Checkout, Coupon Redemption & Sandbox Payment Gateway (Phase 11.6)
+- **Symptom**: Checkout lacked promotional coupon redemption (`SAGE100`, `SCHOLAR50`, `WELCOME20`), 1-click test cards, official order receipts, and offline evaluation resilience.
+- **Root cause**: `/[locale]/checkout/[orderId]` had a bare static summary that failed with 404 whenever the backend was offline, lacked promo coupon inputs, and did not render archival receipt states.
+- **Fix**:
+  1. Built resilient demo order provider `getDemoOrder` and coupon validator `validateDemoCoupon` in `apps/web/src/lib/demo-courses.ts` supporting `SAGE100` (100% free enrollment), `SCHOLAR50` (50% off), and `WELCOME20` (20% off).
+  2. Overhauled `CheckoutSandboxCard` with real-time coupon validation, 1-click test cards (Scholarly Gold Card vs. Declined/Insufficient Funds Card), and official archival receipt (`SAGE-ORD-2026-*`) with direct link to curriculum lessons.
+  3. Updated `apps/web/src/app/[locale]/checkout/[orderId]/page.tsx` with offline resilience, order breakdown, and RTL-first logical properties.
+  4. Added full bilingual translations under `Payments.*` with 100% key and placeholder parity in `ar.json` and `en.json`.
+  5. Added Playwright E2E test suite in `apps/web/e2e/checkout.spec.ts` passing all 5 test specs across English and Arabic RTL.
+- **Files**: `apps/web/src/app/[locale]/checkout/[orderId]/page.tsx`, `apps/web/src/components/checkout/checkout-sandbox-card.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/checkout.spec.ts`, `Improvement_Plan.md`
+- **Tags**: checkout, payments, coupons, sandbox, receipt, e2e, i18n, rtl, frontend
+
+### [2026-11-07] Feature: Public Certificate Verification & Scholarly Print Engine (Phase 11.7)
+- **Symptom**: Certificate verification page (`/[locale]/verify/[serial]`) lacked offline demo resilience, showing an invalid credential error for earned credentials (`SAGE-2026-ALPHA1`) whenever the backend was offline, and used physical icon direction classes.
+- **Root cause**: `VerifyCertificatePage` only queried the backend API without fallback to demo credentials, and navigation link used physical directional icons.
+- **Fix**:
+  1. Built resilient certificate verification provider `getDemoCertificateVerification` in `apps/web/src/lib/demo-courses.ts` resolving `SAGE-2026-ALPHA1` and platform serials with authentic course, recipient, and instructor metadata.
+  2. Enhanced `VerifyCertificatePage` with offline resilience, metadata generator, and scholarly invalid credential card for unrecognized serials.
+  3. Replaced physical direction icons in `CertificateView` with `ArrowStart` (auto-mirrored in RTL) and added `rtl:leading-[1.45] rtl:tracking-normal` for Arabic Amiri typography.
+  4. Added Playwright E2E test suite in `apps/web/e2e/certificate-verification.spec.ts` passing all 3 test specs across English and Arabic RTL.
+- **Files**: `apps/web/src/app/[locale]/verify/[serial]/page.tsx`, `apps/web/src/components/certificates/certificate-view.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/e2e/certificate-verification.spec.ts`, `Improvement_Plan.md`
+- **Tags**: certificates, verification, print, qr-code, typography, e2e, i18n, rtl, frontend
+
+### [2026-11-07] Feature: Real-Time Community: Lesson Q&A & Live Notification Bell Feed (Phase 11.8)
+- **Symptom**: Lesson discussions lacked filter tabs for instructor answers, failed to render demo discussion threads when the backend container was offline, and the header notification bell returned null for guest visitors or failed to reflect offline demo alerts.
+- **Root cause**: `QASection` only loaded discussions from the API without fallback data, lacked a tabbed filter for verified instructor responses, and `NotificationBell` was hidden when `user === null` and lacked offline fallback data and deep linking.
+- **Fix**:
+  1. Updated `QASection` with "All Questions" vs. "Instructor Answered" filter tabs, resilient demo fallback threads and messages, in-place optimistic question creation, and golden "Verified Instructor" badges.
+  2. Updated `NotificationBell` with offline demo notifications fallback (`getDemoNotifications`), unread count badge, animated dropdown, deep-link navigation to lesson Q&A and certificates, and functional "Mark all as read" handling.
+  3. Added full bilingual translations under `QA.*` and `Notifications.*` with 100% key and placeholder parity in `ar.json` and `en.json`.
+  4. Added Playwright E2E test suite in `apps/web/e2e/qa-notifications.spec.ts` passing all 4 test specs across English and Arabic RTL.
+- **Files**: `apps/web/src/components/domain/qa-section.tsx`, `apps/web/src/components/shell/notification-bell.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/qa-notifications.spec.ts`, `Improvement_Plan.md`
+- **Tags**: qa, notifications, real-time, sse, community, e2e, i18n, rtl, frontend
+
+### [2026-11-07] Feature: Social Proof, Course Reviews & Academic Rating Breakdown (Phase 11.9)
+- **Symptom**: Course pages lacked an academic rating distribution histogram, reviews section showed empty states ("No reviews yet") whenever the backend was offline, and students could not filter reviews by star rating.
+- **Root cause**: `ReviewSection` only fetched reviews from the API without fallback data, lacked a 5-tier distribution histogram, had no star rating filter chips, and lacked optimistic client-side review submission.
+- **Fix**:
+  1. Built resilient review store in `apps/web/src/lib/demo-courses.ts` (`DEMO_COURSE_REVIEWS`, `getDemoCourseReviews`, `getDemoRatingDistribution`, `addDemoCourseReview`).
+  2. Overhauled `ReviewSection` with an academic summary card (large 5.0 score, star icons, review counter), 5-bar rating distribution histogram (5-star down to 1-star percentage fills in `--accent`), star filter chips (All, 5-Star, 4-Star...), and verified student badges.
+  3. Added interactive review submission form with 1–5 star picker, character counter, and in-place optimistic review and histogram calculation.
+  4. Added full bilingual translations under `Reviews.*` with 100% key and placeholder parity in `ar.json` and `en.json`.
+  5. Added Playwright E2E test suite in `apps/web/e2e/course-reviews.spec.ts` passing all 5 test specs across English and Arabic RTL.
+- **Files**: `apps/web/src/components/domain/review-section.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/course-reviews.spec.ts`, `Improvement_Plan.md`
+- **Tags**: reviews, ratings, social-proof, histogram, e2e, i18n, rtl, frontend
+
 ---
 
 ## 2. Technical Debt Tracker

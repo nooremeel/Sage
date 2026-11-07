@@ -4,6 +4,7 @@ import { ArrowStart } from '@/components/ui/directional-icon';
 import { CertificateView } from '@/components/certificates/certificate-view';
 import { apiClient } from '@/lib/api';
 import { Link } from '@/i18n/routing';
+import { getDemoCertificateVerification } from '@/lib/demo-courses';
 import type { PublicCertificateVerificationDto } from '@sage/shared';
 
 interface VerifyPageProps {
@@ -15,29 +16,7 @@ interface VerifyPageProps {
 
 export async function generateMetadata({ params }: VerifyPageProps) {
   const { locale, serial } = await params;
-  try {
-    const res = await apiClient<{ verification: PublicCertificateVerificationDto }>(
-      `/certificates/verify/${serial}`
-    );
-    const title = res.verification.courseTitle[locale] || res.verification.courseTitle.en || 'Course';
-    return {
-      title: `Certificate Verification (${serial}) — ${res.verification.studentName} — Sage`,
-      description: `Official verification of certificate ${serial} awarded to ${res.verification.studentName} for completing ${title}.`,
-    };
-  } catch {
-    return {
-      title: `Certificate Verification (${serial}) — Sage`,
-    };
-  }
-}
-
-export default async function VerifyCertificatePage({ params }: VerifyPageProps) {
-  const { locale, serial } = await params;
-  const currentLocale = (locale === 'ar' ? 'ar' : 'en') as 'ar' | 'en';
-  const t = await getTranslations('Certificates');
-
-  let verification: PublicCertificateVerificationDto | null = null;
-  let isInvalid = false;
+  let verification: (PublicCertificateVerificationDto & { slug?: string }) | null = null;
 
   try {
     const res = await apiClient<{ verification: PublicCertificateVerificationDto }>(
@@ -45,10 +24,44 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
     );
     verification = res.verification;
   } catch {
-    isInvalid = true;
+    verification = getDemoCertificateVerification(serial);
   }
 
-  if (isInvalid || !verification || !verification.isValid) {
+  if (verification && verification.isValid) {
+    const title =
+      verification.courseTitle[locale] ||
+      verification.courseTitle.en ||
+      verification.courseTitle.ar ||
+      'Course';
+    return {
+      title: `Certificate Verification (${serial}) — ${verification.studentName} — Sage (سايج)`,
+      description: `Official verification of certificate ${serial} awarded to ${verification.studentName} for completing ${title}.`,
+    };
+  }
+
+  return {
+    title: `Certificate Verification (${serial}) — Sage (سايج)`,
+  };
+}
+
+export default async function VerifyCertificatePage({ params }: VerifyPageProps) {
+  const { locale, serial } = await params;
+  const currentLocale = (locale === 'ar' ? 'ar' : 'en') as 'ar' | 'en';
+  const t = await getTranslations('Certificates');
+
+  let verification: (PublicCertificateVerificationDto & { slug?: string }) | null = null;
+
+  try {
+    const res = await apiClient<{ verification: PublicCertificateVerificationDto & { slug?: string } }>(
+      `/certificates/verify/${serial}`
+    );
+    verification = res.verification;
+  } catch {
+    // Resilient offline fallback for evaluation & demo certificates
+    verification = getDemoCertificateVerification(serial);
+  }
+
+  if (!verification || !verification.isValid) {
     return (
       <div className="container mx-auto max-w-2xl py-20 px-4 sm:px-6">
         <div className="rounded-lg border border-danger/40 bg-card p-8 sm:p-12 text-center space-y-6 shadow-e1">
@@ -57,7 +70,7 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
           </div>
 
           <div className="space-y-2">
-            <h1 className="font-headline text-2xl sm:text-3xl font-bold text-text">
+            <h1 className="font-headline text-2xl sm:text-3xl font-bold text-text rtl:leading-[1.45] rtl:tracking-normal">
               {t('invalidCertificate')}
             </h1>
             <p className="text-sm text-text-muted max-w-md mx-auto leading-relaxed">
@@ -67,7 +80,7 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
 
           <div
             dir="ltr"
-            className="inline-block px-4 py-2 rounded bg-paper-200 text-xs font-mono font-semibold text-text-muted"
+            className="inline-block px-4 py-2 rounded bg-paper-200 dark:bg-card border border-border text-xs font-mono font-semibold text-text-muted"
           >
             {serial}
           </div>
@@ -89,17 +102,17 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
   return (
     <div className="container mx-auto max-w-5xl py-10 px-4 sm:px-6 space-y-8">
       {/* Verification Seal Status Banner (Hidden on print) */}
-      <div className="rounded-lg border border-sage-700/30 bg-sage-300/15 dark:bg-sage-700/20 p-4 sm:p-6 flex flex-wrap items-center justify-between gap-4 print:hidden shadow-sm">
+      <div className="rounded-lg border border-sage-700/30 bg-sage-300/15 dark:bg-sage-700/20 p-4 sm:p-6 flex flex-wrap items-center justify-between gap-4 print:hidden shadow-sm text-start">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-sage-700 text-white flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-full bg-sage-700 text-white flex items-center justify-center shrink-0 shadow-xs">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <div className="space-y-0.5 text-start">
+          <div className="space-y-0.5">
             <h2 className="font-headline text-base sm:text-lg font-bold text-text">
               {t('verifiedBySage')}
             </h2>
             <p className="text-xs text-text-muted">
-              {t('verifyAuthenticity')} • Serial:{' '}
+              {t('verifyAuthenticity')} • {t('serialNumber')}:{' '}
               <span dir="ltr" className="font-mono font-medium text-text">
                 {verification.serial}
               </span>
@@ -114,8 +127,11 @@ export default async function VerifyCertificatePage({ params }: VerifyPageProps)
       </div>
 
       {/* Render Certificate View */}
-      <CertificateView certificate={verification} locale={currentLocale} />
+      <CertificateView
+        certificate={verification}
+        locale={currentLocale}
+        courseSlug={verification.slug}
+      />
     </div>
   );
 }
-

@@ -405,12 +405,19 @@
     "replies": "ردود",
     "instructorBadge": "مدرب",
     "writeReplyPlaceholder": "اكتب إجابتك أو تعقيبك...",
-    "reply": "رد"
+    "reply": "رد",
+    "allQuestions": "جميع الأسئلة",
+    "instructorAnsweredTab": "إجابات المحاضر",
+    "verifiedInstructor": "محاضر معتمد",
+    "questionPostedSuccess": "تم نشر سؤالك بنجاح!",
+    "emptyFilterMessage": "لا توجد نقاشات مطابقة لهذا الفلتر."
   },
   "Notifications": {
     "notifications": "الإشعارات",
     "markAllAsRead": "تحديد الكل كمقروء",
-    "noNotifications": "ليس لديك إشعارات جديدة حالياً"
+    "noNotifications": "ليس لديك إشعارات جديدة حالياً",
+    "unreadBadge": "{count} إشعارات جديدة",
+    "viewDetails": "عرض التفاصيل"
   },
   "Certificates": {
     "certificateOfCompletion": "شهادة إتمام معتمدة",
@@ -446,7 +453,16 @@
     "reviewsCount": "{count} تقييم",
     "enrollToReview": "سجّل في هذه الدورة لتتمكن من كتابة تقييمك.",
     "reviewSuccess": "تم إرسال تقييمك بنجاح!",
-    "mustBeEnrolled": "تعذّر إرسال التقييم. يجب أن تكون مسجلاً في الدورة أولاً."
+    "mustBeEnrolled": "تعذّر إرسال التقييم. يجب أن تكون مسجلاً في الدورة أولاً.",
+    "ratingBreakdown": "توزيع التقييمات",
+    "overallRating": "التقييم العام",
+    "outOfFive": "من 5",
+    "starsCount": "{star} نجوم",
+    "starsCountSingular": "نجمة واحدة",
+    "allRatings": "جميع التقييمات",
+    "verifiedStudent": "طالب معتمد",
+    "filterReviews": "تصفية حسب النجوم",
+    "charactersCount": "{count} / 1000 حرف"
   },
   "Payments": {
     "orderCheckout": "إتمام الطلب",
@@ -467,6 +483,30 @@
     "paymentFailedDesc": "تم رفض العملية التجريبية. يمكنك إعادة المحاولة مع محاكاة دفع ناجح أو إلغاء الطلب.",
     "orderCancelledTitle": "تم إلغاء الطلب",
     "orderCancelledDesc": "تم إلغاء جلسة الدفع هذه. لم يطرأ أي تغيير على حسابك.",
-    "returnToCatalog": "العودة إلى الدورات"
+    "returnToCatalog": "العودة إلى الدورات",
+    "couponLabel": "كوبون الخصم الترويجي",
+    "couponPlaceholder": "مثال: SAGE100 أو SCHOLAR50",
+    "applyCoupon": "تطبيق",
+    "applyingCoupon": "جاري التحقق...",
+    "couponApplied": "تم تطبيق الكوبون {code} (خصم {percent}%)",
+    "invalidCoupon": "رمز الكوبون غير صالح أو منتهي الصلاحية",
+    "removeCoupon": "إلغاء الكوبون",
+    "originalPrice": "السعر الأصلي",
+    "discount": "الخصم الترويجي",
+    "freeEnrollmentBadge": "منحة دراسية كاملة 100%",
+    "freeEnrollmentAction": "تأكيد الالتحاق المجاني بالكامل",
+    "officialReceipt": "إيصال سداد أكاديمي معتمد",
+    "orderReference": "الرقم المرجعي الرسمي",
+    "receiptIssued": "صادر رسمياً عن منصة سايج التعليمية",
+    "testCardsTitle": "بطاقات الاختبار التجريبية بنقرة واحدة",
+    "testCardsSubtitle": "اختر سيناريو المحاكاة لاختبار مسارات بوابة الدفع وتأكيد القبول",
+    "testCardSuccessName": "بطاقة المنحة الأكاديمية الذهبية",
+    "testCardSuccessDesc": "محاكاة فورية لنجاح السداد وتفعيل التحاق الطالب بالدورة",
+    "testCardFailName": "بطاقة مرفوضة / رصيد غير كافٍ",
+    "testCardFailDesc": "محاكاة رفض البنك لإظهار واجهة معالجة الأخطاء وإعادة المحاولة",
+    "securityGuarantee": "معاملة مشفرة وتفعيل فوري لحساب الطالب",
+    "instructorLabel": "المحاضر",
+    "lessonsCount": "{count} درساً",
+    "durationLabel": "إجمالي المدة: {duration}"
   }
 }

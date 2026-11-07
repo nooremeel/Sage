@@ -2,7 +2,8 @@
 
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
-import { Printer, ArrowLeft, ArrowRight, ShieldCheck, Award } from 'lucide-react';
+import { Printer, ShieldCheck, Award } from 'lucide-react';
+import { ArrowStart } from '@/components/ui/directional-icon';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/routing';
 import { QrCodeSvg } from './qr-code-svg';
@@ -70,13 +71,9 @@ export function CertificateView({
         {courseSlug ? (
           <Link
             href={`/courses/${courseSlug}`}
-            className="inline-flex items-center gap-2 text-xs font-medium text-text-muted hover:text-primary transition-colors"
+            className="inline-flex items-center gap-2 text-xs font-medium text-text-muted hover:text-primary transition-colors focus-ring rounded-xs"
           >
-            {locale === 'ar' ? (
-              <ArrowRight className="h-4 w-4" />
-            ) : (
-              <ArrowLeft className="h-4 w-4" />
-            )}
+            <ArrowStart className="h-4 w-4" />
             <span>{t('backToCourse')}</span>
           </Link>
         ) : (
@@ -125,7 +122,7 @@ export function CertificateView({
             </div>
 
             <div className="space-y-1">
-              <h1 className="font-headline text-2xl sm:text-4xl font-bold tracking-tight text-ink-900 print:text-black uppercase">
+              <h1 className="font-headline text-2xl sm:text-4xl font-bold tracking-tight text-ink-900 print:text-black uppercase rtl:leading-[1.45] rtl:tracking-normal">
                 {t('certificateOfCompletion')}
               </h1>
               <p className="text-xs uppercase tracking-widest text-ink-600 print:text-black">
@@ -142,7 +139,7 @@ export function CertificateView({
               {t('thisIsToCertify')}
             </p>
 
-            <h2 className="font-headline text-3xl sm:text-5xl font-bold text-primary dark:text-accent print:text-black tracking-wide underline decoration-1 underline-offset-8 decoration-accent/60">
+            <h2 className="font-headline text-3xl sm:text-5xl font-bold text-primary dark:text-accent print:text-black tracking-wide underline decoration-1 underline-offset-8 decoration-accent/60 rtl:leading-[1.45] rtl:tracking-normal">
               {certificate.studentName}
             </h2>
 
@@ -151,7 +148,7 @@ export function CertificateView({
             </p>
 
             <div className="space-y-1 pt-2">
-              <h3 className="font-headline text-xl sm:text-3xl font-bold text-ink-900 print:text-black max-w-2xl mx-auto leading-snug">
+              <h3 className="font-headline text-xl sm:text-3xl font-bold text-ink-900 print:text-black max-w-2xl mx-auto leading-snug rtl:leading-[1.45] rtl:tracking-normal">
                 {primaryTitle}
               </h3>
               {secondaryTitle && secondaryTitle !== primaryTitle && (
