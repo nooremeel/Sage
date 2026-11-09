@@ -51,8 +51,35 @@ test.describe('Real-Time Community: Lesson Q&A & Notification Center', () => {
     await expect(page.getByText(uniqueTitle)).toBeVisible({ timeout: 5000 });
   });
 
+  test('does not display notification bell or notifications for unauthenticated visitors', async ({ page }) => {
+    await page.goto('/en');
+    await page.evaluate(() => {
+      localStorage.removeItem('sage_auth_user');
+    });
+    await page.reload();
+
+    const bellBtn = page.locator('[data-testid="notification-bell-btn"]');
+    await expect(bellBtn).not.toBeVisible();
+    const badge = page.locator('[data-testid="notification-badge"]');
+    await expect(badge).not.toBeVisible();
+  });
+
   test('header notification bell displays unread count and allows marking all read', async ({ page }) => {
     await page.goto('/en');
+    await page.evaluate(() => {
+      localStorage.setItem(
+        'sage_auth_user',
+        JSON.stringify({
+          id: 'usr-student-001',
+          email: 'student@sage.dev',
+          role: 'student',
+          locale: 'en',
+          emailVerifiedAt: '2026-09-01T10:00:00Z',
+          createdAt: '2026-09-01T10:00:00Z',
+        })
+      );
+    });
+    await page.reload();
 
     const bellBtn = page.locator('[data-testid="notification-bell-btn"]');
     await expect(bellBtn).toBeVisible({ timeout: 10000 });
@@ -81,6 +108,20 @@ test.describe('Real-Time Community: Lesson Q&A & Notification Center', () => {
   });
 
   test('bilingual RTL Q&A and notifications work seamlessly in Arabic', async ({ page }) => {
+    await page.goto('/ar');
+    await page.evaluate(() => {
+      localStorage.setItem(
+        'sage_auth_user',
+        JSON.stringify({
+          id: 'usr-student-001',
+          email: 'student@sage.dev',
+          role: 'student',
+          locale: 'ar',
+          emailVerifiedAt: '2026-09-01T10:00:00Z',
+          createdAt: '2026-09-01T10:00:00Z',
+        })
+      );
+    });
     await page.goto('/ar/courses/modern-web-architecture/lessons/les-arch-01-vid');
 
     await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');

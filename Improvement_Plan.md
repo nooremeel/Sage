@@ -311,6 +311,17 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `packages/shared/src/schemas/*.spec.ts`, `packages/shared/src/errors.spec.ts`, `apps/api/test/**/*.spec.ts`, `apps/web/e2e/auth-lifecycle.spec.ts`, `apps/web/e2e/course-catalog.spec.ts`
 - **Tags**: testing, vitest, playwright, e2e, integration, zod, casl, rtl, nextjs, nestjs
 
+### [2026-11-09] Bug: Unauthenticated Guest Notification Badge Leakage
+- **Symptom**: Opening the site displayed an unread badge with "2" notifications on the header bell even when unauthenticated and not logged in.
+- **Root cause**: `NotificationBell` contained a fallback for guest visitors that called `getDemoNotifications()`, and `getDemoNotifications()` unconditionally returned the 2 demo student notifications of `usr-student-001` regardless of user authentication. In addition, the notification bell was mounted unconditionally in `Header` even when `user` was `null`.
+- **Fix**:
+  1. Updated `getDemoNotifications(userId?: string)` to return an empty array if `userId` is missing or falsy.
+  2. Updated `NotificationBell` to reset `unreadCount` to 0 and `notifications` to `[]` when `!user`, and return `null` when `!user`.
+  3. Conditioned `<NotificationBell />` in `Header` on `user && <NotificationBell ... />`.
+  4. Updated `qa-notifications.spec.ts` to verify the bell is absent for unauthenticated guests, and authenticated for the student notifications flow.
+- **Files**: `apps/web/src/lib/demo-courses.ts`, `apps/web/src/components/shell/notification-bell.tsx`, `apps/web/src/components/shell/header.tsx`, `apps/web/e2e/qa-notifications.spec.ts`, `Improvement_Plan.md`
+- **Tags**: notifications, auth, guest-access, ui, frontend, e2e
+
 ---
 
 ## 2. Technical Debt Tracker

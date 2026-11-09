@@ -26,22 +26,20 @@ export function NotificationBell({ locale }: NotificationBellProps) {
 
   // 1. Initial unread count fetch with offline fallback
   const fetchUnreadCount = useCallback(async () => {
-    if (user) {
-      try {
-        const res = await apiClient<{ count: number }>('/notifications/unread-count');
-        setUnreadCount(res.count);
-        return;
-      } catch {
-        // Fallback to demo notifications when backend is offline
-        const demoList = getDemoNotifications(user.id);
-        setUnreadCount(demoList.filter((n) => !n.readAt).length);
-        return;
-      }
+    if (!user) {
+      setUnreadCount(0);
+      setNotifications([]);
+      return;
     }
 
-    // Guest / demo visitor fallback
-    const demoList = getDemoNotifications();
-    setUnreadCount(demoList.filter((n) => !n.readAt).length);
+    try {
+      const res = await apiClient<{ count: number }>('/notifications/unread-count');
+      setUnreadCount(res.count);
+    } catch {
+      // Fallback to demo notifications when backend is offline
+      const demoList = getDemoNotifications(user.id);
+      setUnreadCount(demoList.filter((n) => !n.readAt).length);
+    }
   }, [user]);
 
   useEffect(() => {
@@ -66,22 +64,23 @@ export function NotificationBell({ locale }: NotificationBellProps) {
     setIsOpen(nextState);
 
     if (nextState && notifications.length === 0) {
+      if (!user) {
+        setNotifications([]);
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
-      if (user) {
-        try {
-          const res = await apiClient<{ items: NotificationDto[] }>('/notifications');
-          if (res.items && res.items.length > 0) {
-            setNotifications(res.items);
-          } else {
-            setNotifications(getDemoNotifications(user.id));
-          }
-        } catch {
+      try {
+        const res = await apiClient<{ items: NotificationDto[] }>('/notifications');
+        if (res.items && res.items.length > 0) {
+          setNotifications(res.items);
+        } else {
           setNotifications(getDemoNotifications(user.id));
-        } finally {
-          setIsLoading(false);
         }
-      } else {
-        setNotifications(getDemoNotifications());
+      } catch {
+        setNotifications(getDemoNotifications(user.id));
+      } finally {
         setIsLoading(false);
       }
     }
@@ -113,6 +112,10 @@ export function NotificationBell({ locale }: NotificationBellProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>

@@ -66,7 +66,7 @@ export function Header() {
         <div className="flex items-center gap-3">
           <ThemeToggle />
           <LanguageSwitcher />
-          <NotificationBell locale={locale as 'ar' | 'en'} />
+          {user && <NotificationBell locale={locale as 'ar' | 'en'} />}
 
           {/* User Auth Action (Desktop) */}
           <div className="hidden sm:flex items-center gap-2">

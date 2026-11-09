@@ -1651,8 +1651,11 @@ export function addDemoQAMessage(
   return newMsg;
 }
 
-export function getDemoNotifications(_userId?: string): NotificationDto[] {
-  return DEMO_NOTIFICATIONS;
+export function getDemoNotifications(userId?: string): NotificationDto[] {
+  if (!userId) {
+    return [];
+  }
+  return DEMO_NOTIFICATIONS.filter((n) => !n.userId || n.userId === userId);
 }
 
 export function markAllDemoNotificationsRead(): void {
