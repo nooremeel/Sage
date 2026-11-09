@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter } from '@/i18n/routing';
 import { Star, MessageSquare, Send, Loader2, CheckCircle2, ShieldCheck, PenLine, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,6 +26,7 @@ interface ReviewSectionProps {
 export function ReviewSection({ courseId, locale }: ReviewSectionProps) {
   const t = useTranslations('Reviews');
   const { user } = useAuth();
+  const router = useRouter();
 
   const [reviews, setReviews] = React.useState<ReviewDto[]>([]);
   const [totalCount, setTotalCount] = React.useState(0);
@@ -116,6 +118,10 @@ export function ReviewSection({ courseId, locale }: ReviewSectionProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (submitting) return;
+    if (!user) {
+      router.push('/login');
+      return;
+    }
 
     setSubmitting(true);
     setErrorMessage(null);
@@ -187,7 +193,13 @@ export function ReviewSection({ courseId, locale }: ReviewSectionProps) {
 
         <Button
           type="button"
-          onClick={() => setShowForm((prev) => !prev)}
+          onClick={() => {
+            if (!user) {
+              router.push('/login');
+              return;
+            }
+            setShowForm((prev) => !prev);
+          }}
           data-testid="write-review-btn"
           className="flex items-center gap-2 bg-primary text-on-primary hover:bg-primary-hover shadow-sm text-xs font-semibold"
           size="sm"

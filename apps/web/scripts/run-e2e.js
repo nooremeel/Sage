@@ -2,6 +2,19 @@ const { spawn } = require('child_process');
 const http = require('http');
 const path = require('path');
 
+function isServerRunning(url) {
+  return new Promise((resolve) => {
+    const req = http.get(url, (res) => {
+      resolve(Boolean(res.statusCode && res.statusCode < 500));
+    });
+    req.on('error', () => resolve(false));
+    req.setTimeout(1500, () => {
+      req.destroy();
+      resolve(false);
+    });
+  });
+}
+
 function waitForServer(url, timeoutMs = 60000) {
   const start = Date.now();
   return new Promise((resolve, reject) => {
@@ -28,31 +41,39 @@ function waitForServer(url, timeoutMs = 60000) {
 async function main() {
   process.chdir(path.resolve(__dirname, '..'));
 
-  console.log('Starting Next.js dev server on port 3000...');
-  const nextProcess = spawn(
-    process.execPath,
-    ['./node_modules/next/dist/bin/next', 'dev', '-p', '3000'],
-    {
-      stdio: ['ignore', 'pipe', 'pipe'],
-      env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=4096' },
-    }
-  );
+  const alreadyRunning = await isServerRunning('http://localhost:3000');
+  let nextProcess = null;
 
-  nextProcess.stdout.on('data', (d) => {
-    const msg = d.toString();
-    if (msg.includes('Ready in') || msg.includes('Starting...')) {
-      process.stdout.write(msg);
-    }
-  });
+  if (alreadyRunning) {
+    console.log('Next.js server is already active on http://localhost:3000. Reusing existing instance...');
+  } else {
+    console.log('Starting Next.js dev server on port 3000...');
+    nextProcess = spawn(
+      process.execPath,
+      ['./node_modules/next/dist/bin/next', 'dev', '-p', '3000'],
+      {
+        stdio: ['ignore', 'pipe', 'pipe'],
+        env: { ...process.env, NODE_OPTIONS: '--max-old-space-size=4096' },
+      }
+    );
 
-  nextProcess.stderr.on('data', (d) => {
-    process.stderr.write(d.toString());
-  });
+    nextProcess.stdout.on('data', (d) => {
+      const msg = d.toString();
+      if (msg.includes('Ready in') || msg.includes('Starting...')) {
+        process.stdout.write(msg);
+      }
+    });
 
-  try {
+    nextProcess.stderr.on('data', (d) => {
+      process.stderr.write(d.toString());
+    });
+
     console.log('Waiting for http://localhost:3000 to be ready...');
     await waitForServer('http://localhost:3000', 45000);
-    console.log('Next.js dev server is ready! Running Playwright tests...\n');
+  }
+
+  try {
+    console.log('Next.js server is ready! Running Playwright tests...\n');
 
     const testArgs = process.argv.slice(2);
     const playwrightArgs = [
@@ -75,8 +96,10 @@ async function main() {
     console.error('E2E Runner failed:', err);
     process.exit(1);
   } finally {
-    console.log('Stopping Next.js dev server...');
-    nextProcess.kill('SIGTERM');
+    if (nextProcess) {
+      console.log('Stopping Next.js dev server...');
+      nextProcess.kill('SIGTERM');
+    }
   }
 }
 

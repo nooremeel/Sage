@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
+import { useRouter, Link } from '@/i18n/routing';
 import {
   MessageSquare,
   Send,
@@ -33,6 +34,7 @@ interface QASectionProps {
 export function QASection({ lessonId, locale }: QASectionProps) {
   const t = useTranslations('QA');
   const { user } = useAuth();
+  const router = useRouter();
 
   const [threads, setThreads] = useState<QAThreadDto[]>([]);
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
@@ -247,7 +249,13 @@ export function QASection({ lessonId, locale }: QASectionProps) {
         </div>
 
         <button
-          onClick={() => setShowNewThreadForm((prev) => !prev)}
+          onClick={() => {
+            if (!user) {
+              router.push('/login');
+              return;
+            }
+            setShowNewThreadForm((prev) => !prev);
+          }}
           data-testid="ask-question-btn"
           className="flex items-center gap-1.5 px-3 py-1.5 bg-bg-subtle hover:bg-border text-text rounded-lg text-xs font-medium transition-colors focus-ring"
         >
@@ -459,27 +467,35 @@ export function QASection({ lessonId, locale }: QASectionProps) {
                     )}
 
                     {/* Reply Form */}
-                    <form
-                      onSubmit={(e) => handlePostReply(th.id, e)}
-                      className="flex gap-2 pt-2"
-                    >
-                      <input
-                        type="text"
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        placeholder={t('writeReplyPlaceholder')}
-                        className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-border bg-card text-text focus-ring"
-                        required
-                      />
-                      <button
-                        type="submit"
-                        disabled={isSubmitting || !replyText.trim()}
-                        className="px-3 py-1.5 bg-primary hover:bg-primary-hover disabled:opacity-50 text-on-primary text-xs font-medium rounded-lg transition-colors flex items-center gap-1 focus-ring"
+                    {user ? (
+                      <form
+                        onSubmit={(e) => handlePostReply(th.id, e)}
+                        className="flex gap-2 pt-2"
                       >
-                        <Send className="w-3 h-3" />
-                        <span>{t('reply')}</span>
-                      </button>
-                    </form>
+                        <input
+                          type="text"
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          placeholder={t('writeReplyPlaceholder')}
+                          className="flex-1 px-3 py-1.5 text-xs rounded-lg border border-border bg-card text-text focus-ring"
+                          required
+                        />
+                        <button
+                          type="submit"
+                          disabled={isSubmitting || !replyText.trim()}
+                          className="px-3 py-1.5 bg-primary hover:bg-primary-hover disabled:opacity-50 text-on-primary text-xs font-medium rounded-lg transition-colors flex items-center gap-1 focus-ring"
+                        >
+                          <Send className="w-3 h-3" />
+                          <span>{t('reply')}</span>
+                        </button>
+                      </form>
+                    ) : (
+                      <div className="pt-2 text-xs text-text-muted">
+                        <Link href="/login" className="text-primary hover:underline font-medium">
+                          {locale === 'ar' ? 'سجّل الدخول للرد على هذا السؤال' : 'Sign in to reply to this discussion'}
+                        </Link>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

@@ -16,8 +16,20 @@ interface AuthContextType {
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = React.useState<AuthUserDto | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [user, setUser] = React.useState<AuthUserDto | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = localStorage.getItem('sage_auth_user');
+        if (stored) {
+          return JSON.parse(stored);
+        }
+      } catch {
+        // ignore
+      }
+    }
+    return null;
+  });
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const refreshUser = React.useCallback(async () => {
     // 1. Immediately read cached session from localStorage if present

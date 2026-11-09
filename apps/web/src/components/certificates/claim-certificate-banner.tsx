@@ -6,6 +6,7 @@ import { Award, CheckCircle, Sparkles, Loader2, ExternalLink } from 'lucide-reac
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/routing';
 import { apiClient } from '@/lib/api';
+import { useAuth } from '@/lib/auth-context';
 import type { CourseProgressDto, CertificateDto } from '@sage/shared';
 
 interface ClaimCertificateBannerProps {
@@ -20,6 +21,7 @@ export function ClaimCertificateBanner({
   locale,
 }: ClaimCertificateBannerProps) {
   const t = useTranslations('Certificates');
+  const { user } = useAuth();
   const [progress, setProgress] = React.useState<CourseProgressDto | null>(null);
   const [existingCert, setExistingCert] = React.useState<CertificateDto | null>(null);
   const [loading, setLoading] = React.useState(true);
@@ -27,6 +29,13 @@ export function ClaimCertificateBanner({
   const [error, setError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
+    if (!user) {
+      setProgress(null);
+      setExistingCert(null);
+      setLoading(false);
+      return;
+    }
+
     let isMounted = true;
 
     async function loadStatus() {
@@ -79,15 +88,8 @@ export function ClaimCertificateBanner({
                 lastAccessedLessonId: null,
               });
             } else {
-              // Active course in progress (waiting for quiz completion)
-              setProgress({
-                courseId,
-                percent: 75,
-                completedLessons: 3,
-                totalLessons: 4,
-                completedLessonIds: [],
-                lastAccessedLessonId: null,
-              });
+              // Unenrolled or no progress
+              setProgress(null);
             }
           }
         } catch {
@@ -170,7 +172,7 @@ export function ClaimCertificateBanner({
     setClaiming(false);
   };
 
-  if (loading || !progress) {
+  if (!user || loading || !progress) {
     return null;
   }
 

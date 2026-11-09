@@ -322,6 +322,25 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `apps/web/src/lib/demo-courses.ts`, `apps/web/src/components/shell/notification-bell.tsx`, `apps/web/src/components/shell/header.tsx`, `apps/web/e2e/qa-notifications.spec.ts`, `Improvement_Plan.md`
 - **Tags**: notifications, auth, guest-access, ui, frontend, e2e
 
+### [2026-11-09] Bug: Anonymous Visitor State Leakage & Hardcoded Personas Across Q&A, Reviews, Certificates, and Enrollments
+- **Symptom**: Anonymous visitors browsing course detail and lesson pages experienced data leaks:
+  1. `ClaimCertificateBanner` displayed "Course Completion: 75%" on lessons for unauthenticated visitors.
+  2. `QASection` and `ReviewSection` allowed opening question/review forms and attributed submitted threads or replies to `usr-student-001` (`Zaid Al-Harbi`) by default.
+  3. `EnrollCard` threw an unhandled "Checkout initiation failed" error when clicking "Enroll" in offline demo mode.
+  4. `AuthProvider` initialized `user` as `null` on the client, creating a micro-flash of guest state before reading `localStorage`.
+- **Root cause**: Offline fallbacks designed for local development assumed `usr-student-001` identity on silence without checking authentication state (`user`), allowing private student actions to leak to anonymous visitors.
+- **Fix**:
+  1. `ClaimCertificateBanner`: Guarded with `useAuth()`. Returns `null` immediately for anonymous visitors (`!user`). Added `isAuthLoading` guard to prevent micro-flashes and fixed `useEffect` dependency array.
+  2. `QASection`: Unauthenticated visitors clicking "Ask a Question" are redirected to `/login`. Reply forms show an inline "Sign in to reply to this discussion" link. Replaced hardcoded student fallback with authenticated `user.id` and name.
+  3. `ReviewSection`: Clicking "Write a Review" or submitting as a guest redirects to `/login`. Attributed to authenticated `user.id` and user name.
+  4. `EnrollCard`: Added resilient offline fallbacks: `handlePaidCheckout` routes to `/checkout/ord-demo-:courseId`, `handleFreeEnroll` marks enrollment optimistically, and `handleCouponEnroll` validates `SAGE100` scholarships offline.
+  5. `AuthProvider`: Initialized `user` synchronously from `localStorage` in `useState` callback to guarantee zero flash of unauthenticated state on client hydration.
+  6. `admin/page.tsx`: Replaced hardcoded "Go to Profile" with localized `{tNav('profile')}`.
+  7. `run-e2e.js`: Added `isServerRunning()` probe to prevent `EADDRINUSE: :::3000` port collisions.
+  8. `e2e/*.spec.ts`: Expanded Playwright E2E coverage to 64 tests across all 14 test specs, asserting guest access gates and authenticated workflows. 100% passed (64/64).
+- **Files**: `apps/web/src/components/certificates/claim-certificate-banner.tsx`, `apps/web/src/components/domain/qa-section.tsx`, `apps/web/src/components/domain/review-section.tsx`, `apps/web/src/components/enrollment/enroll-card.tsx`, `apps/web/src/lib/auth-context.tsx`, `apps/web/src/app/[locale]/admin/page.tsx`, `apps/web/scripts/run-e2e.js`, `apps/web/e2e/qa-notifications.spec.ts`, `apps/web/e2e/course-reviews.spec.ts`, `apps/web/e2e/quiz-runner.spec.ts`, `Improvement_Plan.md`
+- **Tags**: auth, security, guest-access, qa, reviews, certificates, enrollment, e2e, playwright, hydration
+
 ---
 
 ## 2. Technical Debt Tracker

@@ -39,6 +39,7 @@ import {
 
 export default function AdminPage() {
   const tAdmin = useTranslations('admin');
+  const tNav = useTranslations('nav');
   const params = useParams();
   const currentLocale = (params?.locale === 'ar' ? 'ar' : 'en') as 'ar' | 'en';
   const { user, isLoading, login } = useAuth();
@@ -174,7 +175,7 @@ export default function AdminPage() {
 
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
           <Link href="/profile">
-            <Button variant="secondary">Go to Profile</Button>
+            <Button variant="secondary">{tNav('profile')}</Button>
           </Link>
           <Button
             variant="primary"

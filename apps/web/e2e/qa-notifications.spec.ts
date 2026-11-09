@@ -28,7 +28,36 @@ test.describe('Real-Time Community: Lesson Q&A & Notification Center', () => {
     }
   });
 
+  test('redirects unauthenticated visitor to login when clicking ask question', async ({ page }) => {
+    await page.goto('/en');
+    await page.evaluate(() => {
+      localStorage.removeItem('sage_auth_user');
+    });
+    await page.goto('/en/courses/modern-web-architecture/lessons/les-arch-01-vid');
+
+    const askBtn = page.locator('[data-testid="ask-question-btn"]');
+    await expect(askBtn).toBeVisible({ timeout: 10000 });
+    await askBtn.click();
+
+    await page.waitForURL('**/login', { timeout: 15000 });
+    expect(page.url()).toContain('/login');
+  });
+
   test('submitting a new Q&A question optimistically updates thread list', async ({ page }) => {
+    await page.goto('/en');
+    await page.evaluate(() => {
+      localStorage.setItem(
+        'sage_auth_user',
+        JSON.stringify({
+          id: 'usr-student-001',
+          email: 'student@sage.dev',
+          role: 'student',
+          locale: 'en',
+          emailVerifiedAt: '2026-09-01T10:00:00Z',
+          createdAt: '2026-09-01T10:00:00Z',
+        })
+      );
+    });
     await page.goto('/en/courses/modern-web-architecture/lessons/les-arch-01-vid');
 
     const askBtn = page.locator('[data-testid="ask-question-btn"]');
@@ -36,7 +65,7 @@ test.describe('Real-Time Community: Lesson Q&A & Notification Center', () => {
     await askBtn.click();
 
     const titleInput = page.locator('[data-testid="new-thread-title-input"]');
-    await expect(titleInput).toBeVisible();
+    await expect(titleInput).toBeVisible({ timeout: 10000 });
 
     const uniqueTitle = `Distributed Locking Strategies ${Date.now()}`;
     await titleInput.fill(uniqueTitle);

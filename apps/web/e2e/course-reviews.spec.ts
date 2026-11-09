@@ -71,7 +71,36 @@ test.describe('Social Proof: Course Reviews & Academic Rating Breakdown', () => 
     expect(restoredCount).toBeGreaterThan(filteredCount);
   });
 
+  test('redirects unauthenticated visitor to login when clicking write review', async ({ page }) => {
+    await page.goto('/en');
+    await page.evaluate(() => {
+      localStorage.removeItem('sage_auth_user');
+    });
+    await page.goto('/en/courses/modern-web-architecture');
+
+    const writeBtn = page.locator('[data-testid="write-review-btn"]');
+    await expect(writeBtn).toBeVisible({ timeout: 10000 });
+    await writeBtn.click();
+
+    await page.waitForURL('**/login', { timeout: 8000 });
+    expect(page.url()).toContain('/login');
+  });
+
   test('enables writing and submitting a review with optimistic UI update', async ({ page }) => {
+    await page.goto('/en');
+    await page.evaluate(() => {
+      localStorage.setItem(
+        'sage_auth_user',
+        JSON.stringify({
+          id: 'usr-student-001',
+          email: 'student@sage.dev',
+          role: 'student',
+          locale: 'en',
+          emailVerifiedAt: '2026-09-01T10:00:00Z',
+          createdAt: '2026-09-01T10:00:00Z',
+        })
+      );
+    });
     await page.goto('/en/courses/modern-web-architecture');
 
     const writeBtn = page.locator('[data-testid="write-review-btn"]');

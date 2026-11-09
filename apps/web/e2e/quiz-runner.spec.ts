@@ -1,15 +1,38 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Quiz Runner & Certification Unlock (Phase 11.2)', () => {
-  test('takes and passes quiz in English, unlocking certificate milestone', async ({ page }) => {
-    // Clear any previous test certification from local storage
-    await page.goto('/en/courses/thuluth-calligraphy/lessons/les-thuluth-04-quiz');
+  test('does not display certificate claim or progress banner for unauthenticated visitors', async ({ page }) => {
+    await page.goto('/en');
     await page.evaluate(() => {
+      localStorage.removeItem('sage_auth_user');
+      localStorage.removeItem('sage_claimed_cert_course-thuluth-002');
+      localStorage.removeItem('sage_quiz_passed_course-thuluth-002');
+    });
+    await page.goto('/en/courses/thuluth-calligraphy/lessons/les-thuluth-04-quiz');
+
+    await expect(page.getByText(/Course Completion/i)).not.toBeVisible();
+    await expect(page.getByText('Official Serial: SAGE-2026-ALPHA1')).not.toBeVisible();
+  });
+
+  test('takes and passes quiz in English, unlocking certificate milestone', async ({ page }) => {
+    await page.goto('/en');
+    await page.evaluate(() => {
+      localStorage.setItem(
+        'sage_auth_user',
+        JSON.stringify({
+          id: 'usr-student-001',
+          email: 'student@sage.dev',
+          role: 'student',
+          locale: 'en',
+          emailVerifiedAt: '2026-09-01T10:00:00Z',
+          createdAt: '2026-09-01T10:00:00Z',
+        })
+      );
       localStorage.removeItem('sage_claimed_cert_course-thuluth-002');
       localStorage.removeItem('sage_quiz_passed_course-thuluth-002');
       localStorage.removeItem('sage_quiz_attempts_quiz-thuluth-01');
     });
-    await page.reload();
+    await page.goto('/en/courses/thuluth-calligraphy/lessons/les-thuluth-04-quiz');
 
     // Verify initial state: course in progress (NOT prematurely completed)
     await expect(page.getByText(/Course Completion/i)).toBeVisible();
@@ -17,7 +40,7 @@ test.describe('Quiz Runner & Certification Unlock (Phase 11.2)', () => {
 
     // Title and question checks
     const quizHeading = page.locator('h2').filter({ hasText: /Assessment/i });
-    await expect(quizHeading).toBeVisible();
+    await expect(quizHeading).toBeVisible({ timeout: 10000 });
 
     // Verify passing requirement badge
     await expect(page.getByText('Passing Score: 80%')).toBeVisible();
