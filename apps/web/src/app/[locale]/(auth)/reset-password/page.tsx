@@ -1,4 +1,4 @@
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 import { ResetPasswordForm } from '@/components/auth/reset-password-form';
 
 interface ResetPasswordPageProps {
@@ -8,7 +8,7 @@ interface ResetPasswordPageProps {
 export default async function ResetPasswordPage({ searchParams }: ResetPasswordPageProps) {
   const params = await searchParams;
   const token = params.token || '';
-  const tAuth = useTranslations('auth');
+  const tAuth = await getTranslations('auth');
 
   return (
     <div className="space-y-6">

@@ -295,6 +295,22 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `.npmrc`, `apps/api/package.json`, `apps/api/tsconfig.json`, `apps/api/src/modules/auth/auth.service.ts`, `apps/api/src/modules/health/health.service.ts`, `apps/api/src/modules/media/media.service.ts`, `apps/api/test/media/protected-playback.spec.ts`, `apps/web/scripts/check-i18n-parity.ts`, `packages/shared/src/env.ts`, `Improvement_Plan.md`
 - **Tags**: ci, github-actions, pnpm, typescript, express, aws-sdk, vitest, i18n
 
+### [2026-11-09] Bug: Async Server Component calling Client Hook `useTranslations` in Reset Password Page
+- **Symptom**: `Error: useTranslations is not callable within an async component. Please refer to https://next-intl.dev/docs/environments/server-client-components#async-components` and `TypeError: Cannot read properties of null (reading 'use')` during Next.js server render of `/reset-password`.
+- **Root cause**: `ResetPasswordPage` is an async Next.js App Router Server Component (awaiting `searchParams`), but called the client hook `useTranslations('auth')` instead of the server equivalent.
+- **Fix**: Switched to `await getTranslations('auth')` from `next-intl/server`.
+- **Files**: `apps/web/src/app/[locale]/(auth)/reset-password/page.tsx`
+- **Tags**: next-intl, react, nextjs, app-router, server-components, auth, reset-password
+
+### [2026-11-09] Test: Comprehensive Automated Test Suite Expansion (Shared, API, Web E2E)
+- **Scope**:
+  1. `@sage/shared`: 14 test suites, 84 tests covering all Zod validation schemas (`analytics`, `notifications`, `enrollment`, `progress`, `quiz`, `courses`, `auth`, `media`, and `AppErrorCode`).
+  2. `apps/api`: 22 test suites, 90 tests covering CASL policies, IDOR protection, admin management, course lifecycle, Argon2 auth flow, notifications SSE dispatch, user profile privacy, and categories.
+  3. `apps/web`: 14 Playwright E2E tests across `auth-lifecycle.spec.ts` (login, signup, forgot-password, reset-password, verify-email, RTL layout) and `course-catalog.spec.ts` (discipline chips, level filters, keyword search, empty search state, course detail navigation, RTL layout).
+- **Verification**: 100% passing across Vitest (174/174 unit/integration tests), Playwright (14/14 E2E tests), `pnpm lint` (0 errors), `pnpm typecheck` (0 errors), and `pnpm build` (26/26 pages).
+- **Files**: `packages/shared/src/schemas/*.spec.ts`, `packages/shared/src/errors.spec.ts`, `apps/api/test/**/*.spec.ts`, `apps/web/e2e/auth-lifecycle.spec.ts`, `apps/web/e2e/course-catalog.spec.ts`
+- **Tags**: testing, vitest, playwright, e2e, integration, zod, casl, rtl, nextjs, nestjs
+
 ---
 
 ## 2. Technical Debt Tracker
