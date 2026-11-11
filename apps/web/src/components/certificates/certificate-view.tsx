@@ -95,7 +95,7 @@ export function CertificateView({
 
       {/* Main Certificate Sheet */}
       <div
-        className="relative bg-paper text-ink-900 border-8 border-double border-sage-700/80 dark:border-sage-300/80 rounded-lg p-8 sm:p-14 shadow-e2 overflow-hidden print:border-4 print:border-black print:shadow-none print:m-0 print:p-8 print:bg-white print:text-black"
+        className="certificate-print-sheet relative bg-paper text-ink-900 border-8 border-double border-sage-700/80 dark:border-sage-300/80 rounded-lg p-8 sm:p-14 shadow-e2 overflow-hidden print:border-4 print:border-black print:shadow-none print:m-0 print:p-8 print:bg-white print:text-black"
         style={{ minHeight: '580px' }}
       >
         {/* Decorative Arabesque Watermark Center Insignia */}

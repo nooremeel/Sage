@@ -13,6 +13,7 @@ export * from './schemas/certificates.js';
 export * from './schemas/reviews.js';
 export * from './schemas/analytics.js';
 export * from './schemas/payments.js';
+export * from './utils/arabic-normalizer.js';
 
 
 

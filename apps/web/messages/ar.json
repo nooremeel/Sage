@@ -22,6 +22,7 @@
     "login": "تسجيل الدخول",
     "signup": "إنشاء حساب",
     "profile": "الملف الشخصي",
+    "logout": "تسجيل الخروج",
     "menu": "القائمة",
     "close": "إغلاق"
   },
@@ -98,7 +99,13 @@
     "loadMore": "تحميل المزيد من الدورات",
     "lessons": "دروس",
     "hours": "ساعات",
-    "hoursShort": "{count} س"
+    "hoursShort": "{count} س",
+    "sortBy": "الترتيب حسب",
+    "sortHighestRated": "الأعلى تقييماً",
+    "sortPriceAsc": "السعر: من الأقل للأعلى",
+    "sortPriceDesc": "السعر: من الأعلى للأقل",
+    "sortNewest": "الأحدث",
+    "clearSearch": "مسح البحث"
   },
   "courseDetail": {
     "instructor": "المدرّب",
@@ -330,7 +337,14 @@
     "viewVerify": "عرض الشهادة والتحقق منها",
     "issuedOn": "صدرت بتاريخ {date}",
     "officialSerial": "الرقم التسلسلي: {serial}",
-    "academicScholar": "طالب علم معتمد"
+    "academicScholar": "طالب علم معتمد",
+    "profilePicture": "صورة الملف الشخصي",
+    "changeAvatar": "تغيير الصورة",
+    "uploadPhoto": "رفع صورة",
+    "choosePreset": "أو اختر شارة طالب علم",
+    "removePhoto": "إزالة الصورة",
+    "fullName": "الاسم الكامل",
+    "saveProfile": "حفظ التغييرات"
   },
   "styleguide": {
     "title": "دليل التصميم ونظام المكونات",

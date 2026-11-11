@@ -13,7 +13,7 @@ test.describe('Public Certificate Verification & Scholarly Print Engine (Phase 1
     await expect(page.getByRole('heading', { name: 'Certificate of Completion' })).toBeVisible();
     await expect(page.getByText('Official Credential of Academic Distinction')).toBeVisible();
     await expect(page.getByText('This is to certify that')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Nour Student (طالب علم معتمد)' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Nour Emil' })).toBeVisible();
     await expect(page.getByText('has successfully completed the scholarly course')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Classical Arabic Calligraphy — The Thuluth Script' })).toBeVisible();
 
@@ -40,7 +40,7 @@ test.describe('Public Certificate Verification & Scholarly Print Engine (Phase 1
     await expect(page.getByRole('heading', { name: 'شهادة إتمام معتمدة' })).toBeVisible();
     await expect(page.getByText('وثيقة رسمية للإنجاز الأكاديمي والتميّز')).toBeVisible();
     await expect(page.getByText('تشهد منصة سايج بأن')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Nour Student (طالب علم معتمد)' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Nour Emil' })).toBeVisible();
     await expect(page.getByText('قد أتم بنجاح متطلبات الدورة الأكاديمية')).toBeVisible();
     await expect(page.getByRole('heading', { name: 'فنون الخط العربي الكلاسيكي — خط الثلث' })).toBeVisible();
   });

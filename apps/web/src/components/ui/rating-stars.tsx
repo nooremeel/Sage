@@ -25,10 +25,13 @@ export function RatingStars({
     lg: 'h-5 w-5',
   };
 
+  // Round to nearest half-star (e.g. 4.75+ -> 5.0, 4.25+ -> 4.5) so visual stars match the rounded number
+  const normalizedRating = Math.round(rating * 2) / 2;
+
   const stars = Array.from({ length: max }, (_, i) => {
     const starValue = i + 1;
-    const isFilled = rating >= starValue;
-    const isHalf = !isFilled && rating >= starValue - 0.5;
+    const isFilled = normalizedRating >= starValue;
+    const isHalf = !isFilled && normalizedRating >= starValue - 0.5;
 
     return (
       <span key={i} className="relative inline-block">

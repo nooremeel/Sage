@@ -239,9 +239,17 @@ export default function StudentDashboardPage() {
       <div className="rounded-xl border border-border bg-card p-6 sm:p-8 shadow-e1">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-paper-200 text-primary border border-border shadow-xs">
-              <GraduationCap className="h-8 w-8" />
-            </div>
+            {user?.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={studentDisplayName}
+                className="h-16 w-16 shrink-0 rounded-full object-cover border-2 border-primary shadow-xs"
+              />
+            ) : (
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-paper-200 text-primary border border-border shadow-xs">
+                <GraduationCap className="h-8 w-8" />
+              </div>
+            )}
 
             <div className="space-y-1 text-start">
               <div className="flex flex-wrap items-center gap-2">

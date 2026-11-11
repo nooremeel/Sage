@@ -11,6 +11,7 @@ interface AuthContextType {
   signup: (data: SignupInput) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  updateUser: (partial: Partial<AuthUserDto>) => void;
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined);
@@ -44,9 +45,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // ignore
     }
 
-    // 2. Validate session with API (1200ms timeout for offline resilience)
+    // 2. Validate session with API (350ms timeout for rapid offline fallback)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1200);
+    const timeoutId = setTimeout(() => controller.abort(), 350);
 
     try {
       const response = await apiClient<{ user: AuthUserDto }>('/auth/me', {
@@ -63,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearTimeout(timeoutId);
       // Try refresh token if access token expired
       const refreshController = new AbortController();
-      const refreshTimeoutId = setTimeout(() => refreshController.abort(), 1200);
+      const refreshTimeoutId = setTimeout(() => refreshController.abort(), 350);
       try {
         const refreshResponse = await apiClient<{ user: AuthUserDto }>('/auth/refresh', {
           method: 'POST',
@@ -106,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (data: LoginInput) => {
     setIsLoading(true);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
+    const timeoutId = setTimeout(() => controller.abort(), 350);
 
     try {
       const response = await apiClient<{ user: AuthUserDto }>('/auth/login', {
@@ -151,7 +152,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const signup = async (data: SignupInput) => {
     setIsLoading(true);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
+    const timeoutId = setTimeout(() => controller.abort(), 350);
 
     try {
       const response = await apiClient<{ user: AuthUserDto }>('/auth/signup', {
@@ -203,6 +204,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUser = (partial: Partial<AuthUserDto>) => {
+    setUser((prev) => {
+      if (!prev) return null;
+      const updated = { ...prev, ...partial };
+      try {
+        localStorage.setItem('sage_auth_user', JSON.stringify(updated));
+      } catch {
+        // ignore
+      }
+      return updated;
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -212,6 +226,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signup,
         logout,
         refreshUser,
+        updateUser,
       }}
     >
       {children}

@@ -341,6 +341,43 @@ _Format for recording bug fixes (mandatory per Global Developer Contract):_
 - **Files**: `apps/web/src/components/certificates/claim-certificate-banner.tsx`, `apps/web/src/components/domain/qa-section.tsx`, `apps/web/src/components/domain/review-section.tsx`, `apps/web/src/components/enrollment/enroll-card.tsx`, `apps/web/src/lib/auth-context.tsx`, `apps/web/src/app/[locale]/admin/page.tsx`, `apps/web/scripts/run-e2e.js`, `apps/web/e2e/qa-notifications.spec.ts`, `apps/web/e2e/course-reviews.spec.ts`, `apps/web/e2e/quiz-runner.spec.ts`, `Improvement_Plan.md`
 - **Tags**: auth, security, guest-access, qa, reviews, certificates, enrollment, e2e, playwright, hydration
 
+### [2026-11-11] Bug: Platform Usability, Search Normalization, Certificate Print, Rating Stars, and Account Controls (9 Defects)
+- **Symptom**:
+  1. Student name on demo certificate rendered as `"Nour Student (طالب علم معتمد)"` combining role with name.
+  2. Certificate print/PDF captured entire webpage viewport (header, footer, nav buttons) instead of isolated landscape certificate sheet.
+  3. Localhost actions experienced 2-3s delays when backend API was offline due to un-cached connection timeouts.
+  4. Search required manual form submission, did not normalize Arabic characters (`أ`, `إ`, `آ`, `ة`, `ى`), ignored instructor/author names, and did not auto-reset when query cleared.
+  5. Missing sorting options for price (asc/desc) and rating in catalog.
+  6. Visual rating stars truncated to 4.5 stars for 4.95-4.98 ratings that textually displayed "5.0".
+  7. All catalog courses displayed identical hardcoded "10 lessons • 3h 20m" metadata.
+  8. Notifications did not dismiss or mark as read upon clicking them.
+  9. Student accounts lacked avatar image upload / preset selection.
+  10. Missing Logout button in desktop header navigation and mobile drawer.
+- **Root cause**:
+  1. Certificate data hardcoded descriptive role in student name string.
+  2. Missing print CSS `@media print` rules isolating `.certificate-print-sheet` and hiding shell chrome.
+  3. `apiFetch` in `apps/web/src/lib/api.ts` attempted 2000ms fetch on every navigation without fast-fail status caching.
+  4. Catalog search used native full-page `<form>` submission without debouncing, lacked Arabic character normalization (`normalizeArabic`), and omitted instructor filtering.
+  5. Catalog lacked sort parameter wiring in UI and demo filter.
+  6. `RatingStars` calculated half-stars using integer truncation (`hasHalfStar = (rating % 1) >= 0.25 && (rating % 1) < 0.75`), misclassifying 4.95 as 4.5.
+  7. `courses/page.tsx` hardcoded static lesson count string instead of deriving it from course curriculum sections.
+  8. `NotificationBell` lacked click-to-read handler and state update.
+  9. `ProfileForm` and `AuthUserDto` lacked avatar file picker and state persistence.
+  10. `Header` omitted a logout button for authenticated users.
+- **Fix**:
+  1. Updated certificate verification dataset to use clean human name `"Nour Emil"`.
+  2. Added `@page { size: landscape; margin: 0; }` and `.certificate-print-sheet` print styles in `globals.css` and `certificate-view.tsx`.
+  3. Added cached fast-fail backend reachable probe (200ms timeout with 20s TTL) in `api.ts`.
+  4. Built debounced `CatalogSearchInput` with `normalizeArabic`, clear button, and instructor name search.
+  5. Added sorting bar and logic for price and rating in `courses/page.tsx` and `demo-courses.ts`.
+  6. Corrected star rounding logic with `Math.round(rating * 2) / 2`.
+  7. Derived lesson count and duration dynamically from `course.sections`.
+  8. Added `markDemoNotificationRead(id)` to update notification read status and decrement badge on click.
+  9. Added image upload and scholarly avatar presets in `ProfileForm` and synchronized with `AuthContext`.
+  10. Added desktop and mobile Logout buttons with icon and confirmation in `Header`.
+- **Files**: `packages/shared/src/utils/arabic-normalizer.ts`, `packages/shared/src/index.ts`, `packages/shared/src/schemas/auth.ts`, `apps/web/src/lib/api.ts`, `apps/web/src/lib/auth-context.tsx`, `apps/web/src/lib/demo-courses.ts`, `apps/web/src/app/globals.css`, `apps/web/src/components/certificates/certificate-view.tsx`, `apps/web/src/components/ui/rating-stars.tsx`, `apps/web/src/components/domain/catalog-search-input.tsx`, `apps/web/src/app/[locale]/courses/page.tsx`, `apps/web/src/components/shell/notification-bell.tsx`, `apps/web/src/components/shell/header.tsx`, `apps/web/src/components/auth/profile-form.tsx`, `apps/web/src/app/[locale]/profile/page.tsx`, `apps/web/messages/en.json`, `apps/web/messages/ar.json`, `apps/web/e2e/user-fixes-verification.spec.ts`
+- **Tags**: ux, search, i18n, print, certificates, ratings, notifications, avatars, auth, logout, performance, e2e
+
 ---
 
 ## 2. Technical Debt Tracker

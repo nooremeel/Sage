@@ -160,3 +160,57 @@ body {
 .reading-column {
   max-width: 680px;
 }
+
+/* Print styling: isolates certificate and printable elements, hides chrome */
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  header,
+  footer,
+  nav,
+  aside,
+  .print\:hidden,
+  [data-no-print] {
+    display: none !important;
+  }
+
+  body,
+  html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  main,
+  .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  .certificate-print-sheet {
+    box-shadow: none !important;
+    border-width: 4px !important;
+    border-color: #000000 !important;
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-height: 96vh !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+}
+

@@ -15,6 +15,7 @@ import type {
   NotificationDto,
   ReviewDto,
 } from '@sage/shared';
+import { normalizeArabic } from '@sage/shared';
 import type { IllustrationName } from '@/components/illustrations/illustration';
 
 export const DEMO_STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
@@ -504,6 +505,7 @@ export function getDemoCourses(params?: {
   level?: string;
   price?: string;
   query?: string;
+  sort?: string;
 }): CourseDto[] {
   let list = [...DEMO_COURSES];
 
@@ -528,15 +530,53 @@ export function getDemoCourses(params?: {
   }
 
   if (params?.query) {
-    const q = params.query.toLowerCase().trim();
-    list = list.filter((c) =>
-      c.translations.some(
-        (t) =>
-          t.title.toLowerCase().includes(q) ||
-          t.subtitle?.toLowerCase().includes(q) ||
-          t.description?.toLowerCase().includes(q)
-      )
-    );
+    const rawQ = params.query.trim().toLowerCase();
+    const normQ = normalizeArabic(rawQ);
+
+    list = list.filter((c) => {
+      // 1. Author / Instructor name search
+      const instructorRaw = (c.instructorName || '').toLowerCase();
+      const instructorNorm = normalizeArabic(instructorRaw);
+      if (instructorRaw.includes(rawQ) || (normQ && instructorNorm.includes(normQ))) {
+        return true;
+      }
+
+      // 2. Translations title, subtitle, description with Arabic normalization
+      return c.translations.some((t) => {
+        const titleRaw = (t.title || '').toLowerCase();
+        const titleNorm = normalizeArabic(titleRaw);
+        const subRaw = (t.subtitle || '').toLowerCase();
+        const subNorm = normalizeArabic(subRaw);
+        const descRaw = (t.description || '').toLowerCase();
+        const descNorm = normalizeArabic(descRaw);
+
+        return (
+          titleRaw.includes(rawQ) ||
+          (normQ && titleNorm.includes(normQ)) ||
+          subRaw.includes(rawQ) ||
+          (normQ && subNorm.includes(normQ)) ||
+          descRaw.includes(rawQ) ||
+          (normQ && descNorm.includes(normQ))
+        );
+      });
+    });
+  }
+
+  if (params?.sort) {
+    switch (params.sort) {
+      case 'highest_rated':
+        list.sort((a, b) => (b.ratingAvg || 0) - (a.ratingAvg || 0));
+        break;
+      case 'price_asc':
+        list.sort((a, b) => a.priceCents - b.priceCents);
+        break;
+      case 'price_desc':
+        list.sort((a, b) => b.priceCents - a.priceCents);
+        break;
+      case 'newest':
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+    }
   }
 
   return list;
@@ -1430,7 +1470,7 @@ export function getDemoCertificateVerification(serial: string): DemoCertificateV
   if (normalized === 'SAGE-2026-ALPHA1') {
     return {
       serial: 'SAGE-2026-ALPHA1',
-      studentName: 'Nour Student (طالب علم معتمد)',
+      studentName: 'Nour Emil',
       courseTitle: {
         ar: 'فنون الخط العربي الكلاسيكي — خط الثلث',
         en: 'Classical Arabic Calligraphy — The Thuluth Script',
@@ -1450,7 +1490,7 @@ export function getDemoCertificateVerification(serial: string): DemoCertificateV
 
     return {
       serial: normalized,
-      studentName: 'Nour Emil (طالب علم)',
+      studentName: 'Nour Emil',
       courseTitle: {
         ar: arTrans?.title || 'معمارية الويب الحديثة والأنظمة الموزعة',
         en: enTrans?.title || 'Modern Web Architecture & Distributed Systems',
@@ -1663,6 +1703,16 @@ export function markAllDemoNotificationsRead(): void {
     ...n,
     readAt: n.readAt || new Date().toISOString(),
   }));
+}
+
+export function markDemoNotificationRead(id: string): void {
+  DEMO_NOTIFICATIONS = DEMO_NOTIFICATIONS.map((n) =>
+    n.id === id ? { ...n, readAt: n.readAt || new Date().toISOString() } : n
+  );
+}
+
+export function dismissDemoNotification(id: string): void {
+  DEMO_NOTIFICATIONS = DEMO_NOTIFICATIONS.filter((n) => n.id !== id);
 }
 
 export interface RatingDistributionData {

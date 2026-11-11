@@ -6,7 +6,7 @@ import { Bell, CheckCheck, Loader2, MessageSquare, BookOpen, Award, ArrowUpRight
 import { apiClient } from '../../lib/api';
 import { useAuth } from '../../lib/auth-context';
 import { useRealtimeStream } from '../../hooks/use-realtime-stream';
-import { getDemoNotifications, markAllDemoNotificationsRead } from '../../lib/demo-courses';
+import { getDemoNotifications, markAllDemoNotificationsRead, markDemoNotificationRead } from '../../lib/demo-courses';
 import { Link } from '@/i18n/routing';
 import type { NotificationDto } from '@sage/shared';
 
@@ -100,6 +100,22 @@ export function NotificationBell({ locale }: NotificationBellProps) {
     setNotifications((prev) =>
       prev.map((n) => ({ ...n, readAt: n.readAt || new Date().toISOString() }))
     );
+  };
+
+  // 5. Mark single notification as read on click
+  const handleMarkOneRead = async (id: string) => {
+    if (user) {
+      try {
+        await apiClient(`/notifications/${id}/read`, { method: 'PATCH' });
+      } catch {
+        // offline fallback
+      }
+    }
+    markDemoNotificationRead(id);
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, readAt: n.readAt || new Date().toISOString() } : n))
+    );
+    setUnreadCount((c) => Math.max(0, c - 1));
   };
 
   // Close on outside click
@@ -229,7 +245,10 @@ export function NotificationBell({ locale }: NotificationBellProps) {
                     <Link
                       key={n.id}
                       href={linkHref}
-                      onClick={() => setIsOpen(false)}
+                      onClick={() => {
+                        if (isUnread) handleMarkOneRead(n.id);
+                        setIsOpen(false);
+                      }}
                       data-testid="notification-item"
                       className={`block p-3 text-xs transition-colors hover:bg-bg-subtle/70 ${
                         isUnread ? 'bg-primary-tint/30 font-medium' : ''
@@ -243,8 +262,11 @@ export function NotificationBell({ locale }: NotificationBellProps) {
                 return (
                   <div
                     key={n.id}
+                    onClick={() => {
+                      if (isUnread) handleMarkOneRead(n.id);
+                    }}
                     data-testid="notification-item"
-                    className={`p-3 text-xs transition-colors ${
+                    className={`p-3 text-xs transition-colors cursor-pointer ${
                       isUnread ? 'bg-primary-tint/30 font-medium' : 'hover:bg-bg-subtle/50'
                     }`}
                   >

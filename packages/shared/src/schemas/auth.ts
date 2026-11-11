@@ -39,6 +39,8 @@ export type VerifyEmailInput = z.infer<typeof VerifyEmailSchema>;
 
 export const UpdateProfileSchema = z.object({
   locale: z.enum(LOCALES).optional(),
+  name: z.string().trim().max(100).optional(),
+  avatarUrl: z.string().optional(),
 });
 
 export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
@@ -50,6 +52,8 @@ export interface AuthUserDto {
   locale: (typeof LOCALES)[number];
   emailVerifiedAt: string | null;
   createdAt: string;
+  name?: string;
+  avatarUrl?: string;
 }
 
 export interface AuthResponseDto {

@@ -22,6 +22,7 @@
     "login": "Sign In",
     "signup": "Sign Up",
     "profile": "Profile",
+    "logout": "Sign Out",
     "menu": "Menu",
     "close": "Close"
   },
@@ -98,7 +99,13 @@
     "loadMore": "Load More Courses",
     "lessons": "lessons",
     "hours": "hours",
-    "hoursShort": "{count}h"
+    "hoursShort": "{count}h",
+    "sortBy": "Sort by",
+    "sortHighestRated": "Highest Rated",
+    "sortPriceAsc": "Price: Low to High",
+    "sortPriceDesc": "Price: High to Low",
+    "sortNewest": "Newest",
+    "clearSearch": "Clear search"
   },
   "courseDetail": {
     "instructor": "Instructor",
@@ -330,7 +337,14 @@
     "viewVerify": "View & Verify Credential",
     "issuedOn": "Issued on {date}",
     "officialSerial": "Serial: {serial}",
-    "academicScholar": "Student Scholar"
+    "academicScholar": "Student Scholar",
+    "profilePicture": "Profile Picture",
+    "changeAvatar": "Change Picture",
+    "uploadPhoto": "Upload Photo",
+    "choosePreset": "Or choose scholarly avatar",
+    "removePhoto": "Remove Photo",
+    "fullName": "Full Name",
+    "saveProfile": "Save Changes"
   },
   "styleguide": {
     "title": "Design System & Component Styleguide",

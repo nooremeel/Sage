@@ -9,7 +9,7 @@ import { ThemeToggle } from '@/components/shell/theme-toggle';
 import { NotificationBell } from '@/components/shell/notification-bell';
 import { useAuth } from '@/lib/auth-context';
 import { Button } from '@/components/ui/button';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function Header() {
@@ -17,7 +17,7 @@ export function Header() {
   const tCommon = useTranslations('common');
   const locale = useLocale();
   const pathname = usePathname();
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const navLinks = [
@@ -72,13 +72,37 @@ export function Header() {
           <div className="hidden sm:flex items-center gap-2">
             {!isLoading && (
               user ? (
-                <Link
-                  href="/profile"
-                  className="flex items-center gap-1.5 text-xs font-medium text-text hover:text-primary border border-border rounded-md px-2.5 py-1.5 focus-ring"
-                >
-                  <User className="h-3.5 w-3.5 text-primary" />
-                  <span className="max-w-[120px] truncate">{user.email}</span>
-                </Link>
+                <div className="flex items-center gap-1.5">
+                  <Link
+                    href="/profile"
+                    className="flex items-center gap-2 text-xs font-medium text-text hover:text-primary border border-border rounded-md px-2.5 py-1.5 focus-ring transition-colors"
+                  >
+                    {user.avatarUrl ? (
+                      <img
+                        src={user.avatarUrl}
+                        alt={user.name || user.email}
+                        className="h-5 w-5 rounded-full object-cover border border-border shrink-0"
+                      />
+                    ) : (
+                      <div className="h-5 w-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold shrink-0">
+                        {(user.name || user.email)[0].toUpperCase()}
+                      </div>
+                    )}
+                    <span className="max-w-[110px] truncate">{user.name || user.email}</span>
+                  </Link>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => logout()}
+                    title={tNav('logout')}
+                    aria-label={tNav('logout')}
+                    className="h-8 px-2 text-text-muted hover:text-danger hover:bg-danger/10 transition-colors"
+                  >
+                    <LogOut className="h-3.5 w-3.5 rtl:-scale-x-100" />
+                    <span className="hidden lg:inline ms-1 text-xs">{tNav('logout')}</span>
+                  </Button>
+                </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <Link href="/login">
@@ -140,14 +164,43 @@ export function Header() {
             <div className="pt-6 border-t border-border flex flex-col gap-2">
               {!isLoading && (
                 user ? (
-                  <Link
-                    href="/profile"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center gap-2 rounded-md p-2 text-sm font-medium text-text hover:bg-bg-subtle"
-                  >
-                    <User className="h-4 w-4 text-primary" />
-                    <span>{tNav('profile')}</span>
-                  </Link>
+                  <div className="flex flex-col gap-2">
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center gap-2.5 rounded-md p-2 text-sm font-medium text-text hover:bg-bg-subtle transition-colors"
+                    >
+                      {user.avatarUrl ? (
+                        <img
+                          src={user.avatarUrl}
+                          alt={user.name || user.email}
+                          className="h-8 w-8 rounded-full object-cover border border-border shrink-0"
+                        />
+                      ) : (
+                        <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold shrink-0">
+                          {(user.name || user.email)[0].toUpperCase()}
+                        </div>
+                      )}
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-semibold text-text truncate text-sm">
+                          {user.name || tNav('profile')}
+                        </span>
+                        <span className="text-xs text-text-muted truncate">{user.email}</span>
+                      </div>
+                    </Link>
+
+                    <Button
+                      variant="ghost"
+                      onClick={() => {
+                        setMobileMenuOpen(false);
+                        logout();
+                      }}
+                      className="w-full justify-start text-danger hover:text-danger hover:bg-danger/10 gap-2 text-sm"
+                    >
+                      <LogOut className="h-4 w-4 rtl:-scale-x-100" />
+                      <span>{tNav('logout')}</span>
+                    </Button>
+                  </div>
                 ) : (
                   <>
                     <Link
