@@ -433,6 +433,87 @@ async function main() {
         },
       ],
     },
+    // MIT OpenCourseWare Proof of Concept Courses (External Open Source Streams)
+    {
+      categoryId: catEng,
+      instructorId: instructorNour,
+      status: 'published' as const,
+      level: 'beginner' as const,
+      priceCents: 0,
+      currency: 'USD',
+      primaryLocale: 'en' as const,
+      ratingAvg: '5.00',
+      ratingCount: 512,
+      translations: [
+        {
+          locale: 'en' as const,
+          title: 'MIT 6.0001: Introduction to Computer Science and Programming in Python',
+          subtitle: 'MIT OpenCourseWare Proof of Concept (External Open Source Content)',
+          description: 'An introductory computer science course using Python 3, designed for students with little or no programming experience. Streamed live via MIT OpenSource player integration without local database asset storage.',
+          slug: 'mit-6-0001-python',
+        },
+        {
+          locale: 'ar' as const,
+          title: 'مقرر MIT 6.0001: مقدمة في علوم الكمبيوتر والبرمجة بلغة بايثون',
+          subtitle: 'محتوى تعليمي مفتوح المصدر من معهد ماساتشوستس للتقنية (MIT OCW)',
+          description: 'مقرر تأسيسي في علوم الكمبيوتر باستخدام بايثون 3، معروض عبر مشغل المنصة كتكامل إثبات مفهوم للمصادر المفتوحة دون تخزين ملفات الفيديو محلياً.',
+          slug: 'mit-6-0001-python-ar',
+        },
+      ],
+      sections: [
+        {
+          title: { en: 'MIT OCW Module 1: Python Basics', ar: 'مقرر MIT: أساسيات بايثون' },
+          lessons: [
+            {
+              title: { en: 'Lecture 1: What is Computation? (MIT OCW)', ar: 'المحاضرة 1: ما هو الحساب؟ (MIT OCW)' },
+              type: 'video' as const,
+              isFreePreview: true,
+              durationSec: 2900,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      categoryId: catEng,
+      instructorId: instructorNour,
+      status: 'published' as const,
+      level: 'advanced' as const,
+      priceCents: 0,
+      currency: 'USD',
+      primaryLocale: 'en' as const,
+      ratingAvg: '4.99',
+      ratingCount: 428,
+      translations: [
+        {
+          locale: 'en' as const,
+          title: 'MIT 6.006: Introduction to Algorithms',
+          subtitle: 'MIT OpenCourseWare Proof of Concept (External Open Source Content)',
+          description: 'Rigorous introduction to mathematical modeling and analysis of computer algorithms. Streamed via open HLS player integration as a live proof of concept.',
+          slug: 'mit-6-006-algorithms',
+        },
+        {
+          locale: 'ar' as const,
+          title: 'مقرر MIT 6.006: مقدمة في الخوارزميات وتحليلها',
+          subtitle: 'محتوى تعليمي مفتوح المصدر من معهد ماساتشوستس للتقنية (MIT OCW)',
+          description: 'مقرر متقدم في النمذجة الرياضية وتحليل خوارزميات الكمبيوتر، معروض عبر المشغل المتكيف كإثبات مفهوم للمحتوى الخارجي المفتوح.',
+          slug: 'mit-6-006-algorithms-ar',
+        },
+      ],
+      sections: [
+        {
+          title: { en: 'MIT OCW Module 1: Algorithmic Efficiency', ar: 'مقرر MIT: كفاءة الخوارزميات' },
+          lessons: [
+            {
+              title: { en: 'Lecture 1: Algorithmic Complexity & Big-O (MIT OCW)', ar: 'المحاضرة 1: تعقيد الخوارزميات وتدوين Big-O' },
+              type: 'video' as const,
+              isFreePreview: true,
+              durationSec: 3400,
+            },
+          ],
+        },
+      ],
+    },
   ];
 
   const courseMap = new Map<string, string>();

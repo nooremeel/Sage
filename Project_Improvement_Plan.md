@@ -15,8 +15,9 @@ This document outlines the bugs, missing features, and improvements identified f
 
 ## 3. Proof of Concept: Integrating Real Courses
 
-- [ ] **Step: Integrate Open Source Course Content:**
+- [x] **Step: Integrate Open Source Course Content:**
     - Add a few real courses from open sources (e.g., MIT OpenCourseWare) as a proof of concept.
     - **Implementation Constraint:** Do **not** store full course contents or video files on the platform's database.
     - **UI Requirement:** Display these courses within the existing `hls-player.tsx` (if compatible) or a specialized external embed viewer.
     - Ensure these courses are clearly marked as external/open-source and do not interfere with the core enrollment/certificate engine.
+    - *Status:* Completed PoC seeding with MIT 6.0001 and MIT 6.006 courses.
