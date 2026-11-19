@@ -84,9 +84,11 @@ export class MediaService {
         uploadId = createRes.UploadId;
       }
     } catch (err: unknown) {
-      this.logger.warn(
-        `S3 CreateMultipartUpload failed, using fallback: ${err instanceof Error ? err.message : String(err)}`,
-      );
+      if (process.env.NODE_ENV !== 'test') {
+        this.logger.warn(
+          `S3 CreateMultipartUpload failed, using fallback: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
     }
 
     const [newAsset] = await this.db
@@ -167,9 +169,11 @@ export class MediaService {
       });
       await (s3 as any).send(completeCommand);
     } catch (err: unknown) {
-      this.logger.warn(
-        `S3 CompleteMultipartUpload error: ${err instanceof Error ? err.message : String(err)}`,
-      );
+      if (process.env.NODE_ENV !== 'test') {
+        this.logger.warn(
+          `S3 CompleteMultipartUpload error: ${err instanceof Error ? err.message : String(err)}`,
+        );
+      }
     }
 
     await this.db

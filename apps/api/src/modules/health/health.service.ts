@@ -66,11 +66,17 @@ export class HealthService {
   async checkDatabase(): Promise<ServiceHealth> {
     const start = Date.now();
     try {
+      if (!this.sql) {
+        throw new Error('Database client not initialized');
+      }
       await this.sql`SELECT 1`;
       return { status: 'up', latencyMs: Date.now() - start };
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : String(err);
-      this.logger.warn(`Database health check failed: ${message}`);
+      // Suppress warning during tests if it's a connection refused in a non-critical context
+      if (process.env.NODE_ENV !== 'test' || !message.includes('Connection refused')) {
+        this.logger.warn(`Database health check failed: ${message}`);
+      }
       return { status: 'down', error: message, latencyMs: Date.now() - start };
     }
   }

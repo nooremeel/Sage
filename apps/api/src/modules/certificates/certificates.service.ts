@@ -6,6 +6,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { eq, and } from 'drizzle-orm';
+import { randomBytes } from 'crypto';
 import { DRIZZLE_DB, type DrizzleDb } from '../../db/db.module.js';
 import {
   certificates,
@@ -57,22 +58,47 @@ export class CertificatesService {
       return this.enrichCertificateDto(existing);
     }
 
-    // 4. Generate unique serial: SAGE-YYYY-XXXXXX
-    const year = new Date().getFullYear();
-    const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const serial = `SAGE-${year}-${randomPart}`;
+    // 4. Generate unique serial: SAGE-YYYY-XXXXXX with retry on collision
+    let inserted: typeof certificates.$inferSelect | undefined;
+    let attempts = 0;
+    while (!inserted && attempts < 5) {
+      attempts++;
+      const serial = this.generateSerial();
 
-    // 5. Insert certificate
-    const [inserted] = await this.db
-      .insert(certificates)
-      .values({
-        serial,
-        userId,
-        courseId,
-      })
-      .returning();
+      try {
+        const [res] = await this.db
+          .insert(certificates)
+          .values({
+            serial,
+            userId,
+            courseId,
+          })
+          .returning();
+        inserted = res;
+      } catch (err: unknown) {
+        // If race condition where cert was inserted in parallel, return existing
+        const [existingCheck] = await this.db
+          .select()
+          .from(certificates)
+          .where(and(eq(certificates.userId, userId), eq(certificates.courseId, courseId)));
+
+        if (existingCheck) {
+          return this.enrichCertificateDto(existingCheck);
+        }
+
+        if (attempts >= 5) {
+          throw err;
+        }
+      }
+    }
 
     return this.enrichCertificateDto(inserted!);
+  }
+
+  private generateSerial(): string {
+    const year = new Date().getFullYear();
+    const randomPart = randomBytes(4).toString('hex').toUpperCase().substring(0, 6);
+    return `SAGE-${year}-${randomPart}`;
   }
 
   async verifyCertificate(
